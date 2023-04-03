@@ -1,7 +1,12 @@
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+
 function App() {
   return (
     <div className="App">
-      <h1>HELLO WORLD</h1>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }

@@ -4,14 +4,64 @@ import { db } from "./db";
 const PORT = 3000;
 const app = express();
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 app.post("/create", async (req: Request, res: Response) => {
-  console.log(req.body);
-  const { username } = req.body;
-  const user = await db.user.create({ data: { username: username } });
-  res.status(200).json({ user })
+  const { display_name, username, password } = req.body;
+  try {
+    const user = await db.user.create({
+      data: {
+        display_name,
+        username,
+        password,
+      },
+    });
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json(err)
+  }
 });
+
+app.post("/friend", async (req: Request, res: Response) => {
+  const { userId1, userId2 } = req.body;
+  try {
+    const userUpdatedUser1 = await db.user.update({
+      where: { id: userId1 },
+      data: {
+        friends: {
+          connect: { id: userId2 },
+        }
+      }
+    })
+    const userUpdatedUser2 = await db.user.update({
+      where: { id: userId2 },
+      data: {
+        friends: {
+          connect: { id: userId1 },
+        },
+        friendOf: {
+          connect: { id: userId1 },
+        }
+      }
+    })
+    res.status(200).json({ message: "Friend added" });
+  } catch (err) {
+    res.status(500).json(err)
+  }
+});
+
+app.get("/friends", async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await db.user.findUnique({
+      where: { id: Number(userId) },
+      include: { friends: true }
+    })
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json(err)
+  }
+})
 
 app.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);

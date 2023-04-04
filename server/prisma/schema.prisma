@@ -6,12 +6,18 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  username String
+  id           Int      @id @default(autoincrement())
+  display_name String
+  username     String   @unique
+  password     String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  friends      User[]   @relation("Friends")
+  friendOf     User[]   @relation("Friends")
 }

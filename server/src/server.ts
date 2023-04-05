@@ -1,26 +1,12 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { db } from "./db";
+import authRouter from "./routes/auth";
 const PORT = 3000;
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.post("/create", async (req: Request, res: Response) => {
-  const { display_name, username, password } = req.body;
-  try {
-    const user = await db.user.create({
-      data: {
-        display_name,
-        username,
-        password,
-      },
-    });
-    res.status(200).json({ user });
-  } catch (err) {
-    res.status(500).json(err)
-  }
-});
 
 app.post("/friend", async (req: Request, res: Response) => {
   const { userId1, userId2 } = req.body;
@@ -62,6 +48,8 @@ app.get("/friends", async (req, res) => {
     res.status(500).json(err)
   }
 })
+
+app.use("/api/auth", authRouter)
 
 app.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);

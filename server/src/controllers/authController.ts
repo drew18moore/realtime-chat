@@ -28,3 +28,24 @@ export const registerNewUser = async (req: Request, res: Response) => {
     res.status(500).json(err);
   }
 };
+
+export const loginUser = async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  if (!username || username === "")
+    return res.status(400).json({ message: "Username is required" });
+  if (!password || password === "")
+    return res.status(400).json({ message: "Password is required" });
+
+  try {
+    const user = await db.user.findUnique({ where: { username } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    if (!(await bcrypt.compare(password, user.password)))
+      return res.status(400).json({ message: "Incorrect password" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};

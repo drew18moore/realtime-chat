@@ -21,7 +21,12 @@ export const registerNewUser = async (req: Request, res: Response) => {
         password: hashedPassword,
       },
     });
-    res.status(200).json(user);
+    const response = {
+      id: user.id,
+      displayName: user.display_name,
+      username: user.username,
+    }
+    res.status(200).json(response);
   } catch (err: any) {
     if (err.code === "P2002")
       return res.status(403).json({ message: "Username already in use" });
@@ -40,11 +45,15 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const user = await db.user.findUnique({ where: { username } });
     if (!user) return res.status(404).json({ message: "User not found" });
-    
+
     if (!(await bcrypt.compare(password, user.password)))
       return res.status(400).json({ message: "Incorrect password" });
-
-    res.status(200).json(user);
+    const response = {
+      id: user.id,
+      displayName: user.display_name,
+      username: user.username,
+    }
+    res.status(200).json(response);
   } catch (err) {
     res.status(500).json(err);
   }

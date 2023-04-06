@@ -2,10 +2,11 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { db } from "./db";
 import authRouter from "./routes/auth";
+import { corsOptions } from "./config/corsOptions";
 const PORT = 3000;
 const app = express();
 
-app.use(cors());
+app.use(cors<Request>(corsOptions));
 app.use(express.json());
 
 app.post("/friend", async (req: Request, res: Response) => {

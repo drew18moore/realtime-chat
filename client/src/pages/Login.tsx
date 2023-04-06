@@ -16,8 +16,7 @@ const Login = () => {
         username: usernameRef?.current?.value.trim().toLowerCase(),
         password: passwordRef?.current?.value
       })
-      console.log(res);
-      // setCurrentUser(res)
+      setCurrentUser(res.data);
     } catch (err) {
       console.error(err)
     }
@@ -56,7 +55,7 @@ const Login = () => {
           </label>
           <input
             ref={passwordRef}
-            type="text"
+            type="password"
             id="password"
             className="border border-gray-300 px-3 py-2 rounded-lg"
           />

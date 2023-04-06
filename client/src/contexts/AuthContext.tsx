@@ -1,5 +1,4 @@
-import React, { ReactNode, useContext, useState } from "react";
-
+import React, { ReactNode, useContext, useEffect, useState } from "react";
 
 const AuthContext = React.createContext<any>(undefined);
 
@@ -12,6 +11,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [currentUser, setCurrentUser] = useState({});
 
+  useEffect(() => {
+    console.log(currentUser);
+  }, [currentUser]);
+  
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
       {children}

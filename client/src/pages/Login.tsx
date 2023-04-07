@@ -1,10 +1,11 @@
 import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const { setCurrentUser } = useAuth();
+  const navigate = useNavigate();
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -14,11 +15,12 @@ const Login = () => {
     try {
       const res = await api.post("/api/auth/login", {
         username: usernameRef?.current?.value.trim().toLowerCase(),
-        password: passwordRef?.current?.value
-      })
+        password: passwordRef?.current?.value,
+      });
       setCurrentUser(res.data);
+      navigate("/");
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
   };
 

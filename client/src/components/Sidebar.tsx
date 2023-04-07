@@ -1,3 +1,5 @@
+import Converasation from "./Converasation";
+
 const Sidebar = () => {
   return (
     <div className=" bg-white h-screen w-96 relative">
@@ -11,6 +13,26 @@ const Sidebar = () => {
           <button className="bg-gray-200 h-fit rounded-full w-8">
             <img src="add.svg" alt="new conversation" />
           </button>
+        </div>
+      </div>
+      <div className="absolute top-20 left-0 right-0 bottom-0 p-2">
+        <div className="grid gap-2">
+          <Converasation
+            img={
+              "https://yt3.ggpht.com/a/AGF-l7_d6d5tvILSHvz1N0a_P16ZcG6mlqNe3Zvkxg=s900-c-k-c0xffffffff-no-rj-mo"
+            }
+            username={"John Doe"}
+            lastMessage="Hello World"
+            dateLastMessage={new Date()}
+          />
+          <Converasation
+            img={
+              "https://th.bing.com/th/id/OIP.FXR6pmSDte-PA3sDvO2o6wHaE8?pid=ImgDet&rs=1"
+            }
+            username={"Jane Doe"}
+            lastMessage="Hello World"
+            dateLastMessage={new Date()}
+          />
         </div>
       </div>
     </div>

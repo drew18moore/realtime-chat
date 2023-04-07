@@ -45,6 +45,7 @@ const Login = () => {
             type="text"
             id="username"
             className="border border-gray-300 px-3 py-2 rounded-lg"
+            required
           />
         </div>
         <br />
@@ -60,6 +61,7 @@ const Login = () => {
             type="password"
             id="password"
             className="border border-gray-300 px-3 py-2 rounded-lg"
+            required
           />
         </div>
         <br />

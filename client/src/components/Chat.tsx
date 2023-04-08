@@ -8,11 +8,11 @@ const Chat: FC<ChatProps> = ({ username }) => {
   return (
     <div className="relative h-screen">
       {/* Header bar */}
-      <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-20 px-10">
+      <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-14 px-10">
         <h1 className="text-2xl">{username}</h1>
       </div>
 
-      <div className="absolute top-20 bottom-20 w-full"></div>
+      <div className="absolute top-14 bottom-20 w-full bg-gray-200 rounded-tl-md rounded-bl-md"></div>
 
       <div className="bg-white absolute bottom-0 w-full h-20 px-5 flex items-center">
         <input

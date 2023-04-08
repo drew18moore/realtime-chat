@@ -5,6 +5,7 @@ interface ConverasationProps {
   username: string;
   lastMessage: string;
   dateLastMessage: Date;
+  isSelected?: boolean;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -12,13 +13,14 @@ const Converasation: FC<ConverasationProps> = ({
   username,
   lastMessage,
   dateLastMessage,
+  isSelected = false,
 }) => {
   const dateFormatted = dateLastMessage.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
   return (
-    <div className="bg-gray-200 rounded-md flex gap-3 p-3 items-center justify-between">
+    <div className={`${isSelected ? "bg-gray-200" : null} rounded-md flex gap-3 p-3 items-center justify-between`}>
       <div className="flex gap-3 items-center">
         <div className="w-14 h-14 rounded-full overflow-hidden">
           <img
@@ -32,7 +34,9 @@ const Converasation: FC<ConverasationProps> = ({
           <p className="text-gray-600 text-sm">{lastMessage}</p>
         </div>
       </div>
-      <div className="flex self-start text-sm text-gray-600">{dateFormatted}</div>
+      <div className="flex self-start text-sm text-gray-600">
+        {dateFormatted}
+      </div>
     </div>
   );
 };

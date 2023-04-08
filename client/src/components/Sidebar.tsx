@@ -3,7 +3,7 @@ import Converasation from "./Converasation";
 const Sidebar = () => {
   return (
     <div className=" bg-white h-screen w-96 relative">
-      <div className="flex absolute top-0 left-0 right-0 h-20 justify-center">
+      <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
         <div className="flex items-center gap-3">
           <input
             type="text"
@@ -15,7 +15,7 @@ const Sidebar = () => {
           </button>
         </div>
       </div>
-      <div className="absolute top-20 left-0 right-0 bottom-0 p-2">
+      <div className="absolute top-14 left-0 right-0 bottom-0 p-2">
         <div className="grid gap-2">
           <Converasation
             img={
@@ -24,6 +24,7 @@ const Sidebar = () => {
             username={"John Doe"}
             lastMessage="Hello World"
             dateLastMessage={new Date()}
+            isSelected
           />
           <Converasation
             img={

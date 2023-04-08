@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div className="flex ">
       <Sidebar />
-      <div className="flex-grow bg-gray-200 h-screen">
+      <div className="flex-grow h-screen">
         <Chat username={"drew18moore"}/>
       </div>
     </div>

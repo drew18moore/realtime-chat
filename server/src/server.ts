@@ -1,10 +1,19 @@
 import express, { Request, Response } from "express";
+import { Server } from "socket.io";
+import http from "http";
 import cors from "cors";
 import { db } from "./db";
 import authRouter from "./routes/auth";
 import { corsOptions } from "./config/corsOptions";
+
 const PORT = 3000;
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: ["http://127.0.0.1:5173"]
+  }
+});
 
 app.use(cors<Request>(corsOptions));
 app.use(express.json());
@@ -52,6 +61,10 @@ app.get("/friends", async (req, res) => {
 
 app.use("/api/auth", authRouter)
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+io.on("connection", (socket) => {
+  console.log(`User connected: ${socket.id}`);
+})

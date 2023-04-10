@@ -12,12 +12,23 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   display_name String
-  username     String   @unique
+  username     String    @unique
   password     String
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  friends      User[]   @relation("Friends")
-  friendOf     User[]   @relation("Friends")
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  friends      User[]    @relation("Friends")
+  friendOf     User[]    @relation("Friends")
+  createdMessages     Message[] @relation("sentMessages")
+  receivedMessages Message[] @relation("receivedMessages")
+}
+
+model Message {
+  id         Int    @id @default(autoincrement())
+  message    String
+  to         User   @relation("sentMessages", fields: [recieverId], references: [id])
+  recieverId Int
+  from       User   @relation("receivedMessages", fields: [authorId], references: [id])
+  authorId   Int
 }

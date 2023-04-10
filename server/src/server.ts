@@ -4,6 +4,7 @@ import http from "http";
 import cors from "cors";
 import { db } from "./db";
 import authRouter from "./routes/auth";
+import usersRouter from "./routes/users";
 import { corsOptions } from "./config/corsOptions";
 
 const PORT = 3000;
@@ -60,6 +61,7 @@ app.get("/friends", async (req, res) => {
 })
 
 app.use("/api/auth", authRouter)
+app.use("/api/users", usersRouter)
 
 server.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);

@@ -27,8 +27,8 @@ model User {
 model Message {
   id         Int    @id @default(autoincrement())
   message    String
-  to         User   @relation("sentMessages", fields: [recieverId], references: [id])
-  recieverId Int
+  to         User   @relation("sentMessages", fields: [receiverId], references: [id])
+  receiverId Int
   from       User   @relation("receivedMessages", fields: [authorId], references: [id])
   authorId   Int
 }

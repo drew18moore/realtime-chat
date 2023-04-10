@@ -30,7 +30,7 @@ const Chat: FC<ChatProps> = ({ username }) => {
         <div className="grid gap-2 p-2 overflow-auto">
           {messages.map((message, i) => {
             return (
-              <div className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`}>{message.toString()}</div>
+              <div className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`} key={i}>{message.toString()}</div>
             );
           })}
         </div>

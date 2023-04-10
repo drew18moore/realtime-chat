@@ -1,6 +1,12 @@
 import Converasation from "./Converasation";
 
-const Sidebar: React.FC<{ users: User[] }> = ({ users }) => {
+type SidebarProps = {
+  users: User[];
+  currentConversation: User | undefined;
+  setCurrentConversation: React.Dispatch<React.SetStateAction<User | undefined>>;
+};
+
+const Sidebar: React.FC<SidebarProps> = ({ users, currentConversation, setCurrentConversation }) => {
   return (
     <div className=" bg-white h-screen w-96 relative">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
@@ -17,15 +23,16 @@ const Sidebar: React.FC<{ users: User[] }> = ({ users }) => {
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2">
         <div className="grid gap-2">
-          {users.map(user => (
+          {users.map((user) => (
             <Converasation
-            img={"default-pfp.jpg"}
-            username={user.username}
-            lastMessage="Hello World"
-            dateLastMessage={new Date()}
-            isSelected
-            key={user.id}
-          />
+              img={"default-pfp.jpg"}
+              username={user.username}
+              lastMessage="Hello World"
+              dateLastMessage={new Date()}
+              isSelected={user === currentConversation}
+              onClick={() => setCurrentConversation(user)}
+              key={user.id}
+            />
           ))}
         </div>
       </div>

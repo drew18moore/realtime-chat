@@ -6,6 +6,7 @@ import api from "../api/api";
 
 const Home = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [currentConversation, setCurrentConversation] = useState<User>();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -17,16 +18,16 @@ const Home = () => {
       }
     }
     fetchUsers()
+    const socket = io("http://localhost:3000");
+    socket.on("connection", (socket) => {
+      console.log(socket);
+    })
   }, [])
 
-  const socket = io("http://localhost:3000");
-  socket.on("connection", (socket) => {
-    console.log(socket);
-  })
 
   return (
     <div className="flex ">
-      <Sidebar users={users} />
+      <Sidebar users={users} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
       <div className="flex-grow h-screen">
         <Chat username={"drew18moore"}/>
       </div>

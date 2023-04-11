@@ -29,7 +29,7 @@ const Home = () => {
     <div className="flex ">
       <Sidebar users={users} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
       <div className="flex-grow h-screen">
-        <Chat username={"drew18moore"}/>
+        <Chat currentConversation={currentConversation}/>
       </div>
     </div>
   );

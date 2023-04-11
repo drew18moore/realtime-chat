@@ -1,36 +1,64 @@
 import { FC, useEffect, useRef, useState } from "react";
+import api from "../api/api";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ChatProps {
-  username: String;
+  currentConversation: User | undefined;
 }
 
-const Chat: FC<ChatProps> = ({ username }) => {
+const Chat: FC<ChatProps> = ({ currentConversation }) => {
+  const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
-  const [messages, setMessages] = useState<Array<string>>([]);
+  const [messages, setMessages] = useState<Array<Message>>([]);
 
   useEffect(() => {
-    console.log(messages);
-  }, [messages]);
+    const fetchPosts = async () => {
+      const res = await api.get("/api/messages", {
+        params: {
+          currentUserId: currentUser?.id,
+          recipientId: currentConversation?.id,
+        },
+      });
+      console.log(res.data);
+      setMessages(res.data);
+    };
+    if (currentConversation) {
+      fetchPosts();
+    }
+  }, [currentConversation]);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = messageInputRef?.current?.value;
-    console.log(messageInputRef?.current?.value);
-    setMessages((prev) => [...prev, value!]);
-    messageInputRef!.current!.value = "";
+    if (value !== "") {
+      setMessages((prev) => [
+        ...prev,
+        {
+          message: value!,
+          receiverId: currentConversation?.id,
+          authorId: currentUser?.id,
+        },
+      ]);
+      messageInputRef!.current!.value = "";
+    }
   };
   return (
     <div className="relative h-screen">
       {/* Header bar */}
       <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-14 px-10">
-        <h1 className="text-2xl">{username}</h1>
+        <h1 className="text-2xl">{currentConversation?.username}</h1>
       </div>
 
       <div className="absolute top-14 bottom-20 w-full bg-gray-200 rounded-tl-md rounded-bl-md flex flex-col justify-end">
         <div className="grid gap-2 p-2 overflow-auto">
           {messages.map((message, i) => {
             return (
-              <div className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`} key={i}>{message.toString()}</div>
+              <div
+                className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`}
+                key={i}
+              >
+                {message.message.toString()}
+              </div>
             );
           })}
         </div>

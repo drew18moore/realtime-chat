@@ -4,3 +4,10 @@ type User = {
   display_name: string
   username: string
 }
+
+type Message = {
+  id?: int
+  message: string
+  receiverId: int
+  authorId: int
+}

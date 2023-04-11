@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import api from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
+import Message from "./Message";
 
 interface ChatProps {
   currentConversation: User | undefined;
@@ -53,12 +54,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
         <div className="grid gap-2 p-2 overflow-auto">
           {messages.map((message, i) => {
             return (
-              <div
-                className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`}
-                key={i}
-              >
-                {message.message.toString()}
-              </div>
+              <Message message={message} key={i} />
             );
           })}
         </div>

@@ -31,4 +31,5 @@ model Message {
   receiverId Int
   from       User   @relation("receivedMessages", fields: [authorId], references: [id])
   authorId   Int
+  created_at DateTime @default(now())
 }

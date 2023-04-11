@@ -10,4 +10,5 @@ type Message = {
   message: string
   receiverId: int
   authorId: int
+  created_at: Date
 }

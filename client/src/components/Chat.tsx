@@ -38,6 +38,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
           message: value!,
           receiverId: currentConversation?.id,
           authorId: currentUser?.id,
+          created_at: new Date(Date.now())
         },
       ]);
       messageInputRef!.current!.value = "";

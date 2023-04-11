@@ -47,7 +47,7 @@ const Signup = ({}) => {
             ref={displayNameRef}
             type="text"
             id="display-name"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>
@@ -63,7 +63,7 @@ const Signup = ({}) => {
             ref={usernameRef}
             type="text"
             id="username"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>
@@ -79,7 +79,7 @@ const Signup = ({}) => {
             ref={passwordRef}
             type="password"
             id="password"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>
@@ -95,7 +95,7 @@ const Signup = ({}) => {
             ref={repeatPasswordRef}
             type="password"
             id="repeat-password"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>

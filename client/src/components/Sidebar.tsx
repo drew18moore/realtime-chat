@@ -8,15 +8,15 @@ type SidebarProps = {
 
 const Sidebar: React.FC<SidebarProps> = ({ users, currentConversation, setCurrentConversation }) => {
   return (
-    <div className=" bg-white h-screen w-96 relative">
+    <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-5">
           <input
             type="text"
-            className="h-fit m-auto px-3 py-1 rounded-full bg-gray-200"
+            className="h-fit m-auto px-3 py-1 rounded-full bg-neutral-300 placeholder:text-neutral-600"
             placeholder="Search"
           />
-          <button className="bg-gray-200 h-fit rounded-full w-8">
+          <button className="h-fit rounded-full w-6">
             <img src="add.svg" alt="new conversation" />
           </button>
         </div>

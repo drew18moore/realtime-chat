@@ -44,7 +44,7 @@ const Login = () => {
             ref={usernameRef}
             type="text"
             id="username"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>
@@ -60,7 +60,7 @@ const Login = () => {
             ref={passwordRef}
             type="password"
             id="password"
-            className="border border-gray-300 px-3 py-2 rounded-lg"
+            className="border border-neutral-300 px-3 py-2 rounded-lg"
             required
           />
         </div>

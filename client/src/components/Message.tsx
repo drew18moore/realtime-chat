@@ -2,9 +2,10 @@ import { FC } from "react";
 
 interface MessageProps {
   message: Message;
+  isCurrentUser: boolean;
 }
 
-const Message: FC<MessageProps> = ({ message }) => {
+const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
   // Format datetime
   const date = new Date(message?.created_at);
   let dateFormated;
@@ -24,13 +25,13 @@ const Message: FC<MessageProps> = ({ message }) => {
   }
 
   return (
-    <div className="justify-self-end grid">
+    <div className={`${isCurrentUser ? "justify-self-end" : "justify-self-start"} grid`}>
       <div
-        className={`bg-blue-400 w-fit rounded-full px-2 py-1 justify-self-end`}
+        className={`${isCurrentUser ? "bg-blue-400" : "bg-neutral-300"} w-fit rounded-full px-2 py-1 ${isCurrentUser ? "justify-self-end" : "justify-self-start"}`}
       >
         {message.message}
       </div>
-      <p className="justify-self-end">{dateFormated}</p>
+      <p className={`${isCurrentUser ? "justify-self-end" : "justify-self-start"}`}>{dateFormated}</p>
     </div>
   );
 };

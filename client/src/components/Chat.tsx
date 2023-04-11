@@ -38,7 +38,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
           message: value!,
           receiverId: currentConversation?.id,
           authorId: currentUser?.id,
-          created_at: new Date(Date.now())
+          created_at: new Date(Date.now()),
         },
       ]);
       messageInputRef!.current!.value = "";
@@ -51,11 +51,15 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
         <h1 className="text-2xl">{currentConversation?.username}</h1>
       </div>
 
-      <div className="absolute top-14 bottom-20 w-full bg-gray-200 rounded-tl-md rounded-bl-md flex flex-col justify-end">
+      <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
         <div className="grid gap-2 p-2 overflow-auto">
           {messages.map((message, i) => {
             return (
-              <Message message={message} key={i} />
+              <Message
+                message={message}
+                key={i}
+                isCurrentUser={message.authorId === currentUser?.id}
+              />
             );
           })}
         </div>
@@ -68,7 +72,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
         <input
           ref={messageInputRef}
           type="text"
-          className="w-full rounded-full px-3 py-2 bg-gray-200"
+          className="w-full rounded-full px-3 py-2 bg-neutral-300 placeholder:text-neutral-600"
           placeholder="Type a message..."
         />
       </form>

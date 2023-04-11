@@ -28,7 +28,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
     }
   }, [currentConversation]);
 
-  const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+  const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = messageInputRef?.current?.value;
     if (value !== "") {
@@ -41,6 +41,11 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
           created_at: new Date(Date.now()),
         },
       ]);
+      const res = await api.post("/api/messages/new", {
+        authorId: currentUser?.id,
+        receiverId: currentConversation?.id,
+        message: value
+      })
       messageInputRef!.current!.value = "";
     }
   };

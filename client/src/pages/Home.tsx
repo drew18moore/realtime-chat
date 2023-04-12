@@ -5,19 +5,19 @@ import { useEffect, useState } from "react";
 import api from "../api/api";
 
 const Home = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [conversations, setConversations] = useState<User[]>([]);
   const [currentConversation, setCurrentConversation] = useState<User>();
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchConversations = async () => {
       try {
         const res = await api.get("/api/users/all")
-        setUsers(res.data)
+        setConversations(res.data)
       } catch (err) {
         console.error(err)
       }
     }
-    fetchUsers()
+    fetchConversations()
     const socket = io("http://localhost:3000");
     socket.on("connection", (socket) => {
       console.log(socket);
@@ -27,7 +27,7 @@ const Home = () => {
 
   return (
     <div className="flex ">
-      <Sidebar users={users} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
+      <Sidebar users={conversations} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
       <div className="flex-grow h-screen">
         <Chat currentConversation={currentConversation}/>
       </div>

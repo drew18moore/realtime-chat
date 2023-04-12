@@ -27,12 +27,16 @@ export const getMessages = async (req: Request, res: Response) => {
   try {
     const messages = await db.message.findMany({
       where: {
-        authorId: {
-          in: [parsedCurrentUserId, parsedRecipientId],
-        },
-        receiverId: {
-          in: [parsedCurrentUserId, parsedRecipientId],
-        },
+        OR: [
+          {
+            authorId: parsedCurrentUserId,
+            receiverId: parsedRecipientId,
+          },
+          {
+            authorId: parsedRecipientId,
+            receiverId: parsedCurrentUserId,
+          },
+        ]
       },
     });
     res.status(200).json(messages);

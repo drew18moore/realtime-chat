@@ -18,12 +18,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getAllConversations = async (req: Request, res: Response) => {
   const { userId } = req.params;
+  const userIdParsed = parseInt(userId)
   try {
     const conversations = await db.conversation.findMany({
       where: {
         users: {
           some: {
-            id: parseInt(userId),
+            id: userIdParsed,
           },
         },
       },
@@ -50,6 +51,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
     });
     const response = conversations.map((conversation) => ({
       ...conversation,
+      users: conversation.users.filter(user => user.id !== userIdParsed),
       lastMessageSent: conversation.messages[0],
       messages: undefined
     }));

@@ -1,14 +1,27 @@
 /// <reference types="vite/client" />
 type User = {
-  id: int
+  id: number
   display_name: string
   username: string
 }
 
 type Message = {
-  id?: int
+  id?: number
   message: string
-  receiverId: int
-  authorId: int
+  receiverId: number
+  authorId: number
   created_at: Date
+}
+
+type Conversation = {
+  id: number
+  title?: string | null
+  users: [{
+    id: number
+    username: string
+  }]
+  lastMessageSent: {
+    message: string,
+    created_at: Date
+  }
 }

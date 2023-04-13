@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 
 interface ChatProps {
-  currentConversation: User | undefined;
+  currentConversation: Conversation | undefined;
 }
 
 const Chat: FC<ChatProps> = ({ currentConversation }) => {
@@ -17,7 +17,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
       const res = await api.get("/api/messages", {
         params: {
           currentUserId: currentUser?.id,
-          recipientId: currentConversation?.id,
+          conversationId: currentConversation?.id,
         },
       });
       console.log(res.data);
@@ -31,13 +31,14 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = messageInputRef?.current?.value;
+    const receiverId = currentConversation?.users[0]?.id
     if (value !== "") {
       setMessages((prev) => [
         ...prev,
         {
           message: value!,
-          receiverId: currentConversation?.id,
-          authorId: currentUser?.id,
+          receiverId: receiverId!,
+          authorId: currentUser?.id!,
           created_at: new Date(Date.now()),
         },
       ]);
@@ -53,7 +54,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
     <div className="relative h-screen">
       {/* Header bar */}
       <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-14 px-10">
-        <h1 className="text-2xl">{currentConversation?.username}</h1>
+        <h1 className="text-2xl">{currentConversation?.users[0]?.username}</h1>
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">

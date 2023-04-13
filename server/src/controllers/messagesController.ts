@@ -20,27 +20,19 @@ export const newMessage = async (req: Request, res: Response) => {
   }
 };
 
-export const getMessages = async (req: Request, res: Response) => {
-  const { currentUserId, recipientId } = req.query;
+export const getMessagesInConversation = async (req: Request, res: Response) => {
+  const { currentUserId, conversationId } = req.query;
   const parsedCurrentUserId = parseInt(currentUserId as string);
-  const parsedRecipientId = parseInt(recipientId as string);
+  const parsedConversationId = parseInt(conversationId as string);
   try {
     const messages = await db.message.findMany({
       where: {
-        OR: [
-          {
-            authorId: parsedCurrentUserId,
-            receiverId: parsedRecipientId,
-          },
-          {
-            authorId: parsedRecipientId,
-            receiverId: parsedCurrentUserId,
-          },
-        ]
+        conversationId: parsedConversationId
       },
     });
     res.status(200).json(messages);
   } catch (err) {
+    console.error(err)
     res.status(500).json({ message: err });
   }
 };

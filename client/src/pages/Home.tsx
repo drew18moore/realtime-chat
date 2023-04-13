@@ -3,15 +3,17 @@ import Chat from "../components/Chat";
 import Sidebar from "../components/Sidebar";
 import { useEffect, useState } from "react";
 import api from "../api/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
-  const [conversations, setConversations] = useState<User[]>([]);
-  const [currentConversation, setCurrentConversation] = useState<User>();
+  const { currentUser } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversation, setCurrentConversation] = useState<Conversation>();
 
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const res = await api.get("/api/users/all")
+        const res = await api.get(`/api/users/${currentUser?.id}/conversations`)
         setConversations(res.data)
       } catch (err) {
         console.error(err)
@@ -27,7 +29,7 @@ const Home = () => {
 
   return (
     <div className="flex ">
-      <Sidebar users={conversations} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
+      <Sidebar conversations={conversations} currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
       <div className="flex-grow h-screen">
         <Chat currentConversation={currentConversation}/>
       </div>

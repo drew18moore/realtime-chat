@@ -44,8 +44,9 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
       ]);
       const res = await api.post("/api/messages/new", {
         authorId: currentUser?.id,
-        receiverId: currentConversation?.id,
-        message: value
+        receiverId: currentConversation?.users[0].id,
+        message: value,
+        conversationId: currentConversation?.id
       })
       messageInputRef!.current!.value = "";
     }

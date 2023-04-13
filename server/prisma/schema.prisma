@@ -12,24 +12,35 @@ datasource db {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  display_name String
-  username     String    @unique
-  password     String
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  friends      User[]    @relation("Friends")
-  friendOf     User[]    @relation("Friends")
-  createdMessages     Message[] @relation("sentMessages")
-  receivedMessages Message[] @relation("receivedMessages")
+  id               Int            @id @default(autoincrement())
+  display_name     String
+  username         String         @unique
+  password         String
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
+  friends          User[]         @relation("Friends")
+  friendOf         User[]         @relation("Friends")
+  createdMessages  Message[]      @relation("sentMessages")
+  receivedMessages Message[]      @relation("receivedMessages")
+  conversations    Conversation[] @relation("Participants")
 }
 
 model Message {
-  id         Int    @id @default(autoincrement())
-  message    String
-  to         User   @relation("sentMessages", fields: [receiverId], references: [id])
-  receiverId Int
-  from       User   @relation("receivedMessages", fields: [authorId], references: [id])
-  authorId   Int
-  created_at DateTime @default(now())
+  id             Int           @id @default(autoincrement())
+  message        String
+  to             User          @relation("sentMessages", fields: [receiverId], references: [id])
+  receiverId     Int
+  from           User          @relation("receivedMessages", fields: [authorId], references: [id])
+  authorId       Int
+  created_at     DateTime      @default(now())
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  conversationId Int?
+}
+
+model Conversation {
+  id         Int       @id @default(autoincrement())
+  title      String?
+  users      User[]    @relation("Participants")
+  messages   Message[]
+  created_at DateTime  @default(now())
 }

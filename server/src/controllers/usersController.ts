@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const getAllUsers = async (req: Request, res: Response) => {
+  const search = req.query.search as string || ""
   try {
     const users = await db.user.findMany({
       select: {
@@ -9,6 +10,12 @@ export const getAllUsers = async (req: Request, res: Response) => {
         display_name: true,
         username: true,
       },
+      where: {
+        username: {
+          contains: search,
+          mode: "insensitive"
+        }
+      }
     });
     res.status(200).json(users);
   } catch (err) {

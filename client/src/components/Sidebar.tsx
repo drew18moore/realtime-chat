@@ -1,8 +1,11 @@
+import { useEffect, useState } from "react";
 import Converasation from "./Converasation";
-import { FiSearch } from "react-icons/fi"
+import Search from "./Search";
+import api from "../api/api";
+import { useAuth } from "../contexts/AuthContext";
+import Contact from "./Contact";
 
 type SidebarProps = {
-  conversations: Conversation[];
   currentConversation: Conversation | undefined;
   setCurrentConversation: React.Dispatch<
     React.SetStateAction<Conversation | undefined>
@@ -10,39 +13,59 @@ type SidebarProps = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
-  conversations,
   currentConversation,
   setCurrentConversation,
 }) => {
+  const { currentUser } = useAuth();
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const res = await api.get(
+          `/api/users/${currentUser?.id}/conversations`
+        );
+        setConversations(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchConversations();
+  }, []);
+
   return (
     <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
-        <div className="flex items-center gap-5 w-full mx-5 relative">
-          <div className="absolute h-4 pl-3 pointer-events-none text-neutral-600">
-            <FiSearch />
-          </div>
-          <input
-            type="text"
-            className="h-fit m-auto px-3 py-1 rounded-full bg-neutral-300 placeholder:text-neutral-600 w-full pl-9"
-            placeholder="Search"
-          />
-        </div>
+        <Search setSearchResults={setSearchResults} />
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2">
         <div className="grid gap-2">
-          {conversations.map((conversation) => {
-            return (
-              <Converasation
-                img={"default-pfp.jpg"}
-                username={conversation.users[0].username}
-                lastMessage={conversation.lastMessageSent.message}
-                dateLastMessage={new Date(conversation.lastMessageSent.created_at)}
-                isSelected={conversation === currentConversation}
-                onClick={() => setCurrentConversation(conversation)}
-                key={conversation.id}
-              />
-            );
-          })}
+          {searchResults.length === 0
+            ? conversations.map((conversation) => {
+                return (
+                  <Converasation
+                    img={"default-pfp.jpg"}
+                    username={conversation.users[0].username}
+                    lastMessage={conversation.lastMessageSent.message}
+                    dateLastMessage={
+                      new Date(conversation.lastMessageSent.created_at)
+                    }
+                    isSelected={conversation === currentConversation}
+                    onClick={() => setCurrentConversation(conversation)}
+                    key={conversation.id}
+                  />
+                );
+              })
+            : searchResults.map((result) => {
+                return (
+                  <Contact
+                    img={"default-pfp.jpg"}
+                    username={result.username}
+                    key={result.id}
+                  />
+                );
+              })}
         </div>
       </div>
     </div>

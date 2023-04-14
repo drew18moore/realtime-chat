@@ -25,3 +25,9 @@ type Conversation = {
     created_at: Date
   }
 }
+
+type SearchResult = {
+  id: number
+  display_name: string
+  username: string
+}

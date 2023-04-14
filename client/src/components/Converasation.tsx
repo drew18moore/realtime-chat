@@ -22,7 +22,7 @@ const Converasation: FC<ConverasationProps> = ({
     minute: "2-digit",
   });
   return (
-    <div onClick={onClick} className={`${isSelected ? "bg-neutral-300" : null} rounded-md flex gap-3 p-3 items-center justify-between cursor-pointer`}>
+    <div onClick={onClick} className={`${isSelected ? "bg-neutral-300" : null} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
       <div className="flex gap-3 items-center">
         <div className="w-14 h-14 rounded-full overflow-hidden">
           <img

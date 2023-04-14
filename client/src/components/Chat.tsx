@@ -72,7 +72,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
         </div>
       </div>
 
-      <form
+      {currentConversation && <form
         onSubmit={sendMessage}
         className="bg-white absolute bottom-0 w-full h-20 px-5 flex items-center"
       >
@@ -82,7 +82,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
           className="w-full rounded-full px-3 py-2 bg-neutral-300 placeholder:text-neutral-600"
           placeholder="Type a message..."
         />
-      </form>
+      </form>}
     </div>
   );
 };

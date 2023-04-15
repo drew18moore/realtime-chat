@@ -3,14 +3,14 @@ import { FiSearch } from "react-icons/fi";
 import api from "../api/api";
 
 type SearchProps = {
-  setSearchResults: React.Dispatch<React.SetStateAction<SearchResult[]>>;
+  setSearchResults: React.Dispatch<React.SetStateAction<SearchResults | undefined>>;
 };
 
 const Search: React.FC<SearchProps> = ({ setSearchResults }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const handleChange = async () => {
     if (inputRef.current?.value.trim() === "") {
-      setSearchResults([])
+      setSearchResults(undefined)
       return
     }
     const res = await api.get("/api/users", {

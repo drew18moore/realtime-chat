@@ -17,7 +17,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         }
       }
     });
-    res.status(200).json(users);
+    res.status(200).json({ users: users, numFound: users.length });
   } catch (err) {
     res.status(500).json({ message: err });
   }

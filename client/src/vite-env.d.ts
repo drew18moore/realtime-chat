@@ -26,8 +26,7 @@ type Conversation = {
   }
 }
 
-type SearchResult = {
-  id: number
-  display_name: string
-  username: string
+type SearchResults = {
+  users: User[],
+  numFound: number
 }

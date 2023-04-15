@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { currentUser } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResults | undefined>(undefined);
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2">
         <div className="grid gap-2">
-          {searchResults.length === 0
+          {!searchResults
             ? conversations.map((conversation) => {
                 return (
                   <Converasation
@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   />
                 );
               })
-            : searchResults.map((result) => {
+            : searchResults.users.length > 0 ? searchResults.users.map((result) => {
                 return (
                   <Contact
                     img={"default-pfp.jpg"}
@@ -65,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     key={result.id}
                   />
                 );
-              })}
+              }) : <h2 className="text-center">No results found</h2>}
         </div>
       </div>
     </div>

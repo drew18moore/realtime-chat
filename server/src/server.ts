@@ -8,6 +8,7 @@ import { corsOptions } from "./config/corsOptions";
 import messagesRouter from "./routes/messages";
 import conversationsRouter from "./routes/conversations";
 import { credentials } from "./middleware/credentials";
+import cookieParser from "cookie-parser"
 
 const PORT = 3000;
 const app = express();
@@ -21,6 +22,7 @@ const io = new Server(server, {
 app.use(credentials);
 app.use(cors<Request>(corsOptions));
 app.use(express.json());
+app.use(cookieParser())
 
 app.use("/api/auth", authRouter)
 app.use("/api/users", usersRouter)

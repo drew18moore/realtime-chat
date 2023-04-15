@@ -7,6 +7,7 @@ import usersRouter from "./routes/users";
 import { corsOptions } from "./config/corsOptions";
 import messagesRouter from "./routes/messages";
 import conversationsRouter from "./routes/conversations";
+import { credentials } from "./middleware/credentials";
 
 const PORT = 3000;
 const app = express();
@@ -17,6 +18,7 @@ const io = new Server(server, {
   }
 });
 
+app.use(credentials);
 app.use(cors<Request>(corsOptions));
 app.use(express.json());
 

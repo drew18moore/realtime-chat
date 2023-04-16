@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Converasation from "./Converasation";
 import Search from "./Search";
-import api from "../api/api";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
 
@@ -19,11 +19,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   const { currentUser } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResults | undefined>(undefined);
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const res = await api.get(
+        const res = await axiosPrivate.get(
           `/api/users/${currentUser?.id}/conversations`
         );
         setConversations(res.data);

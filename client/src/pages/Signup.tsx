@@ -15,11 +15,17 @@ const Signup = ({}) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await api.post("/api/auth/signup", {
-        display_name: displayNameRef?.current?.value.trim(),
-        username: usernameRef?.current?.value.trim().toLowerCase(),
-        password: passwordRef?.current?.value,
-      });
+      const res = await api.post(
+        "/api/auth/signup",
+        {
+          display_name: displayNameRef?.current?.value.trim(),
+          username: usernameRef?.current?.value.trim().toLowerCase(),
+          password: passwordRef?.current?.value,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       setCurrentUser(res.data);
       navigate("/");
     } catch (err) {

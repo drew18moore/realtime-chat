@@ -3,6 +3,7 @@ type User = {
   id: number
   display_name: string
   username: string
+  accessToken: string
 }
 
 type Message = {

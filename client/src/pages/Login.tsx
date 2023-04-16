@@ -13,10 +13,16 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await api.post("/api/auth/login", {
-        username: usernameRef?.current?.value.trim().toLowerCase(),
-        password: passwordRef?.current?.value,
-      });
+      const res = await api.post(
+        "/api/auth/login",
+        {
+          username: usernameRef?.current?.value.trim().toLowerCase(),
+          password: passwordRef?.current?.value,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       setCurrentUser(res.data);
       navigate("/");
     } catch (err) {

@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
-import api from "../api/api";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 interface ChatProps {
   currentConversation: Conversation | undefined;
@@ -11,10 +11,11 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState<Array<Message>>([]);
+  const axiosPrivate = useAxiosPrivate();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await api.get("/api/messages", {
+      const res = await axiosPrivate.get("/api/messages", {
         params: {
           currentUserId: currentUser?.id,
           conversationId: currentConversation?.id,
@@ -42,7 +43,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
           created_at: new Date(Date.now()),
         },
       ]);
-      const res = await api.post("/api/messages/new", {
+      const res = await axiosPrivate.post("/api/messages/new", {
         authorId: currentUser?.id,
         receiverId: currentConversation?.users[0].id,
         message: value,

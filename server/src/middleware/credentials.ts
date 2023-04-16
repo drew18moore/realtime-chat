@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-
-const allowedOrigins = require("../config/allowedOrigins");
+import { allowedOrigins } from "../config/allowedOrigins";
 
 export const credentials = (req: Request, res: Response, next: NextFunction) => {
   const origin = req.headers.origin as string;

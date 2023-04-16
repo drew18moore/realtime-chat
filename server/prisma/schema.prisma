@@ -23,6 +23,7 @@ model User {
   createdMessages  Message[]      @relation("sentMessages")
   receivedMessages Message[]      @relation("receivedMessages")
   conversations    Conversation[] @relation("Participants")
+  refresh_token    String         @default("")
 }
 
 model Message {

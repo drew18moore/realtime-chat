@@ -10,6 +10,7 @@ interface ChatProps {
 const Chat: FC<ChatProps> = ({ currentConversation }) => {
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Array<Message>>([]);
   const axiosPrivate = useAxiosPrivate();
 
@@ -29,10 +30,16 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
     }
   }, [currentConversation]);
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = messageInputRef?.current?.value;
-    const receiverId = currentConversation?.users[0]?.id
+    const receiverId = currentConversation?.users[0]?.id;
     if (value !== "") {
       setMessages((prev) => [
         ...prev,
@@ -47,8 +54,8 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
         authorId: currentUser?.id,
         receiverId: currentConversation?.users[0].id,
         message: value,
-        conversationId: currentConversation?.id
-      })
+        conversationId: currentConversation?.id,
+      });
       messageInputRef!.current!.value = "";
     }
   };
@@ -60,7 +67,7 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
-        <div className="grid gap-2 p-2 overflow-auto">
+        <div className="grid gap-2 p-2 overflow-auto relative">
           {messages.map((message, i) => {
             return (
               <Message
@@ -70,20 +77,23 @@ const Chat: FC<ChatProps> = ({ currentConversation }) => {
               />
             );
           })}
+          <div ref={messagesEndRef} className="absolute bottom-0"/>
         </div>
       </div>
 
-      {currentConversation && <form
-        onSubmit={sendMessage}
-        className="bg-white absolute bottom-0 w-full h-20 px-5 flex items-center"
-      >
-        <input
-          ref={messageInputRef}
-          type="text"
-          className="w-full rounded-full px-3 py-2 bg-neutral-300 placeholder:text-neutral-600"
-          placeholder="Type a message..."
-        />
-      </form>}
+      {currentConversation && (
+        <form
+          onSubmit={sendMessage}
+          className="bg-white absolute bottom-0 w-full h-20 px-5 flex items-center"
+        >
+          <input
+            ref={messageInputRef}
+            type="text"
+            className="w-full rounded-full px-3 py-2 bg-neutral-300 placeholder:text-neutral-600"
+            placeholder="Type a message..."
+          />
+        </form>
+      )}
     </div>
   );
 };

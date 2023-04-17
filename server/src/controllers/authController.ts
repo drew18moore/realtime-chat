@@ -126,7 +126,9 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
 
     const refreshToken = cookies.jwt as string;
     console.log(refreshToken);
-    const user = await db.user.findFirst({ where: { refresh_token: refreshToken } });
+    const user = await db.user.findFirst({
+      where: { refresh_token: refreshToken },
+    });
     console.log(user);
     if (!user) return res.status(403).json({ message: "Forbidden" });
 
@@ -146,8 +148,46 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
         res.status(200).json({ accessToken });
       }
     );
-
   } catch (err) {
     console.error(err);
   }
-}
+};
+
+export const handlePersistentLogin = async (req: Request, res: Response) => {
+  try {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+
+    const refreshToken = cookies.jwt as string;
+    const user = await db.user.findFirst({
+      where: { refresh_token: refreshToken },
+    });
+    if (!user) return res.status(403).json({ message: "Forbidden" });
+
+    jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string,
+      (err, decoded) => {
+        const userId = (decoded as Token).userId;
+        if (err || user.id.toString() !== userId.toString())
+          return res.status(403).json({ message: "Forbidden" });
+        const accessToken = jwt.sign(
+          { userId: userId },
+          process.env.ACCESS_TOKEN_SECRET as string,
+          { expiresIn: "900000" } // 15 mins
+        );
+
+        const response = {
+          id: user.id,
+          displayName: user.display_name,
+          username: user.username,
+          accessToken,
+        };
+
+        res.status(200).json(response);
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+};

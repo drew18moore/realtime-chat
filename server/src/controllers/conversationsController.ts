@@ -7,7 +7,6 @@ export const newConversation = async (req: Request, res: Response) => {
   const recipientIdParsed = parseInt(recipientId);
   const authorIdParsed = parseInt(authorId);
   try {
-    console.log("START");
     const conversation = await db.conversation.create({
       data: {
         users: {
@@ -26,7 +25,6 @@ export const newConversation = async (req: Request, res: Response) => {
         messages: true,
       },
     });
-    console.log("dda");
     res.status(200).json(conversation);
   } catch (err) {
     console.error(err)

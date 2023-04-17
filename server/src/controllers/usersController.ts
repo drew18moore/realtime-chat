@@ -25,7 +25,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getAllConversations = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  console.log("object", req.userId);
   const userIdParsed = parseInt(userId)
   try {
     const conversations = await db.conversation.findMany({

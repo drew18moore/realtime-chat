@@ -125,18 +125,15 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
     const refreshToken = cookies.jwt as string;
-    console.log(refreshToken);
     const user = await db.user.findFirst({
       where: { refresh_token: refreshToken },
     });
-    console.log(user);
     if (!user) return res.status(403).json({ message: "Forbidden" });
 
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET as string,
       (err, decoded) => {
-        console.log(decoded);
         const userId = (decoded as Token).userId;
         if (err || user.id.toString() !== userId.toString())
           return res.status(403).json({ message: "Forbidden" });

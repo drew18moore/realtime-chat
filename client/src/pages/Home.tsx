@@ -1,6 +1,8 @@
 import Chat from "../components/Chat";
 import Sidebar from "../components/Sidebar";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import { Outlet } from "react-router-dom";
+
 
 const Home = () => {
   const [currentConversation, setCurrentConversation] = useState<Conversation>();
@@ -9,7 +11,7 @@ const Home = () => {
     <div className="flex ">
       <Sidebar currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
       <div className="flex-grow h-screen">
-        <Chat currentConversation={currentConversation}/>
+        <Outlet />
       </div>
     </div>
   );

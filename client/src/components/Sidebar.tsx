@@ -4,6 +4,7 @@ import Search from "./Search";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
+import { useNavigate, useParams } from "react-router-dom";
 
 type SidebarProps = {
   currentConversation: Conversation | undefined;
@@ -16,6 +17,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentConversation,
   setCurrentConversation,
 }) => {
+  const navigate = useNavigate();
+  const { conversationId } = useParams();
   const { currentUser } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResults | undefined>(undefined);
@@ -52,8 +55,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                     dateLastMessage={
                       new Date(conversation.lastMessageSent.created_at)
                     }
-                    isSelected={conversation === currentConversation}
-                    onClick={() => setCurrentConversation(conversation)}
+                    isSelected={conversation.id.toString() === conversationId}
+                    onClick={() => navigate(`/${conversation.id}`)}
                     key={conversation.id}
                   />
                 );

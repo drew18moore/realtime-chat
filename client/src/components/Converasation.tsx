@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ConverasationProps {
   img: string;
@@ -6,7 +7,11 @@ interface ConverasationProps {
   lastMessage: string;
   dateLastMessage: Date;
   isSelected?: boolean;
-  onClick: () => void
+  conversationId: number;
+  recipients: {
+    id: number
+    username: string
+  }[]
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -15,14 +20,22 @@ const Converasation: FC<ConverasationProps> = ({
   lastMessage,
   dateLastMessage,
   isSelected = false,
-  onClick,
+  conversationId,
+  recipients
 }) => {
+  const navigate = useNavigate()
   const dateFormatted = dateLastMessage.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
+
+  const handleClick = () => {
+    const state = { recipients }
+    navigate(`/${conversationId}`, { state })
+  }
+
   return (
-    <div onClick={onClick} className={`${isSelected ? "bg-neutral-300" : null} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
+    <div onClick={handleClick} className={`${isSelected ? "bg-neutral-300" : null} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
       <div className="flex gap-3 items-center">
         <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
           <img

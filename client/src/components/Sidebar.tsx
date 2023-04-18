@@ -56,7 +56,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                       new Date(conversation.lastMessageSent.created_at)
                     }
                     isSelected={conversation.id.toString() === conversationId}
-                    onClick={() => navigate(`/${conversation.id}`)}
+                    conversationId={conversation.id}
+                    recipients={conversation.users}
                     key={conversation.id}
                   />
                 );

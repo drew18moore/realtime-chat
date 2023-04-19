@@ -188,3 +188,40 @@ export const handlePersistentLogin = async (req: Request, res: Response) => {
     console.error(err);
   }
 };
+
+export const handleLogout = async (req: Request, res: Response) => {
+  try {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(204);
+
+    const refreshToken = cookies.jwt;
+    const user = await db.user.findFirst({
+      where: { refresh_token: refreshToken },
+    });
+    if (!user) {
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return res.status(204);
+    }
+
+    // Delete refresh token from db
+    await db.user.update({
+      where: { id: user.id },
+      data: { refresh_token: "" },
+    });
+
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.sendStatus(204);
+  } catch (err) {
+    console.error(err);
+  }
+};

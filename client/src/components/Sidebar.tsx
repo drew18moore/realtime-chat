@@ -39,6 +39,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchConversations();
   }, []);
 
+  const handleLogout = async () => {
+    await axiosPrivate.post("/api/auth/logout")
+    navigate("/login")
+  } 
+
   return (
     <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
@@ -74,6 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 );
               }) : <h2 className="text-center">No results found</h2>}
         </div>
+        <button onClick={handleLogout} className="bg-neutral-300 px-3 py-2 rounded-xl absolute bottom-2">Logout</button>
       </div>
     </div>
   );

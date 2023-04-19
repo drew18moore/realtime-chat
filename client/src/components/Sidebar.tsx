@@ -31,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           `/api/users/${currentUser?.id}/conversations`
         );
         setConversations(res.data);
+        console.log(res.data);
       } catch (err) {
         console.error(err);
       }
@@ -50,14 +51,14 @@ const Sidebar: React.FC<SidebarProps> = ({
                 return (
                   <Converasation
                     img={"default-pfp.jpg"}
-                    username={conversation.users[0].username}
-                    lastMessage={conversation.lastMessageSent.message}
+                    username={conversation.recipient.username}
+                    lastMessage={conversation.lastMessageSent?.message}
                     dateLastMessage={
-                      new Date(conversation.lastMessageSent.created_at)
+                      conversation.lastMessageSent?.created_at ? new Date(conversation.lastMessageSent?.created_at) : undefined
                     }
                     isSelected={conversation.id.toString() === conversationId}
                     conversationId={conversation.id}
-                    recipients={conversation.users}
+                    recipient={conversation.recipient}
                     key={conversation.id}
                   />
                 );

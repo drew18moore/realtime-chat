@@ -4,14 +4,14 @@ import { useNavigate } from "react-router-dom";
 interface ConverasationProps {
   img: string;
   username: string;
-  lastMessage: string;
-  dateLastMessage: Date;
+  lastMessage: string | undefined;
+  dateLastMessage: Date | undefined;
   isSelected?: boolean;
   conversationId: number;
-  recipients: {
+  recipient: {
     id: number
     username: string
-  }[]
+  }
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -21,16 +21,16 @@ const Converasation: FC<ConverasationProps> = ({
   dateLastMessage,
   isSelected = false,
   conversationId,
-  recipients
+  recipient
 }) => {
   const navigate = useNavigate()
-  const dateFormatted = dateLastMessage.toLocaleTimeString("en-US", {
+  const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
   const handleClick = () => {
-    const state = { recipients }
+    const state = { recipient }
     navigate(`/${conversationId}`, { state })
   }
 

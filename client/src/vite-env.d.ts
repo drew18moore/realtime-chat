@@ -17,14 +17,14 @@ type Message = {
 type Conversation = {
   id: number
   title?: string | null
-  users: [{
+  recipient: {
     id: number
     username: string
-  }]
-  lastMessageSent: {
+  }
+  lastMessageSent?: {
     message: string,
     created_at: Date
-  }
+  } | undefined
 }
 
 type SearchResults = {

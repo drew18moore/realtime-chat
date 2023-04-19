@@ -5,10 +5,10 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useLocation, useParams } from "react-router-dom";
 
 interface ConversationState {
-  recipients: {
+  recipient: {
     id: number;
     username: string;
-  }[];
+  };
 }
 
 const Chat = () => {
@@ -45,7 +45,7 @@ const Chat = () => {
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = messageInputRef?.current?.value;
-    const receiverId = state?.recipients[0]?.id;
+    const receiverId = state?.recipient?.id;
     if (value !== "") {
       setMessages((prev) => [
         ...prev,
@@ -58,7 +58,7 @@ const Chat = () => {
       ]);
       const res = await axiosPrivate.post("/api/messages/new", {
         authorId: currentUser?.id,
-        receiverId: state.recipients[0].id,
+        receiverId: state.recipient.id,
         message: value,
         conversationId: conversationId,
       });
@@ -69,7 +69,7 @@ const Chat = () => {
     <div className="relative h-screen">
       {/* Header bar */}
       <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-14 px-10">
-        <h1 className="text-2xl">{state?.recipients[0].username}</h1>
+        <h1 className="text-2xl">{state?.recipient.username}</h1>
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">

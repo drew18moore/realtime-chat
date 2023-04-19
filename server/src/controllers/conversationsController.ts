@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { db } from "../db";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export const newConversation = async (req: Request, res: Response) => {
   const { recipientId, message, authorId } = req.body;
@@ -9,19 +8,19 @@ export const newConversation = async (req: Request, res: Response) => {
   try {
     const conversation = await db.conversation.create({
       data: {
-        users: {
-          connect: [{ id: recipientIdParsed }, { id: authorIdParsed }],
-        },
-        messages: {
-          create: {
-            message,
-            authorId: authorIdParsed,
-            receiverId: recipientIdParsed,
-          },
-        },
+        creator: { connect: { id: authorIdParsed } },
+        joiner: { connect: { id: recipientIdParsed } },
+        // messages: {
+        //   create: {
+        //     message,
+        //     authorId: authorIdParsed,
+        //     receiverId: recipientIdParsed,
+        //   },
+        // },
       },
       include: {
-        users: true,
+        creator: true,
+        joiner: true,
         messages: true,
       },
     });

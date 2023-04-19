@@ -29,20 +29,25 @@ export const getAllConversations = async (req: Request, res: Response) => {
   try {
     const conversations = await db.conversation.findMany({
       where: {
-        users: {
-          some: {
-            id: userIdParsed,
-          },
-        },
+        OR: [
+          { creatorId: parseInt(userId) },
+          { joinerId: parseInt(userId) }
+        ]
       },
       select: {
         id: true,
         title: true,
-        users: {
+        creator: {
           select: {
             id: true,
             username: true,
-          },
+          }
+        },
+        joiner: {
+          select: {
+            id: true,
+            username: true,
+          }
         },
         messages: {
           select: {
@@ -58,7 +63,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
     });
     const response = conversations.map((conversation) => ({
       ...conversation,
-      users: conversation.users.filter(user => user.id !== userIdParsed),
+      recipient: conversation.creator.id === userIdParsed ? conversation.joiner : conversation.creator,
+      creator: undefined,
+      joiner: undefined,
       lastMessageSent: conversation.messages[0],
       messages: undefined
     }));

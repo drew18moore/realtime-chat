@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const newConversation = async (req: Request, res: Response) => {
-  const { recipientId, authorId } = req.body;
-  const recipientIdParsed = parseInt(recipientId);
-  const authorIdParsed = parseInt(authorId);
+  const { joinerId, creatorId } = req.body;
+  const joinerIdParsed = parseInt(joinerId);
+  const creatorIdParsed = parseInt(creatorId);
   try {
     // Check if a conversation exists
     const existingConversation = await db.conversation.findMany({
@@ -12,14 +12,14 @@ export const newConversation = async (req: Request, res: Response) => {
         OR: [
           {
             AND: [
-              { creatorId: authorIdParsed },
-              { joinerId: recipientIdParsed },
+              { creatorId: creatorIdParsed },
+              { joinerId: joinerIdParsed },
             ],
           },
           {
             AND: [
-              { creatorId: recipientIdParsed },
-              { joinerId: authorIdParsed },
+              { creatorId: joinerIdParsed },
+              { joinerId: creatorIdParsed },
             ],
           },
         ],
@@ -53,8 +53,8 @@ export const newConversation = async (req: Request, res: Response) => {
     }
     const conversation = await db.conversation.create({
       data: {
-        creator: { connect: { id: authorIdParsed } },
-        joiner: { connect: { id: recipientIdParsed } },
+        creator: { connect: { id: creatorIdParsed } },
+        joiner: { connect: { id: joinerIdParsed } },
       },
       select: {
         id: true,

@@ -67,6 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 return (
                   <Contact
                     img={"default-pfp.jpg"}
+                    id={result.id}
                     username={result.username}
                     key={result.id}
                   />

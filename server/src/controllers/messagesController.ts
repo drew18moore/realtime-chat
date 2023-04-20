@@ -14,7 +14,18 @@ export const newMessage = async (req: Request, res: Response) => {
         receiverId: parsedReceiverId,
         conversationId: parsedConversationId
       },
+      include: {
+        conversation: true
+      }
     });
+
+    const conversation = newMessage.conversation;
+    if (conversation) {
+      await db.conversation.update({
+        where: { id: conversation.id },
+        data: { dateLastMessage: new Date() }
+      });
+    }
     res.status(200).json({ message: "Message has been saved" });
   } catch (err) {
     console.error(err);

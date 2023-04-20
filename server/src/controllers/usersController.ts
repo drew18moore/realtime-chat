@@ -60,6 +60,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
           take: 1,
         },
       },
+      orderBy: {
+        dateLastMessage: "desc",
+      }
     });
     const response = conversations.map((conversation) => ({
       ...conversation,

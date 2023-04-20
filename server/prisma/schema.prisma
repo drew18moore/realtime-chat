@@ -46,4 +46,5 @@ model Conversation {
   joinerId Int
   messages   Message[]
   created_at DateTime  @default(now())
+  dateLastMessage DateTime?
 }

@@ -8,16 +8,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi"
 
 type SidebarProps = {
-  currentConversation: Conversation | undefined;
-  setCurrentConversation: React.Dispatch<
-    React.SetStateAction<Conversation | undefined>
-  >;
+  
 };
 
-const Sidebar: React.FC<SidebarProps> = ({
-  currentConversation,
-  setCurrentConversation,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({}) => {
   const navigate = useNavigate();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();

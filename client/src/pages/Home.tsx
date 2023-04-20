@@ -5,11 +5,9 @@ import { Outlet } from "react-router-dom";
 
 
 const Home = () => {
-  const [currentConversation, setCurrentConversation] = useState<Conversation>();
-
   return (
     <div className="flex ">
-      <Sidebar currentConversation={currentConversation} setCurrentConversation={setCurrentConversation} />
+      <Sidebar />
       <div className="flex-grow h-screen">
         <Outlet />
       </div>

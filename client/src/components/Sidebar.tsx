@@ -44,6 +44,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     navigate("/login")
   } 
 
+  const addConversation = (conversation: Conversation) => {
+    if (!conversations.some(conv => conv.id === conversation.id))
+      setConversations(prev => [...prev, conversation])
+  }
+
   return (
     <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
@@ -75,6 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     id={result.id}
                     username={result.username}
                     key={result.id}
+                    addConversation={addConversation}
                   />
                 );
               }) : <h2 className="text-center">No results found</h2>}

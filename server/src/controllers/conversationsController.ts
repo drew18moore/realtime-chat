@@ -44,7 +44,7 @@ export const newConversation = async (req: Request, res: Response) => {
     if (existingConversation.length > 0) {
       const response = {
         ...existingConversation[0],
-        recipient: existingConversation[0].creator,
+        recipient: existingConversation[0].joiner,
         creator: undefined,
         joiner: undefined,
         messages: undefined,

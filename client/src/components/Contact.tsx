@@ -7,9 +7,10 @@ interface ContactProps {
   img: string;
   id: number;
   username: string;
+  addConversation: (conversation: Conversation) => void
 }
 
-const Contact: FC<ContactProps> = ({ img, id, username }) => {
+const Contact: FC<ContactProps> = ({ img, id, username, addConversation }) => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const handleClick = async () => {
@@ -18,7 +19,9 @@ const Contact: FC<ContactProps> = ({ img, id, username }) => {
       joinerId: id
     })
     console.log(res.data);
-    navigate(`/${res.data.id}`)
+    addConversation(res.data);
+    const state = { recipient: res.data.recipient }
+    navigate(`/${res.data.id}`, { state });
   }
   return (
     <div onClick={handleClick} className="rounded-xl flex gap-3 p-2 items-center cursor-pointer hover:bg-neutral-300">

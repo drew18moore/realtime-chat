@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 type User = {
   id: number
-  display_name: string
+  displayName: string
   username: string
   accessToken: string
 }

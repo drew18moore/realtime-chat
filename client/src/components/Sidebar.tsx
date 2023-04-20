@@ -5,6 +5,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi"
 
 type SidebarProps = {
   currentConversation: Conversation | undefined;
@@ -58,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
         <Search setSearchResults={setSearchResults} />
       </div>
-      <div className="absolute top-14 left-0 right-0 bottom-0 p-2">
+      <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2">
           {!searchResults
             ? conversations.map((conversation) => {
@@ -89,7 +90,18 @@ const Sidebar: React.FC<SidebarProps> = ({
                 );
               }) : <h2 className="text-center">No results found</h2>}
         </div>
-        <button onClick={handleLogout} className="bg-neutral-300 px-3 py-2 rounded-xl absolute bottom-2">Logout</button>
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-12 rounded-full overflow-hidden">
+              <img src="default-pfp.jpg" alt="" className="object-cover w-full h-full" />
+            </div>
+            <div className="grid items-center">
+              <p className="text-base leading-4">{currentUser?.displayName}</p>
+              <p className="text-neutral-600 text-sm leading-4">@{currentUser?.username}</p>
+            </div>
+          </div>
+          <button onClick={handleLogout} className="hover:bg-neutral-300 px-3 py-2 rounded-xl"><FiLogOut /></button>
+        </div>
       </div>
     </div>
   );

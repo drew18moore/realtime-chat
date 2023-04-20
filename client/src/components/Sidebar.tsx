@@ -46,7 +46,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const addConversation = (conversation: Conversation) => {
     if (!conversations.some(conv => conv.id === conversation.id))
-      setConversations(prev => [...prev, conversation])
+      setConversations(prev => {
+        const updatedConversations = [...prev]
+        updatedConversations.unshift(conversation)
+        return updatedConversations
+      })
   }
 
   return (

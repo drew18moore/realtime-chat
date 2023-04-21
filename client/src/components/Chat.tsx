@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -11,15 +11,19 @@ interface ConversationState {
   };
 }
 
-type OutletContextType = [
-  Conversation[],
-  React.Dispatch<React.SetStateAction<Conversation[]>>
-];
+interface OutletContextType {
+  updateConversationLastMessageSent: (
+    conversationId: number,
+    message: string,
+    createdAt: Date
+  ) => void;
+}
 
 const Chat = () => {
-  const { conversationId } = useParams()
-  const [conversations, setConversations] = useOutletContext() as OutletContextType;
-  const state = useLocation().state as ConversationState
+  const { conversationId } = useParams();
+  const { updateConversationLastMessageSent } =
+    useOutletContext() as OutletContextType;
+  const state = useLocation().state as ConversationState;
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -68,6 +72,7 @@ const Chat = () => {
         message: value,
         conversationId: conversationId,
       });
+      updateConversationLastMessageSent(parseInt(conversationId!), value!, res.data.createdAt)
       messageInputRef!.current!.value = "";
     }
   };
@@ -89,7 +94,7 @@ const Chat = () => {
               />
             );
           })}
-          <div ref={messagesEndRef} className="absolute bottom-0"/>
+          <div ref={messagesEndRef} className="absolute bottom-0" />
         </div>
       </div>
 

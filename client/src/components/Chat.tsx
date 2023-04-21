@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useOutletContext, useParams } from "react-router-dom";
 
 interface ConversationState {
   recipient: {
@@ -11,8 +11,14 @@ interface ConversationState {
   };
 }
 
+type OutletContextType = [
+  Conversation[],
+  React.Dispatch<React.SetStateAction<Conversation[]>>
+];
+
 const Chat = () => {
   const { conversationId } = useParams()
+  const [conversations, setConversations] = useOutletContext() as OutletContextType;
   const state = useLocation().state as ConversationState
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);

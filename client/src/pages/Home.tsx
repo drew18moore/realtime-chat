@@ -1,15 +1,14 @@
-import Chat from "../components/Chat";
 import Sidebar from "../components/Sidebar";
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 
-
 const Home = () => {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   return (
-    <div className="flex ">
-      <Sidebar />
+    <div className="flex">
+      <Sidebar conversations={conversations} setConversations={setConversations} />
       <div className="flex-grow h-screen">
-        <Outlet />
+        <Outlet context={[conversations, setConversations]} />
       </div>
     </div>
   );

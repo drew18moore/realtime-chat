@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useLocation, useOutletContext, useParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useOutletContext,
+  useParams,
+} from "react-router-dom";
 
 interface ConversationState {
   recipient: {
@@ -29,17 +34,24 @@ const Chat = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Array<Message>>([]);
   const axiosPrivate = useAxiosPrivate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await axiosPrivate.get("/api/messages", {
-        params: {
-          currentUserId: currentUser?.id,
-          conversationId: conversationId,
-        },
-      });
-      console.log(res.data);
-      setMessages(res.data);
+      try {
+        const res = await axiosPrivate.get("/api/messages", {
+          params: {
+            currentUserId: currentUser?.id,
+            conversationId: conversationId,
+          },
+        });
+
+        setMessages(res.data);
+      } catch (err: any) {
+        if (err.response.status === 401) {
+          navigate("/");
+        }
+      }
     };
     if (conversationId) {
       fetchPosts();
@@ -72,7 +84,11 @@ const Chat = () => {
         message: value,
         conversationId: conversationId,
       });
-      updateConversationLastMessageSent(parseInt(conversationId!), value!, res.data.createdAt)
+      updateConversationLastMessageSent(
+        parseInt(conversationId!),
+        value!,
+        res.data.createdAt
+      );
       messageInputRef!.current!.value = "";
     }
   };

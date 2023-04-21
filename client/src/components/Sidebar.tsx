@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Converasation from "./Converasation";
 import Search from "./Search";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, setConversations }) =>
   const navigate = useNavigate();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [searchResults, setSearchResults] = useState<SearchResults | undefined>(undefined);
   const axiosPrivate = useAxiosPrivate();
 
@@ -40,6 +41,10 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, setConversations }) =>
   } 
 
   const addConversation = (conversation: Conversation) => {
+    // Clear searchbar and search results
+    inputRef.current!.value = ""
+    setSearchResults(undefined)
+    
     if (!conversations.some(conv => conv.id === conversation.id))
       setConversations(prev => {
         const updatedConversations = [...prev]
@@ -51,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, setConversations }) =>
   return (
     <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
-        <Search setSearchResults={setSearchResults} />
+        <Search inputRef={inputRef} setSearchResults={setSearchResults} />
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2">
@@ -80,6 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, setConversations }) =>
                     username={result.username}
                     key={result.id}
                     addConversation={addConversation}
+
                   />
                 );
               }) : <h2 className="text-center">No results found</h2>}

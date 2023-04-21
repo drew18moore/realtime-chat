@@ -1,14 +1,14 @@
-import { useRef } from "react";
+import { RefObject, useRef } from "react";
 import { FiSearch } from "react-icons/fi";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 type SearchProps = {
+  inputRef: RefObject<HTMLInputElement>;
   setSearchResults: React.Dispatch<React.SetStateAction<SearchResults | undefined>>;
 };
 
-const Search: React.FC<SearchProps> = ({ setSearchResults }) => {
+const Search: React.FC<SearchProps> = ({ inputRef, setSearchResults }) => {
   const axiosPrivate = useAxiosPrivate();
-  const inputRef = useRef<HTMLInputElement>(null);
   const handleChange = async () => {
     if (inputRef.current?.value.trim() === "") {
       setSearchResults(undefined)

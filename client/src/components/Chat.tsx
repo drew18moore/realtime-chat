@@ -66,30 +66,34 @@ const Chat = () => {
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const value = messageInputRef?.current?.value;
-    const receiverId = state?.recipient?.id;
-    if (value !== "") {
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: value!,
-          receiverId: receiverId!,
-          authorId: currentUser?.id!,
-          created_at: new Date(Date.now()),
-        },
-      ]);
-      const res = await axiosPrivate.post("/api/messages/new", {
-        authorId: currentUser?.id,
-        receiverId: state.recipient.id,
-        message: value,
-        conversationId: conversationId,
-      });
-      updateConversationLastMessageSent(
-        parseInt(conversationId!),
-        value!,
-        res.data.createdAt
-      );
-      messageInputRef!.current!.value = "";
+    try {
+      const value = messageInputRef?.current?.value;
+      const receiverId = state?.recipient?.id;
+      if (value !== "") {
+        setMessages((prev) => [
+          ...prev,
+          {
+            message: value!,
+            receiverId: receiverId!,
+            authorId: currentUser?.id!,
+            created_at: new Date(Date.now()),
+          },
+        ]);
+        const res = await axiosPrivate.post("/api/messages/new", {
+          authorId: currentUser?.id,
+          receiverId: state.recipient.id,
+          message: value,
+          conversationId: conversationId,
+        });
+        updateConversationLastMessageSent(
+          parseInt(conversationId!),
+          value!,
+          res.data.createdAt
+        );
+        messageInputRef!.current!.value = "";
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
   return (

@@ -4,23 +4,29 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 type SearchProps = {
   inputRef: RefObject<HTMLInputElement>;
-  setSearchResults: React.Dispatch<React.SetStateAction<SearchResults | undefined>>;
+  setSearchResults: React.Dispatch<
+    React.SetStateAction<SearchResults | undefined>
+  >;
 };
 
 const Search: React.FC<SearchProps> = ({ inputRef, setSearchResults }) => {
   const axiosPrivate = useAxiosPrivate();
   const handleChange = async () => {
-    if (inputRef.current?.value.trim() === "") {
-      setSearchResults(undefined)
-      return
+    try {
+      if (inputRef.current?.value.trim() === "") {
+        setSearchResults(undefined);
+        return;
+      }
+      const res = await axiosPrivate.get("/api/users", {
+        params: {
+          search: inputRef.current?.value.trim(),
+        },
+      });
+      console.log(res.data);
+      setSearchResults(res.data);
+    } catch (err) {
+      console.error(err);
     }
-    const res = await axiosPrivate.get("/api/users", {
-      params: {
-        search: inputRef.current?.value.trim(),
-      },
-    });
-    console.log(res.data);
-    setSearchResults(res.data);
   };
   return (
     <div className="flex items-center gap-5 w-full mx-5 relative">

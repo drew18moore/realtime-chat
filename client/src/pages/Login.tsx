@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../hooks/auth/useLogin";
 import { RotatingLines } from "react-loader-spinner";
@@ -25,6 +25,11 @@ const Login = () => {
         <h1 className="text-2xl text-center font-bold p-2 text-blue-600">
           Log in
         </h1>
+        {isError && (
+          <p className="bg-red-100 border border-red-600 w-fit text-red-600 m-auto px-2 rounded-lg">
+            {error?.response?.data?.message || "An unknown error occurred."}
+          </p>
+        )}
         <div className="grid gap-1">
           <label
             htmlFor="username"

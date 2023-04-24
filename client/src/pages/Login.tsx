@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../hooks/auth/useLogin";
 import { RotatingLines } from "react-loader-spinner";
 
 const Login = () => {
   const { mutate: login, isLoading, isError, error } = useLogin();
-
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 

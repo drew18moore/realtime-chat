@@ -27,6 +27,11 @@ const Signup = ({}) => {
         <h1 className="text-2xl text-center font-bold p-2 text-blue-600">
           Sign Up
         </h1>
+        {isError && (
+          <p className="bg-red-100 border border-red-600 w-fit text-red-600 m-auto px-2 rounded-lg">
+            {error?.response?.data?.message || "An unknown error occurred."}
+          </p>
+        )}
         <div className="grid gap-1">
           <label
             htmlFor="display-name"

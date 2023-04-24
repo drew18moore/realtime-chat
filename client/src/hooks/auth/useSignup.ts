@@ -2,7 +2,7 @@ import { UseMutateFunction, useMutation, useQueryClient } from "@tanstack/react-
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 
 const signUp = ({ display_name, username, password }: { display_name: string, username: string, password: string }): Promise<AxiosResponse<User>> => {
   return api.post(
@@ -24,8 +24,8 @@ const useSignup = () => {
       setCurrentUser(data.data)
       navigate("/")
     },
-    onError: (err) => {
-      console.log(err);
+    onError: (err: AxiosError<{ message: string }>) => {
+      throw err
     },
   });
 };

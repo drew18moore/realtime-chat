@@ -1,18 +1,19 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../hooks/auth/useLogin";
+import { RotatingLines } from "react-loader-spinner";
 
 const Login = () => {
-  const { mutate: login, isLoading, isError, error } = useLogin()
+  const { mutate: login, isLoading, isError, error } = useLogin();
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const username = usernameRef?.current?.value.trim().toLowerCase() as string
-    const password = passwordRef?.current?.value as string
-    login({ username, password })
+    const username = usernameRef?.current?.value.trim().toLowerCase() as string;
+    const password = passwordRef?.current?.value as string;
+    login({ username, password });
   };
 
   return (
@@ -56,8 +57,12 @@ const Login = () => {
           />
         </div>
         <br />
-        <button className="bg-blue-600 p-2 rounded-lg text-white">
-          Log In
+        <button className="bg-blue-600 p-2 rounded-lg text-white flex justify-center">
+          {isLoading ? (
+            <RotatingLines strokeColor="white" width="24" />
+          ) : (
+            "Log in"
+          )}
         </button>
         <p className="text-center mt-2">
           Need an account?{" "}

@@ -1,33 +1,18 @@
 import { useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../api/api";
-import { useAuth } from "../contexts/AuthContext";
+import { Link } from "react-router-dom";
+import useLogin from "../hooks/auth/useLogin";
 
 const Login = () => {
-  const { setCurrentUser } = useAuth();
-  const navigate = useNavigate();
+  const { mutate: login, isLoading, isError, error } = useLogin()
 
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const res = await api.post(
-        "/api/auth/login",
-        {
-          username: usernameRef?.current?.value.trim().toLowerCase(),
-          password: passwordRef?.current?.value,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      setCurrentUser(res.data);
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
+    const username = usernameRef?.current?.value.trim().toLowerCase() as string
+    const password = passwordRef?.current?.value as string
+    login({ username, password })
   };
 
   return (

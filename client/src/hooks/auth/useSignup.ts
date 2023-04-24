@@ -4,21 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { AxiosResponse } from "axios";
 
-const login = ({ username, password }: { username: string, password: string }): Promise<AxiosResponse<User>> => {
+const signUp = ({ display_name, username, password }: { display_name: string, username: string, password: string }): Promise<AxiosResponse<User>> => {
   return api.post(
-    "/api/auth/login",
-    { username, password },
+    "/api/auth/signup",
+    { display_name, username, password },
     { withCredentials: true }
   );
 };
 
-const useLogin = () => {
+const useSignup = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
 
   return useMutation(
-    login, {
+    signUp, {
     onSuccess: (data) => {
       console.log(data);
       setCurrentUser(data.data)
@@ -30,4 +30,4 @@ const useLogin = () => {
   });
 };
 
-export default useLogin;
+export default useSignup;

@@ -1,12 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { Link } from "react-router-dom";
 import { useRef } from "react";
-import api from "../api/api";
+import useSignup from "../hooks/auth/useSignup";
 
 const Signup = ({}) => {
-  const { setCurrentUser } = useAuth();
-  const navigate = useNavigate();
-
+  const { mutate: signup } = useSignup();
   const displayNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -14,23 +11,10 @@ const Signup = ({}) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const res = await api.post(
-        "/api/auth/signup",
-        {
-          display_name: displayNameRef?.current?.value.trim(),
-          username: usernameRef?.current?.value.trim().toLowerCase(),
-          password: passwordRef?.current?.value,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      setCurrentUser(res.data);
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
+    const display_name = displayNameRef?.current?.value.trim() as string;
+    const username = usernameRef?.current?.value.trim().toLowerCase() as string;
+    const password = passwordRef?.current?.value as string;
+    signup({ display_name, username, password });
   };
 
   return (

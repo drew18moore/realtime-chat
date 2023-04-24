@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { useRef } from "react";
 import useSignup from "../hooks/auth/useSignup";
+import { RotatingLines } from "react-loader-spinner";
 
 const Signup = ({}) => {
-  const { mutate: signup } = useSignup();
+  const { mutate: signup, isLoading, isError, error } = useSignup();
   const displayNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -90,8 +91,12 @@ const Signup = ({}) => {
           />
         </div>
         <br />
-        <button className="bg-blue-600 p-2 rounded-lg text-white">
-          Sign Up
+        <button className="bg-blue-600 p-2 rounded-lg text-white flex justify-center">
+          {isLoading ? (
+            <RotatingLines strokeColor="white" width="24" />
+          ) : (
+            "Sign up"
+          )}
         </button>
         <p className="text-center mt-2">
           Already have an account?{" "}

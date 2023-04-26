@@ -1,8 +1,4 @@
-import {
-  UseMutateFunction,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -31,7 +27,6 @@ const signUp = ({
 };
 
 const useSignup = () => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth();
 

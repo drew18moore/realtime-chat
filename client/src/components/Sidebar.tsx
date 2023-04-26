@@ -4,8 +4,9 @@ import Search from "./Search";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
+import useLogout from "../hooks/auth/useLogout";
 
 type SidebarProps = {
   conversations: Conversation[];
@@ -16,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   conversations,
   setConversations,
 }) => {
-  const navigate = useNavigate();
+  const { mutate: logout } = useLogout();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,15 +40,6 @@ const Sidebar: React.FC<SidebarProps> = ({
     };
     fetchConversations();
   }, []);
-
-  const handleLogout = async () => {
-    try {
-      await axiosPrivate.post("/api/auth/logout");
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const addConversation = (conversation: Conversation) => {
     // Clear searchbar and search results
@@ -121,7 +113,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={() => logout()}
             className="hover:bg-neutral-300 px-3 py-2 rounded-xl"
           >
             <FiLogOut />

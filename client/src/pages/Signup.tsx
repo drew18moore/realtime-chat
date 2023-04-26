@@ -15,7 +15,8 @@ const Signup = ({}) => {
     const display_name = displayNameRef?.current?.value.trim() as string;
     const username = usernameRef?.current?.value.trim().toLowerCase() as string;
     const password = passwordRef?.current?.value as string;
-    signup({ display_name, username, password });
+    const repeatPassword = repeatPasswordRef?.current?.value as string;
+    signup({ display_name, username, password, repeatPassword });
   };
 
   return (

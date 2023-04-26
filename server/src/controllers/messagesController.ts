@@ -26,7 +26,14 @@ export const newMessage = async (req: Request, res: Response) => {
         data: { dateLastMessage: new Date() }
       });
     }
-    res.status(200).json({ message: "Message has been saved", createdAt: newMessage.created_at });
+    const response = {
+      id: newMessage.id,
+      message: newMessage.message,
+      receiverId: newMessage.receiverId,
+      authorId: newMessage.authorId,
+      created_at: newMessage.created_at
+    }
+    res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -8,6 +8,8 @@ import {
   useOutletContext,
   useParams,
 } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 interface ConversationState {
   recipient: {
@@ -32,31 +34,25 @@ const Chat = () => {
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = useState<Array<Message>>([]);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await axiosPrivate.get("/api/messages", {
-          params: {
-            currentUserId: currentUser?.id,
-            conversationId: conversationId,
-          },
-        });
-
-        setMessages(res.data);
-      } catch (err: any) {
-        if (err.response.status === 401) {
-          navigate("/");
-        }
-      }
-    };
-    if (conversationId) {
-      fetchPosts();
+  const { data: messages } = useQuery(
+    ["messages", conversationId],
+    () =>
+      axiosPrivate.get("/api/messages", {
+        params: { currentUserId: currentUser?.id, conversationId },
+      }),
+    {
+      onError: (err: AxiosError) => {
+        if (err.response?.status === 401) navigate("/");
+      },
+      retry: (failureCount, error) => {
+        return error?.response?.status !== 401;
+      },
     }
-  }, [conversationId]);
+  );
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -64,38 +60,43 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const value = messageInputRef?.current?.value;
-      const receiverId = state?.recipient?.id;
-      if (value !== "") {
-        setMessages((prev) => [
-          ...prev,
-          {
-            message: value!,
-            receiverId: receiverId!,
-            authorId: currentUser?.id!,
-            created_at: new Date(Date.now()),
-          },
+  const { mutate: newMessage } = useMutation(
+    () =>
+      axiosPrivate.post("/api/messages/new", {
+        authorId: currentUser?.id,
+        receiverId: state.recipient.id,
+        message: messageInputRef?.current?.value,
+        conversationId: conversationId,
+      }),
+    {
+      onSuccess: (data) => {
+        console.log("SUCCESS", data);
+        const prevMessages: any = queryClient.getQueryData([
+          "messages",
+          conversationId,
         ]);
-        const res = await axiosPrivate.post("/api/messages/new", {
-          authorId: currentUser?.id,
-          receiverId: state.recipient.id,
-          message: value,
-          conversationId: conversationId,
+        queryClient.setQueryData(["messages", conversationId], {
+          ...prevMessages,
+          data: [...prevMessages.data, data.data],
         });
         updateConversationLastMessageSent(
           parseInt(conversationId!),
-          value!,
-          res.data.createdAt
+          messageInputRef?.current?.value!,
+          data.data.created_at
         );
         messageInputRef!.current!.value = "";
-      }
-    } catch (err) {
-      console.error(err);
+      },
+      onError: (err) => {
+        console.log("ERROR", err);
+      },
     }
+  );
+
+  const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    newMessage();
   };
+
   return (
     <div className="relative h-screen">
       {/* Header bar */}
@@ -105,7 +106,7 @@ const Chat = () => {
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
         <div className="grid gap-2 p-2 overflow-auto relative">
-          {messages.map((message, i) => {
+          {messages?.data.map((message: Message, i: number) => {
             return (
               <Message
                 message={message}

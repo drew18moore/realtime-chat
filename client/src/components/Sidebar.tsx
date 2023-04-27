@@ -6,14 +6,10 @@ import Contact from "./Contact";
 import { useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/auth/useLogout";
+import { useGetConversations } from "../hooks/useConversations";
 
-type SidebarProps = {
-  conversations: Conversation[];
-};
-
-const Sidebar: React.FC<SidebarProps> = ({
-  conversations,
-}) => {
+const Sidebar = () => {
+  const { data: conversations } = useGetConversations()
   const { mutate: logout } = useLogout();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();
@@ -35,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2">
           {!searchResults ? (
-            conversations?.map((conversation) => {
+            conversations?.data.map((conversation) => {
               return (
                 <Converasation
                   img={"default-pfp.jpg"}

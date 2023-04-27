@@ -11,9 +11,6 @@ const Home = () => {
   const { data: conversations } = useQuery(["conversations"], () => {
     return axiosPrivate.get(`/api/users/${currentUser?.id}/conversations`)
   }, {
-    onSuccess: (data) => {
-      console.log("SUCCESS", data);
-    },
     onError: (err) => {
       console.log("ERROR", err);
     },

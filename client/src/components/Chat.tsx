@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 interface ConversationState {
@@ -40,8 +40,8 @@ const Chat = () => {
       retry: (failureCount, error) => {
         return error?.response?.status !== 401;
       },
-      refetchOnWindowFocus: false
-    },
+      refetchOnWindowFocus: false,
+    }
   );
 
   useEffect(() => {
@@ -60,28 +60,37 @@ const Chat = () => {
       }),
     {
       onSuccess: (data) => {
-        console.log("SUCCESS", data);
-        const prevMessages: any = queryClient.getQueryData([
-          "messages",
-          conversationId,
-        ]);
-        queryClient.setQueryData(["messages", conversationId], {
-          ...prevMessages,
-          data: [...prevMessages.data, data.data],
-        });
-        const prevConversations: any = queryClient.getQueryData(["conversations"])
-        const conversationIndex: number = prevConversations.data.findIndex((conv: Conversation) => conv.id === parseInt(conversationId!))
-        const updatedConversation: Conversation = { ...prevConversations.data[conversationIndex] };
-        updatedConversation.lastMessageSent = { message: data.data.message, created_at: data.data.created_at }
-        console.log(prevConversations, conversationIndex);
-        console.log("object", updatedConversation);
-        const updatedConversations: Conversation[] = [...prevConversations.data];
-        updatedConversations[conversationIndex] = updatedConversation
-        console.log(updatedConversations, updatedConversation);
-        queryClient.setQueryData(["conversations"], {
-          ...prevConversations,
-          data: [...updatedConversations]
-        })
+        queryClient.setQueryData(
+          ["messages", conversationId],
+          (prevMessages: any) => ({
+            ...prevMessages,
+            data: [...prevMessages.data, data.data],
+          })
+        );
+        // Update lastMessageSent
+        queryClient.setQueryData(
+          ["conversations"],
+          (prevConversations: any) => {
+            const conversationIndex: number = prevConversations.data.findIndex(
+              (conv: Conversation) => conv.id === parseInt(conversationId!)
+            );
+            const updatedConversation: Conversation = {
+              ...prevConversations.data[conversationIndex],
+              lastMessageSent: {
+                message: data.data.message,
+                created_at: data.data.created_at,
+              },
+            };
+            const updatedConversations: Conversation[] = [
+              ...prevConversations.data,
+            ];
+            updatedConversations[conversationIndex] = updatedConversation;
+            return {
+              ...prevConversations,
+              data: updatedConversations,
+            };
+          }
+        );
         messageInputRef!.current!.value = "";
       },
       onError: (err) => {

@@ -5,7 +5,6 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import {
   useLocation,
   useNavigate,
-  useOutletContext,
   useParams,
 } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -18,18 +17,8 @@ interface ConversationState {
   };
 }
 
-interface OutletContextType {
-  updateConversationLastMessageSent: (
-    conversationId: number,
-    message: string,
-    createdAt: Date
-  ) => void;
-}
-
 const Chat = () => {
   const { conversationId } = useParams();
-  const { updateConversationLastMessageSent } =
-    useOutletContext() as OutletContextType;
   const state = useLocation().state as ConversationState;
   const { currentUser } = useAuth();
   const messageInputRef = useRef<HTMLInputElement>(null);
@@ -51,7 +40,8 @@ const Chat = () => {
       retry: (failureCount, error) => {
         return error?.response?.status !== 401;
       },
-    }
+      refetchOnWindowFocus: false
+    },
   );
 
   useEffect(() => {
@@ -79,11 +69,19 @@ const Chat = () => {
           ...prevMessages,
           data: [...prevMessages.data, data.data],
         });
-        updateConversationLastMessageSent(
-          parseInt(conversationId!),
-          messageInputRef?.current?.value!,
-          data.data.created_at
-        );
+        const prevConversations: any = queryClient.getQueryData(["conversations"])
+        const conversationIndex: number = prevConversations.data.findIndex((conv: Conversation) => conv.id === parseInt(conversationId!))
+        const updatedConversation: Conversation = { ...prevConversations.data[conversationIndex] };
+        updatedConversation.lastMessageSent = { message: data.data.message, created_at: data.data.created_at }
+        console.log(prevConversations, conversationIndex);
+        console.log("object", updatedConversation);
+        const updatedConversations: Conversation[] = [...prevConversations.data];
+        updatedConversations[conversationIndex] = updatedConversation
+        console.log(updatedConversations, updatedConversation);
+        queryClient.setQueryData(["conversations"], {
+          ...prevConversations,
+          data: [...updatedConversations]
+        })
         messageInputRef!.current!.value = "";
       },
       onError: (err) => {

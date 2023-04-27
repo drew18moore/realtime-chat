@@ -1,30 +1,30 @@
+import { useQuery } from "@tanstack/react-query";
 import Sidebar from "../components/Sidebar";
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import { useAuth } from "../contexts/AuthContext";
 
 const Home = () => {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const axiosPrivate = useAxiosPrivate();
+  const { currentUser } = useAuth()
 
-  const updateConversationLastMessageSent = (conversationId: number, message: string, createdAt: Date) => {
-    setConversations(prev => {
-      const conversationIndex = prev.findIndex(conversation => conversation.id === conversationId);
-      const updatedConversation = { ...prev[conversationIndex] };
-      updatedConversation.lastMessageSent = {
-        message: message,
-        created_at: createdAt,
-      };
-      const updatedConversations = [...prev];
-      updatedConversations[conversationIndex] = updatedConversation;
-
-      return updatedConversations;
-    });
-  }
+  const { data: conversations } = useQuery(["conversations"], () => {
+    return axiosPrivate.get(`/api/users/${currentUser?.id}/conversations`)
+  }, {
+    onSuccess: (data) => {
+      console.log("SUCCESS", data);
+    },
+    onError: (err) => {
+      console.log("ERROR", err);
+    },
+    refetchOnWindowFocus: false
+  })
   
   return (
     <div className="flex">
-      <Sidebar conversations={conversations} setConversations={setConversations} />
+      <Sidebar conversations={conversations?.data as Conversation[]} />
       <div className="flex-grow h-screen">
-        <Outlet context={{ updateConversationLastMessageSent }} />
+        <Outlet />
       </div>
     </div>
   );

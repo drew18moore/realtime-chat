@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Converasation from "./Converasation";
 import Search from "./Search";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
 import { useParams } from "react-router-dom";
@@ -10,12 +9,10 @@ import useLogout from "../hooks/auth/useLogout";
 
 type SidebarProps = {
   conversations: Conversation[];
-  setConversations: React.Dispatch<React.SetStateAction<Conversation[]>>;
 };
 
 const Sidebar: React.FC<SidebarProps> = ({
   conversations,
-  setConversations,
 }) => {
   const { mutate: logout } = useLogout();
   const { conversationId } = useParams();
@@ -24,34 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [searchResults, setSearchResults] = useState<SearchResults | undefined>(
     undefined
   );
-  const axiosPrivate = useAxiosPrivate();
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const res = await axiosPrivate.get(
-          `/api/users/${currentUser?.id}/conversations`
-        );
-        setConversations(res.data);
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchConversations();
-  }, []);
-
-  const addConversation = (conversation: Conversation) => {
-    // Clear searchbar and search results
+  const clearSearch = () => {
     inputRef.current!.value = "";
     setSearchResults(undefined);
-
-    if (!conversations.some((conv) => conv.id === conversation.id))
-      setConversations((prev) => {
-        const updatedConversations = [...prev];
-        updatedConversations.unshift(conversation);
-        return updatedConversations;
-      });
   };
 
   return (
@@ -62,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2">
           {!searchResults ? (
-            conversations.map((conversation) => {
+            conversations?.map((conversation) => {
               return (
                 <Converasation
                   img={"default-pfp.jpg"}
@@ -88,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   id={result.id}
                   username={result.username}
                   key={result.id}
-                  addConversation={addConversation}
+                  clearSearch={clearSearch}
                 />
               );
             })

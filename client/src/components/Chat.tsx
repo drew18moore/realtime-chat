@@ -1,13 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useLocation, useParams } from "react-router-dom";
-import {
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useGetMessages } from "../hooks/useMessages";
+import { useGetMessages, useNewMessage } from "../hooks/useMessages";
 
 interface ConversationState {
   recipient: {
@@ -20,72 +15,31 @@ const Chat = () => {
   const { conversationId } = useParams();
   const state = useLocation().state as ConversationState;
   const { currentUser } = useAuth();
-  const messageInputRef = useRef<HTMLInputElement>(null);
+  const [message, setMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const axiosPrivate = useAxiosPrivate();
-  const queryClient = useQueryClient();
 
   const { data: messages } = useGetMessages(parseInt(conversationId!));
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
-  const { mutate: newMessage } = useMutation(
-    () =>
-      axiosPrivate.post("/api/messages/new", {
-        authorId: currentUser?.id,
-        receiverId: state.recipient.id,
-        message: messageInputRef?.current?.value,
-        conversationId: conversationId,
-      }),
-    {
-      onSuccess: (data) => {
-        queryClient.setQueryData(
-          ["messages", conversationId],
-          (prevMessages: any) => ({
-            ...prevMessages,
-            data: [...prevMessages.data, data.data],
-          })
-        );
-        // Update lastMessageSent
-        queryClient.setQueryData(
-          ["conversations"],
-          (prevConversations: any) => {
-            const conversationIndex: number = prevConversations.data.findIndex(
-              (conv: Conversation) => conv.id === parseInt(conversationId!)
-            );
-            const updatedConversation: Conversation = {
-              ...prevConversations.data[conversationIndex],
-              lastMessageSent: {
-                message: data.data.message,
-                created_at: data.data.created_at,
-              },
-            };
-            const updatedConversations: Conversation[] = [
-              ...prevConversations.data,
-            ];
-            updatedConversations[conversationIndex] = updatedConversation;
-            return {
-              ...prevConversations,
-              data: updatedConversations,
-            };
-          }
-        );
-        messageInputRef!.current!.value = "";
-      },
-      onError: (err) => {
-        console.log("ERROR", err);
-      },
-    }
+  
+  const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
+    parseInt(conversationId!),
+    state?.recipient.id,
+    message
   );
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     newMessage();
   };
+  
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    setMessage("");
+  }, [messageHasBeenSent])
 
   return (
     <div className="relative h-screen">
@@ -115,10 +69,11 @@ const Chat = () => {
           className="bg-white absolute bottom-0 w-full h-20 px-5 flex items-center"
         >
           <input
-            ref={messageInputRef}
             type="text"
             className="w-full rounded-full px-3 py-2 bg-neutral-300 placeholder:text-neutral-600"
+            value={message}
             placeholder="Type a message..."
+            onChange={(e) => setMessage(e.target.value)}
           />
         </form>
       )}

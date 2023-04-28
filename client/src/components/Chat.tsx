@@ -2,13 +2,12 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useGetMessages } from "../hooks/useMessages";
 
 interface ConversationState {
   recipient: {
@@ -24,25 +23,9 @@ const Chat = () => {
   const messageInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const axiosPrivate = useAxiosPrivate();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: messages } = useQuery(
-    ["messages", conversationId],
-    () =>
-      axiosPrivate.get("/api/messages", {
-        params: { currentUserId: currentUser?.id, conversationId },
-      }),
-    {
-      onError: (err: AxiosError) => {
-        if (err.response?.status === 401) navigate("/");
-      },
-      retry: (failureCount, error) => {
-        return error?.response?.status !== 401;
-      },
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data: messages } = useGetMessages(parseInt(conversationId!));
 
   useEffect(() => {
     if (messagesEndRef.current) {

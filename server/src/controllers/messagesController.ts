@@ -6,24 +6,28 @@ export const newMessage = async (req: Request, res: Response) => {
   const parsedReceiverId = parseInt(receiverId);
   const parsedAuthorId = parseInt(authorId);
   const parsedConversationId = parseInt(conversationId);
+
+  if (message.trim() === "" || !message)
+    return res.status(400).json({ message: "Message cannot be empty" });
+
   try {
     const newMessage = await db.message.create({
       data: {
         message,
         authorId: parsedAuthorId,
         receiverId: parsedReceiverId,
-        conversationId: parsedConversationId
+        conversationId: parsedConversationId,
       },
       include: {
-        conversation: true
-      }
+        conversation: true,
+      },
     });
 
     const conversation = newMessage.conversation;
     if (conversation) {
       await db.conversation.update({
         where: { id: conversation.id },
-        data: { dateLastMessage: new Date() }
+        data: { dateLastMessage: new Date() },
       });
     }
     const response = {
@@ -31,8 +35,8 @@ export const newMessage = async (req: Request, res: Response) => {
       message: newMessage.message,
       receiverId: newMessage.receiverId,
       authorId: newMessage.authorId,
-      created_at: newMessage.created_at
-    }
+      created_at: newMessage.created_at,
+    };
     res.status(200).json(response);
   } catch (err) {
     console.error(err);

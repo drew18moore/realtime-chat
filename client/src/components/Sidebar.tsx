@@ -40,7 +40,7 @@ const Sidebar = () => {
   if (isLoadingConversations) {
     const numSkeletonComponents = 6
     for (let i = 0; i < numSkeletonComponents; i++) {
-      conversationsContent?.push(<ConverasationSkeleton />)
+      conversationsContent?.push(<ConverasationSkeleton key={i} />)
     }
   } else {
     conversationsContent = conversations?.data.map((conversation) => {

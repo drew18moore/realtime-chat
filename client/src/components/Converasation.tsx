@@ -35,7 +35,7 @@ const Converasation: FC<ConverasationProps> = ({
   }
 
   return (
-    <div onClick={handleClick} className={`${isSelected ? "bg-neutral-300" : null} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
+    <div onClick={handleClick} className={`${isSelected ? "bg-neutral-300" : "hover:bg-neutral-200"} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
       <div className="flex gap-3 items-center">
         <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
           <img

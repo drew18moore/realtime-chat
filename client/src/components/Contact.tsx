@@ -17,7 +17,7 @@ const Contact: FC<ContactProps> = ({ img, id, username, clearSearch }) => {
         newConversation();
         clearSearch();
       }}
-      className="rounded-xl flex gap-3 p-2 items-center cursor-pointer hover:bg-neutral-300"
+      className="rounded-xl flex gap-3 p-2 items-center cursor-pointer hover:bg-neutral-200"
     >
       <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
         <img

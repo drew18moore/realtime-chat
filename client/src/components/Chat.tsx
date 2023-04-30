@@ -28,6 +28,10 @@ const Chat = () => {
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (message.trim() === "") {
+      setMessage("")
+      return
+    }
     newMessage();
   };
   

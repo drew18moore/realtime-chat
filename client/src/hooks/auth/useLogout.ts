@@ -1,16 +1,12 @@
-import { axiosPrivate } from "../../api/api";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../../contexts/AuthContext";
-
-const logout = () => {
-  return axiosPrivate.post("/api/auth/logout");
-};
+import useAxiosPrivate from "../useAxiosPrivate";
 
 const useLogout = () => {
   const { setCurrentUser } = useAuth();
-
+  const axiosPrivate = useAxiosPrivate()
   return useMutation(
-    logout, {
+    () => axiosPrivate.post("/api/auth/logout"), {
       onSuccess: () => {
         setCurrentUser(undefined)
       },

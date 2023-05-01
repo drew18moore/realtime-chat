@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { useSocket } from "../contexts/SocketContext";
 
 export const useGetMessages = (conversationId: number) => {
   const axiosPrivate = useAxiosPrivate();
@@ -35,6 +36,7 @@ export const useNewMessage = (
   const axiosPrivate = useAxiosPrivate();
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
+  const socket = useSocket()
 
   return useMutation(
     () =>
@@ -77,6 +79,8 @@ export const useNewMessage = (
             };
           }
         );
+        // Send to other user
+        socket.emit("send-message", { recipientId, message: data.data.message, timeSent: data.data.created_at })
       },
       onError: (err) => {
         console.log("ERROR", err);

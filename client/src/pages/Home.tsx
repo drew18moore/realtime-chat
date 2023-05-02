@@ -6,12 +6,13 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
   const socket = useSocket();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (socket) {
       socket.on("receive-message", (receivedMessage) => {
         console.log("RECEIVED MESSAGE", receivedMessage);
-        const { conversationId, recipientId, authorId, message, timeSent } = receivedMessage
+        const { conversationId, recipientId, authorId, message, timeSent } =
+          receivedMessage;
 
         // Update conversations cache
         queryClient.setQueryData(
@@ -24,40 +25,49 @@ const Home = () => {
               ...prevConversations.data[conversationIndex],
               lastMessageSent: {
                 message,
-                created_at: timeSent
+                created_at: timeSent,
               },
             };
             const updatedConversations: Conversation[] = [
-              ...prevConversations.data
+              ...prevConversations.data,
             ];
             updatedConversations[conversationIndex] = updatedConversation;
             return {
               ...prevConversations,
-              data: updatedConversations
+              data: updatedConversations,
             };
           }
         );
 
         // Update messages cache
-        queryClient.setQueryData(
-          ["messages", conversationId],
-          (prevMessages: any) => ({
-            ...prevMessages,
-            data: [...prevMessages.data, {
-              message,
-              receiverId: recipientId,
-              authorId,
-              created_at: timeSent
-            }]
-          })
-        )
+        const existingMessages = queryClient.getQueryData([
+          "messages",
+          conversationId,
+        ]);
+        if (existingMessages) {
+          queryClient.setQueryData(
+            ["messages", conversationId],
+            (prevMessages: any) => ({
+              ...prevMessages,
+              data: [
+                ...prevMessages.data,
+                {
+                  message,
+                  receiverId: recipientId,
+                  authorId,
+                  created_at: timeSent,
+                },
+              ],
+            })
+          );
+        }
       });
     }
     return () => {
       if (socket) {
-        socket.off("receive-message")
+        socket.off("receive-message");
       }
-    }
+    };
   }, [socket]);
 
   return (

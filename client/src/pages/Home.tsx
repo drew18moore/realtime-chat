@@ -11,8 +11,8 @@ const Home = () => {
     if (socket) {
       socket.on("receive-message", (receivedMessage) => {
         console.log("RECEIVED MESSAGE", receivedMessage);
-        const { conversationId, message, timeSent } = receivedMessage
-        
+        const { conversationId, recipientId, authorId, message, timeSent } = receivedMessage
+
         // Update conversations cache
         queryClient.setQueryData(
           ["conversations"],
@@ -39,6 +39,18 @@ const Home = () => {
         );
 
         // Update messages cache
+        queryClient.setQueryData(
+          ["messages", conversationId],
+          (prevMessages: any) => ({
+            ...prevMessages,
+            data: [...prevMessages.data, {
+              message,
+              receiverId: recipientId,
+              authorId,
+              created_at: timeSent
+            }]
+          })
+        )
       });
     }
     return () => {

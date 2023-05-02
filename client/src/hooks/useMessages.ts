@@ -80,7 +80,7 @@ export const useNewMessage = (
           }
         );
         // Send to other user
-        socket.emit("send-message", { recipientId, conversationId, message: data.data.message, timeSent: data.data.created_at })
+        socket.emit("send-message", { authorId: data.data.authorId, recipientId, conversationId, message: data.data.message, timeSent: data.data.created_at })
       },
       onError: (err) => {
         console.log("ERROR", err);

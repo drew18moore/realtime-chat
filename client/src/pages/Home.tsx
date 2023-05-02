@@ -10,7 +10,6 @@ const Home = () => {
   useEffect(() => {
     if (socket) {
       socket.on("receive-message", (receivedMessage) => {
-        console.log("RECEIVED MESSAGE", receivedMessage);
         const { conversationId, recipientId, authorId, message, timeSent } =
           receivedMessage;
 

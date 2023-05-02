@@ -30,7 +30,6 @@ export const useNewConversation = (joinerId: number) => {
   }, {
     onSuccess: (data) => {
       const prevConversations: any = queryClient.getQueryData(["conversations"])
-      console.log(prevConversations?.data);
       if (!prevConversations.data.some((conv: Conversation) => conv.id === data.data.id)) {
         queryClient.setQueryData(["conversations"], {
           ...prevConversations,

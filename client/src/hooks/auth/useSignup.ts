@@ -32,7 +32,6 @@ const useSignup = () => {
 
   return useMutation(signUp, {
     onSuccess: (data) => {
-      console.log(data);
       setCurrentUser(data.data);
       navigate("/");
     },

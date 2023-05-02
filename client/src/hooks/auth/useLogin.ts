@@ -24,7 +24,6 @@ const useLogin = () => {
 
   return useMutation(login, {
     onSuccess: (data) => {
-      console.log(data);
       setCurrentUser(data.data);
       navigate("/");
     },

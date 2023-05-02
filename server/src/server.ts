@@ -53,7 +53,6 @@ io.on("connection", (socket) => {
       message: string;
       timeSent: Date;
     }) => {
-      console.log(`SENDING ${message} TO ${recipientId} - ${timeSent}`);
       socket.broadcast.to(recipientId.toString()).emit("receive-message", {
         authorId,
         recipientId,

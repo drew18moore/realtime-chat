@@ -16,10 +16,10 @@ const Chat = () => {
   const state = useLocation().state as ConversationState;
   const { currentUser } = useAuth();
   const [message, setMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: messages } = useGetMessages(parseInt(conversationId!));
-  
+
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
     state?.recipient.id,
@@ -29,21 +29,22 @@ const Chat = () => {
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim() === "") {
-      setMessage("")
-      return
+      setMessage("");
+      return;
     }
     newMessage();
   };
-  
+
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
   useEffect(() => {
     setMessage("");
-  }, [messageHasBeenSent])
+  }, [messageHasBeenSent]);
 
   return (
     <div className="relative h-screen">
@@ -53,7 +54,10 @@ const Chat = () => {
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
-        <div className="grid gap-2 p-2 overflow-auto relative">
+        <div
+          ref={messagesContainerRef}
+          className="grid gap-2 p-2 overflow-auto relative"
+        >
           {messages?.data.map((message: Message, i: number) => {
             return (
               <Message
@@ -63,7 +67,6 @@ const Chat = () => {
               />
             );
           })}
-          <div ref={messagesEndRef} className="absolute bottom-0" />
         </div>
       </div>
 

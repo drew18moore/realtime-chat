@@ -16,7 +16,13 @@ A realtime chat application
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Socket.io](https://img.shields.io/badge/Socket.io-010101?&style=for-the-badge&logo=Socket.io&logoColor=white)
 
-
+## Try it out
+[https://realtime-chat-phi.vercel.app/](https://realtime-chat-phi.vercel.app/)
+- Login using your username and password or create a new account
+- <strong>If you don't want to register</strong>, login using the <strong>demo</strong> account:
+  - <strong>username</strong>: demo
+  - <strong>password</strong>: 123456
+  
 ## Features
 
 - User authentication with JWT

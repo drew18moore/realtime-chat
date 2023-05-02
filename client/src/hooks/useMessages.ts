@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
@@ -38,7 +38,7 @@ export const useNewMessage = (
   const queryClient = useQueryClient();
   const socket = useSocket()
 
-  return useMutation(
+  return useMutation<AxiosResponse<Message>>(
     () =>
       axiosPrivate.post("/api/messages/new", {
         authorId: currentUser?.id,
@@ -80,7 +80,7 @@ export const useNewMessage = (
           }
         );
         // Send to other user
-        socket.emit("send-message", { recipientId, message: data.data.message, timeSent: data.data.created_at })
+        socket.emit("send-message", { recipientId, conversationId, message: data.data.message, timeSent: data.data.created_at })
       },
       onError: (err) => {
         console.log("ERROR", err);

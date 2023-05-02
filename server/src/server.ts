@@ -42,15 +42,19 @@ io.on("connection", (socket) => {
     "send-message",
     ({
       recipientId,
+      conversationId,
       message,
       timeSent,
     }: {
       recipientId: number;
+      conversationId: number;
       message: string;
       timeSent: Date;
     }) => {
       console.log(`SENDING ${message} TO ${recipientId} - ${timeSent}`);
       socket.broadcast.to(recipientId.toString()).emit("receive-message", {
+        recipientId,
+        conversationId,
         message,
         timeSent,
       });

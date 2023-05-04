@@ -20,7 +20,7 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
       day: "numeric",
       year: "numeric",
       hour: "numeric",
-      minute: "2-digit",
+      minute: "numeric",
     });
   }
 

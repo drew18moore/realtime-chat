@@ -67,7 +67,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={` bg-neutral-100 h-[calc(100svh)] w-full ${
+      className={`h-[calc(100svh)] w-full ${
         isRootRoute ? "block" : "hidden"
       } sm:w-96 sm:block relative border border-r-neutral-300`}
     >

@@ -74,7 +74,7 @@ const Home = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className={`flex-grow h-screen ${isRootRoute ? "hidden": ""} sm:block`}>
+      <div className={`flex-grow ${isRootRoute ? "hidden": ""} sm:block`}>
         <Outlet />
       </div>
     </div>

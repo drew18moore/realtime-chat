@@ -49,7 +49,7 @@ const Chat = () => {
   }, [messageHasBeenSent]);
 
   return (
-    <div className="relative h-screen">
+    <div className="relative h-[calc(100svh)]">
       {/* Header bar */}
       <div className="flex items-center gap-3 bg-white absolute top-0 right-0 left-0 h-14 px-5 sm:px-10">
         <button

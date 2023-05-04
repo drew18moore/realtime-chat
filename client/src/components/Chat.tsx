@@ -85,14 +85,14 @@ const Chat = () => {
         >
           <input
             type="text"
-            className="w-full rounded-full px-4 py-3 bg-neutral-300 placeholder:text-neutral-600"
+            className="w-full rounded-full px-4 py-3 bg-neutral-200 placeholder:text-neutral-600"
             value={message}
             placeholder="Type a message..."
             onChange={(e) => setMessage(e.target.value)}
           />
           <button
             type="submit"
-            className={`bg-neutral-300 rounded-full h-12 aspect-square flex items-center justify-center p-2.5 ${
+            className={`bg-neutral-200 rounded-full h-12 aspect-square flex items-center justify-center p-2.5 ${
               message.trim() === ""
                 ? "text-neutral-400 cursor-default"
                 : "text-blue-600"

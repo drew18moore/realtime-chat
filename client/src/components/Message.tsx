@@ -27,7 +27,7 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
   return (
     <div className={`${isCurrentUser ? "justify-self-end" : "justify-self-start"} grid max-w-xl`}>
       <div
-        className={`${isCurrentUser ? "bg-blue-600 text-white" : "bg-neutral-300"} w-fit rounded-[1.25rem] px-3 py-[0.5rem] ${isCurrentUser ? "justify-self-end" : "justify-self-start"} text-base leading-5`}
+        className={`${isCurrentUser ? "bg-blue-600 text-white" : "bg-neutral-200"} w-fit rounded-[1.25rem] px-3 py-[0.5rem] ${isCurrentUser ? "justify-self-end" : "justify-self-start"} text-base leading-5`}
       >
         {message.message}
       </div>

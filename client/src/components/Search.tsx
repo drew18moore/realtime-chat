@@ -13,7 +13,7 @@ const Search: React.FC<SearchProps> = ({ search, setSearch }) => {
       </div>
       <input
         type="text"
-        className="h-fit m-auto px-3 py-1 rounded-full bg-neutral-300 placeholder:text-neutral-600 w-full pl-9"
+        className="h-fit m-auto px-3 py-1 rounded-full bg-neutral-200 placeholder:text-neutral-600 w-full pl-9"
         placeholder="Search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}

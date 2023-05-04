@@ -1,10 +1,12 @@
 import Sidebar from "../components/Sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
+  const location = useLocation();
+  const isRootRoute = location.pathname === "/";
   const socket = useSocket();
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -72,7 +74,7 @@ const Home = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-grow h-screen">
+      <div className={`flex-grow h-screen ${isRootRoute ? "hidden": ""} sm:block`}>
         <Outlet />
       </div>
     </div>

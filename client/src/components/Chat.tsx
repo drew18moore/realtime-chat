@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetMessages, useNewMessage } from "../hooks/useMessages";
-import { BiSend } from "react-icons/bi";
+import { BiSend, BiArrowBack } from "react-icons/bi";
 
 interface ConversationState {
   recipient: {
@@ -13,6 +13,7 @@ interface ConversationState {
 }
 
 const Chat = () => {
+  const navigate = useNavigate();
   const { conversationId } = useParams();
   const state = useLocation().state as ConversationState;
   const { currentUser } = useAuth();
@@ -50,7 +51,13 @@ const Chat = () => {
   return (
     <div className="relative h-screen">
       {/* Header bar */}
-      <div className="flex items-center bg-white absolute top-0 right-0 left-0 h-14 px-10">
+      <div className="flex items-center gap-3 bg-white absolute top-0 right-0 left-0 h-14 px-5 sm:px-10">
+        <button
+          className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 sm:hidden"
+          onClick={() => navigate(-1)}
+        >
+          <BiArrowBack size={"100%"} />
+        </button>
         <h1 className="text-2xl">{state?.recipient.username}</h1>
       </div>
 
@@ -91,7 +98,7 @@ const Chat = () => {
                 : "text-blue-600"
             }`}
           >
-            <BiSend size={"fill"} />
+            <BiSend size={"100%"} />
           </button>
         </form>
       )}

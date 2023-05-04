@@ -3,7 +3,7 @@ import Converasation from "./Converasation";
 import Search from "./Search";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/auth/useLogout";
 import { useGetConversations } from "../hooks/useConversations";
@@ -13,6 +13,8 @@ import { AxiosResponse } from "axios";
 import ConverasationSkeleton from "./ConversationSkeleton";
 
 const Sidebar = () => {
+  const location = useLocation();
+  const isRootRoute = location.pathname === "/";
   const axiosPrivate = useAxiosPrivate();
   const { data: conversations, isLoading: isLoadingConversations } =
     useGetConversations();
@@ -38,9 +40,9 @@ const Sidebar = () => {
   let conversationsContent: JSX.Element[] | undefined = [];
 
   if (isLoadingConversations) {
-    const numSkeletonComponents = 6
+    const numSkeletonComponents = 6;
     for (let i = 0; i < numSkeletonComponents; i++) {
-      conversationsContent?.push(<ConverasationSkeleton key={i} />)
+      conversationsContent?.push(<ConverasationSkeleton key={i} />);
     }
   } else {
     conversationsContent = conversations?.data.map((conversation) => {
@@ -64,7 +66,11 @@ const Sidebar = () => {
   }
 
   return (
-    <div className=" bg-neutral-100 h-screen w-96 relative border border-r-neutral-300">
+    <div
+      className={` bg-neutral-100 h-screen w-full ${
+        isRootRoute ? "block" : "hidden"
+      } sm:w-96 sm:block relative border border-r-neutral-300`}
+    >
       <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
         <Search search={search} setSearch={setSearch} />
       </div>

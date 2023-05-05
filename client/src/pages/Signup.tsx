@@ -33,77 +33,76 @@ const Signup = ({}) => {
             {error?.response?.data?.message || "An unknown error occurred."}
           </p>
         )}
-        <div className="grid gap-1">
-          <label
-            htmlFor="display-name"
-            className="text-lg font-semibold text-blue-600"
-          >
-            Display Name
-          </label>
-          <input
-            ref={displayNameRef}
-            type="text"
-            id="display-name"
-            className="border border-neutral-300 px-3 py-2 rounded-lg"
-            required
-          />
+        <div className="grid gap-5">
+          <div className="grid gap-1">
+            <label
+              htmlFor="display-name"
+              className="text-lg font-semibold text-blue-600"
+            >
+              Display Name
+            </label>
+            <input
+              ref={displayNameRef}
+              type="text"
+              id="display-name"
+              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              required
+            />
+          </div>
+          <div className="grid gap-1">
+            <label
+              htmlFor="username"
+              className="text-lg font-semibold text-blue-600"
+            >
+              Username
+            </label>
+            <input
+              ref={usernameRef}
+              type="text"
+              id="username"
+              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              required
+            />
+          </div>
+          <div className="grid gap-1">
+            <label
+              htmlFor="password"
+              className="text-lg font-semibold text-blue-600"
+            >
+              Password
+            </label>
+            <input
+              ref={passwordRef}
+              type="password"
+              id="password"
+              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              required
+            />
+          </div>
+          <div className="grid gap-1">
+            <label
+              htmlFor="repeat-password"
+              className="text-lg font-semibold text-blue-600"
+            >
+              Repeat Password
+            </label>
+            <input
+              ref={repeatPasswordRef}
+              type="password"
+              id="repeat-password"
+              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              required
+            />
+          </div>
+          <button className="bg-blue-600 p-2 rounded-lg text-white flex justify-center">
+            {isLoading ? (
+              <RotatingLines strokeColor="white" width="24" />
+            ) : (
+              "Sign up"
+            )}
+          </button>
         </div>
-        <br />
-        <div className="grid gap-1">
-          <label
-            htmlFor="username"
-            className="text-lg font-semibold text-blue-600"
-          >
-            Username
-          </label>
-          <input
-            ref={usernameRef}
-            type="text"
-            id="username"
-            className="border border-neutral-300 px-3 py-2 rounded-lg"
-            required
-          />
-        </div>
-        <br />
-        <div className="grid gap-1">
-          <label
-            htmlFor="password"
-            className="text-lg font-semibold text-blue-600"
-          >
-            Password
-          </label>
-          <input
-            ref={passwordRef}
-            type="password"
-            id="password"
-            className="border border-neutral-300 px-3 py-2 rounded-lg"
-            required
-          />
-        </div>
-        <br />
-        <div className="grid gap-1">
-          <label
-            htmlFor="repeat-password"
-            className="text-lg font-semibold text-blue-600"
-          >
-            Repeat Password
-          </label>
-          <input
-            ref={repeatPasswordRef}
-            type="password"
-            id="repeat-password"
-            className="border border-neutral-300 px-3 py-2 rounded-lg"
-            required
-          />
-        </div>
-        <br />
-        <button className="bg-blue-600 p-2 rounded-lg text-white flex justify-center">
-          {isLoading ? (
-            <RotatingLines strokeColor="white" width="24" />
-          ) : (
-            "Sign up"
-          )}
-        </button>
+
         <p className="text-center mt-2">
           Already have an account?{" "}
           <Link to={"/login"} className="text-blue-600">

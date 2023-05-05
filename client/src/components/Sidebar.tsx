@@ -56,7 +56,7 @@ const Sidebar = () => {
       return (
         <Converasation
           img={"default-pfp.jpg"}
-          username={conversation.recipient.username}
+          displayName={conversation.recipient.display_name}
           lastMessage={conversation.lastMessageSent?.message}
           dateLastMessage={
             conversation.lastMessageSent?.created_at

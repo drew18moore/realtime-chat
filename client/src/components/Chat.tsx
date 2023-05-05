@@ -8,7 +8,7 @@ import { BiSend, BiArrowBack } from "react-icons/bi";
 interface ConversationState {
   recipient: {
     id: number;
-    username: string;
+    display_name: string;
   };
 }
 
@@ -58,7 +58,7 @@ const Chat = () => {
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl">{state?.recipient.username}</h1>
+        <h1 className="text-2xl">{state?.recipient.display_name}</h1>
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">

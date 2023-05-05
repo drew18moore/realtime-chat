@@ -40,12 +40,14 @@ export const getAllConversations = async (req: Request, res: Response) => {
         creator: {
           select: {
             id: true,
+            display_name: true,
             username: true,
           }
         },
         joiner: {
           select: {
             id: true,
+            display_name: true,
             username: true,
           }
         },

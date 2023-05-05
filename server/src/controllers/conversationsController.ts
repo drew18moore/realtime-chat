@@ -68,7 +68,7 @@ export const newConversation = async (req: Request, res: Response) => {
         joiner: {
           select: {
             id: true,
-            username: true,
+            display_name: true,
           }
         },
       }

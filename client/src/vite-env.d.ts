@@ -19,7 +19,7 @@ type Conversation = {
   title?: string | null
   recipient: {
     id: number
-    username: string
+    display_name: string
   }
   lastMessageSent?: {
     message: string,

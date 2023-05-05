@@ -3,20 +3,20 @@ import { useNavigate } from "react-router-dom";
 
 interface ConverasationProps {
   img: string;
-  username: string;
+  displayName: string;
   lastMessage: string | undefined;
   dateLastMessage: Date | undefined;
   isSelected?: boolean;
   conversationId: number;
   recipient: {
     id: number
-    username: string
+    display_name: string
   }
 }
 
 const Converasation: FC<ConverasationProps> = ({
   img,
-  username,
+  displayName,
   lastMessage,
   dateLastMessage,
   isSelected = false,
@@ -45,7 +45,7 @@ const Converasation: FC<ConverasationProps> = ({
           />
         </div>
         <div className="grid items-center">
-          <h2 className="text-xl">{username}</h2>
+          <h2 className="text-xl">{displayName}</h2>
           <p className="text-neutral-600 text-sm truncate">{lastMessage}</p>
         </div>
       </div>

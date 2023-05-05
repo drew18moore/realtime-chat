@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const getAllUsers = async (req: Request, res: Response) => {
-  const search = req.query.search as string || ""
+  const search = (req.query.search as string) || "";
   try {
     const users = await db.user.findMany({
       select: {
@@ -11,11 +11,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
         username: true,
       },
       where: {
-        username: {
-          contains: search,
-          mode: "insensitive"
-        }
-      }
+        OR: [
+          { username: { contains: search, mode: "insensitive" } },
+          { display_name: { contains: search, mode: "insensitive" } },
+        ],
+      },
     });
     res.status(200).json({ users: users, numFound: users.length });
   } catch (err) {
@@ -25,14 +25,11 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getAllConversations = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const userIdParsed = parseInt(userId)
+  const userIdParsed = parseInt(userId);
   try {
     const conversations = await db.conversation.findMany({
       where: {
-        OR: [
-          { creatorId: parseInt(userId) },
-          { joinerId: parseInt(userId) }
-        ]
+        OR: [{ creatorId: parseInt(userId) }, { joinerId: parseInt(userId) }],
       },
       select: {
         id: true,
@@ -42,14 +39,14 @@ export const getAllConversations = async (req: Request, res: Response) => {
             id: true,
             display_name: true,
             username: true,
-          }
+          },
         },
         joiner: {
           select: {
             id: true,
             display_name: true,
             username: true,
-          }
+          },
         },
         messages: {
           select: {
@@ -64,15 +61,18 @@ export const getAllConversations = async (req: Request, res: Response) => {
       },
       orderBy: {
         dateLastMessage: "desc",
-      }
+      },
     });
     const response = conversations.map((conversation) => ({
       ...conversation,
-      recipient: conversation.creator.id === userIdParsed ? conversation.joiner : conversation.creator,
+      recipient:
+        conversation.creator.id === userIdParsed
+          ? conversation.joiner
+          : conversation.creator,
       creator: undefined,
       joiner: undefined,
       lastMessageSent: conversation.messages[0],
-      messages: undefined
+      messages: undefined,
     }));
     res.status(200).json(response);
   } catch (err) {

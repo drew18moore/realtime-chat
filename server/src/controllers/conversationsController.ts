@@ -30,13 +30,13 @@ export const newConversation = async (req: Request, res: Response) => {
         creator: {
           select: {
             id: true,
-            username: true,
+            display_name: true,
           }
         },
         joiner: {
           select: {
             id: true,
-            username: true,
+            display_name: true,
           }
         },
       }

@@ -91,6 +91,7 @@ const Sidebar = () => {
                 <Contact
                   img={"default-pfp.jpg"}
                   id={result.id}
+                  displayName={result.display_name}
                   username={result.username}
                   key={result.id}
                   clearSearch={clearSearch}
@@ -111,7 +112,7 @@ const Sidebar = () => {
               />
             </div>
             <div className="grid items-center">
-              <p className="text-base leading-4">{currentUser?.displayName}</p>
+              <p className="text-base leading-4">{currentUser?.display_name}</p>
               <p className="text-neutral-600 text-sm leading-4">
                 @{currentUser?.username}
               </p>

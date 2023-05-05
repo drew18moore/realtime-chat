@@ -4,11 +4,18 @@ import { useNewConversation } from "../hooks/useConversations";
 interface ContactProps {
   img: string;
   id: number;
+  displayName: string;
   username: string;
   clearSearch: () => void;
 }
 
-const Contact: FC<ContactProps> = ({ img, id, username, clearSearch }) => {
+const Contact: FC<ContactProps> = ({
+  img,
+  id,
+  displayName,
+  username,
+  clearSearch,
+}) => {
   const { mutate: newConversation } = useNewConversation(id);
 
   return (
@@ -26,7 +33,10 @@ const Contact: FC<ContactProps> = ({ img, id, username, clearSearch }) => {
           className="object-cover w-full h-full"
         />
       </div>
-      <h2 className="text-lg">{username}</h2>
+      <div className="flex flex-col">
+        <h3 className="text-lg leading-5">{displayName}</h3>
+        <h3 className="text-sm text-neutral-600">@{username}</h3>
+      </div>
     </div>
   );
 };

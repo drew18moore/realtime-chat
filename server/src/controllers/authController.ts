@@ -46,7 +46,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
 
     const response = {
       id: user.id,
-      displayName: user.display_name,
+      display_name: user.display_name,
       username: user.username,
       accessToken,
     };
@@ -100,7 +100,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     const response = {
       id: user.id,
-      displayName: user.display_name,
+      display_name: user.display_name,
       username: user.username,
       accessToken,
     };
@@ -176,7 +176,7 @@ export const handlePersistentLogin = async (req: Request, res: Response) => {
 
         const response = {
           id: user.id,
-          displayName: user.display_name,
+          display_name: user.display_name,
           username: user.username,
           accessToken,
         };

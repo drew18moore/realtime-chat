@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Converasation from "./Converasation";
 import Search from "./Search";
 import { useAuth } from "../contexts/AuthContext";
@@ -11,6 +11,7 @@ import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import ConverasationSkeleton from "./ConversationSkeleton";
+import useDebounce from "../hooks/useDebounce";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -21,20 +22,26 @@ const Sidebar = () => {
   const { mutate: logout } = useLogout();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();
+
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 200);
+
+  useEffect(() => {
+    console.log(debouncedSearch);
+  }, [debouncedSearch])
 
   const clearSearch = () => {
     setSearch("");
   };
 
   const { data: searchResults } = useQuery<AxiosResponse<SearchResults>>(
-    ["searchUsers", search.trim()],
+    ["searchUsers", debouncedSearch.trim()],
     () => {
       return axiosPrivate.get("/api/users", {
-        params: { search: search.trim() },
+        params: { search: debouncedSearch.trim() },
       });
     },
-    { enabled: search.trim() !== "" }
+    { enabled: debouncedSearch.trim() !== "" }
   );
 
   let conversationsContent: JSX.Element[] | undefined = [];

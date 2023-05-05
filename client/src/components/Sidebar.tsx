@@ -82,7 +82,7 @@ const Sidebar = () => {
         <Search search={search} setSearch={setSearch} />
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
-        <div className="grid gap-2">
+        <div className="grid gap-2 overflow-y-auto">
           {!searchResults?.data ? (
             conversationsContent
           ) : searchResults.data.users.length > 0 ? (

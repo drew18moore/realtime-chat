@@ -66,7 +66,7 @@ const Chat = () => {
           ref={messagesContainerRef}
           className="grid gap-2 p-2 overflow-auto relative"
         >
-          {messages?.data.map((message: Message, i: number) => {
+          {messages?.map((message: Message, i: number) => {
             return (
               <Message
                 message={message}

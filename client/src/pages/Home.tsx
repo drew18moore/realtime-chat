@@ -16,50 +16,42 @@ const Home = () => {
           receivedMessage;
 
         // Update conversations cache
-        queryClient.setQueryData(
+        queryClient.setQueryData<Conversation[]>(
           ["conversations"],
-          (prevConversations: any) => {
-            const conversationIndex: number = prevConversations.data.findIndex(
-              (conv: Conversation) => conv.id === conversationId
+          (prevConversations) => {
+            const conversationIndex = prevConversations!.findIndex(
+              (conv) => conv.id === conversationId
             );
             const updatedConversation: Conversation = {
-              ...prevConversations.data[conversationIndex],
+              ...prevConversations![conversationIndex],
               lastMessageSent: {
                 message,
                 created_at: timeSent,
               },
             };
-            const updatedConversations: Conversation[] = [
-              ...prevConversations.data,
-            ];
+            const updatedConversations = [...prevConversations!];
             updatedConversations[conversationIndex] = updatedConversation;
-            return {
-              ...prevConversations,
-              data: updatedConversations,
-            };
+            return updatedConversations;
           }
         );
 
         // Update messages cache
-        const existingMessages = queryClient.getQueryData([
+        const existingMessages = queryClient.getQueryData<Message[]>([
           "messages",
           conversationId,
         ]);
         if (existingMessages) {
-          queryClient.setQueryData(
+          queryClient.setQueryData<Message[]>(
             ["messages", conversationId],
-            (prevMessages: any) => ({
-              ...prevMessages,
-              data: [
-                ...prevMessages.data,
-                {
-                  message,
-                  receiverId: recipientId,
-                  authorId,
-                  created_at: timeSent,
-                },
-              ],
-            })
+            (prevMessages) => [
+              ...prevMessages!,
+              {
+                message,
+                receiverId: recipientId,
+                authorId,
+                created_at: timeSent,
+              },
+            ]
           );
         }
       });
@@ -74,7 +66,7 @@ const Home = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className={`flex-grow ${isRootRoute ? "hidden": ""} sm:block`}>
+      <div className={`flex-grow ${isRootRoute ? "hidden" : ""} sm:block`}>
         <Outlet />
       </div>
     </div>

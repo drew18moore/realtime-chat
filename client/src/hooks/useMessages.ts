@@ -10,17 +10,19 @@ export const useGetMessages = (conversationId: number) => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  return useQuery(
+  return useQuery<Message[]>(
     ["messages", conversationId],
-    () =>
-      axiosPrivate.get("/api/messages", {
+    async () => {
+      const res = await axiosPrivate.get("/api/messages", {
         params: { currentUserId: currentUser?.id, conversationId },
-      }),
+      })
+      return res.data
+    },
     {
-      onError: (err: AxiosError) => {
+      onError: (err: any) => {
         if (err.response?.status === 401) navigate("/");
       },
-      retry: (failureCount, error) => {
+      retry: (_, error: any) => {
         return error?.response?.status !== 401;
       },
       refetchOnWindowFocus: false,
@@ -38,49 +40,45 @@ export const useNewMessage = (
   const queryClient = useQueryClient();
   const socket = useSocket()
 
-  return useMutation<AxiosResponse<Message>>(
-    () =>
-      axiosPrivate.post("/api/messages/new", {
+  return useMutation<Message>(
+    async () => {
+      const res = await axiosPrivate.post("/api/messages/new", {
         authorId: currentUser?.id,
         receiverId: recipientId,
         message: message,
         conversationId: conversationId,
-      }),
+      })
+      return res.data
+    },
     {
       onSuccess: (data) => {
-        queryClient.setQueryData(
+        queryClient.setQueryData<Message[]>(
           ["messages", conversationId],
-          (prevMessages: any) => ({
-            ...prevMessages,
-            data: [...prevMessages.data, data.data],
-          })
+          (prevMessages) => [...prevMessages!, data]
         );
         // Update lastMessageSent
-        queryClient.setQueryData(
+        queryClient.setQueryData<Conversation[]>(
           ["conversations"],
-          (prevConversations: any) => {
-            const conversationIndex: number = prevConversations.data.findIndex(
-              (conv: Conversation) => conv.id === conversationId
+          (prevConversations) => {
+            const conversationIndex = prevConversations!.findIndex(
+              (conv) => conv.id === conversationId
             );
             const updatedConversation: Conversation = {
-              ...prevConversations.data[conversationIndex],
+              ...prevConversations![conversationIndex],
               lastMessageSent: {
-                message: data.data.message,
-                created_at: data.data.created_at,
+                message: data.message,
+                created_at: data.created_at,
               },
             };
-            const updatedConversations: Conversation[] = [
-              ...prevConversations.data,
+            const updatedConversations = [
+              ...prevConversations!,
             ];
             updatedConversations[conversationIndex] = updatedConversation;
-            return {
-              ...prevConversations,
-              data: updatedConversations,
-            };
+            return updatedConversations
           }
         );
         // Send to other user
-        socket.emit("send-message", { authorId: data.data.authorId, recipientId, conversationId, message: data.data.message, timeSent: data.data.created_at })
+        socket.emit("send-message", { authorId: data.authorId, recipientId, conversationId, message: data.message, timeSent: data.created_at })
       },
       onError: (err) => {
         console.log("ERROR", err);

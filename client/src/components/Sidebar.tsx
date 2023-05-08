@@ -26,10 +26,6 @@ const Sidebar = () => {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 200);
 
-  useEffect(() => {
-    console.log(debouncedSearch);
-  }, [debouncedSearch])
-
   const clearSearch = () => {
     setSearch("");
   };
@@ -52,7 +48,7 @@ const Sidebar = () => {
       conversationsContent?.push(<ConverasationSkeleton key={i} />);
     }
   } else {
-    conversationsContent = conversations?.data.map((conversation) => {
+    conversationsContent = conversations?.map((conversation) => {
       return (
         <Converasation
           img={"default-pfp.jpg"}

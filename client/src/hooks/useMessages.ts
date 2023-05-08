@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
-import { AxiosError, AxiosResponse } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 
@@ -54,7 +53,7 @@ export const useNewMessage = (
       onSuccess: (data) => {
         queryClient.setQueryData<Message[]>(
           ["messages", conversationId],
-          (prevMessages) => [...prevMessages!, data]
+          (prevMessages) => [data, ...prevMessages!]
         );
         // Update lastMessageSent
         queryClient.setQueryData<Conversation[]>(

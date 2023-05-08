@@ -48,9 +48,11 @@ export const getMessagesInConversation = async (
   req: Request,
   res: Response
 ) => {
-  const { currentUserId, conversationId } = req.query;
+  const { currentUserId, conversationId, page, limit = 10 } = req.query;
   const parsedCurrentUserId = parseInt(currentUserId as string);
   const parsedConversationId = parseInt(conversationId as string);
+  const parsedPage = parseInt(page as string);
+  const parsedLimit = parseInt(limit as string);
   try {
     const conversation = await db.conversation.findUnique({
       where: { id: parsedConversationId },
@@ -62,11 +64,25 @@ export const getMessagesInConversation = async (
     ) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const messages = await db.message.findMany({
-      where: {
-        conversationId: parsedConversationId,
-      },
-    });
+
+    let messages;
+    if (page) {
+      messages = await db.message.findMany({
+        where: {
+          conversationId: parsedConversationId,
+        },
+        orderBy: { created_at: "desc" },
+        skip: (parsedPage - 1) * parsedLimit,
+        take: parsedLimit,
+      });
+    } else {
+      messages = await db.message.findMany({
+        where: {
+          conversationId: parsedConversationId,
+        },
+        orderBy: { created_at: "desc" },
+      });
+    }
     res.status(200).json(messages);
   } catch (err) {
     console.error(err);

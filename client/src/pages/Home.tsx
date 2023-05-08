@@ -44,13 +44,13 @@ const Home = () => {
           queryClient.setQueryData<Message[]>(
             ["messages", conversationId],
             (prevMessages) => [
-              ...prevMessages!,
               {
                 message,
                 receiverId: recipientId,
                 authorId,
                 created_at: timeSent,
               },
+              ...prevMessages!,
             ]
           );
         }

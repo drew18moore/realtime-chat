@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useGetMessages, useNewMessage } from "../hooks/useMessages";
+import {
+  useGetMessagesInfinite,
+  useNewMessage,
+} from "../hooks/useMessages";
 import { BiSend, BiArrowBack } from "react-icons/bi";
 
 interface ConversationState {
@@ -20,7 +23,7 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages } = useGetMessages(parseInt(conversationId!));
+  const { data: messages } = useGetMessagesInfinite(parseInt(conversationId!));
 
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
@@ -66,14 +69,16 @@ const Chat = () => {
           ref={messagesContainerRef}
           className="grid gap-2 p-2 overflow-auto relative"
         >
-          {messages?.slice().reverse().map((message, i) => {
-            return (
-              <Message
-                message={message}
-                key={i}
-                isCurrentUser={message.authorId === currentUser?.id}
-              />
-            );
+          {messages?.pages.map((page) => {
+            return page.map((message, i) => {
+              return (
+                <Message
+                  message={message}
+                  key={i}
+                  isCurrentUser={message.authorId === currentUser?.id}
+                />
+              );
+            });
           })}
         </div>
       </div>

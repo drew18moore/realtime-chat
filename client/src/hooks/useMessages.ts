@@ -55,8 +55,6 @@ export const useGetMessagesInfinite = (conversationId: number) => {
       },
       refetchOnWindowFocus: false,
       getNextPageParam: (lastPage, allPages) => {
-        console.log(lastPage);
-        console.log(allPages);
         return lastPage.length ? allPages.length + 1 : undefined
       }
     }

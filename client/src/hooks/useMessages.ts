@@ -29,7 +29,7 @@ export const useGetMessages = (conversationId: number) => {
   );
 };
 
-export const useGetMessagesInfinite = (conversationId: number) => {
+export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
   const axiosPrivate = useAxiosPrivate();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -41,7 +41,8 @@ export const useGetMessagesInfinite = (conversationId: number) => {
         params: {
           currentUserId: currentUser?.id, 
           conversationId,
-          page: pageParam
+          page: pageParam,
+          limit: limit
         },
       })
       return res.data

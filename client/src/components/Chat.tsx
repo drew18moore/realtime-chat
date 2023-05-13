@@ -23,7 +23,8 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: messages, fetchNextPage, hasNextPage } = useGetMessagesInfinite(parseInt(conversationId!));
+  const LIMIT = 20;
+  const { data: messages, fetchNextPage } = useGetMessagesInfinite(parseInt(conversationId!), LIMIT);
 
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
@@ -69,7 +70,7 @@ const Chat = () => {
           ref={messagesContainerRef}
           className="grid gap-2 p-2 overflow-auto relative"
         >
-          {hasNextPage && <button onClick={() => fetchNextPage()} className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto">Show More</button>}
+          {messages?.pages[messages.pages.length - 1].length! >= LIMIT && <button onClick={() => fetchNextPage()} className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto">Show More</button>}
           {messages?.pages.slice().reverse().map((page) => {
             return page.slice().reverse().map((message, i) => {
               return (

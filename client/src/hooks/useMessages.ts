@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +29,39 @@ export const useGetMessages = (conversationId: number) => {
   );
 };
 
+export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
+  const axiosPrivate = useAxiosPrivate();
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  return useInfiniteQuery<Message[]>(
+    ["messages", conversationId],
+    async ({ pageParam = 1 }) => {
+      const res = await axiosPrivate.get("/api/messages", {
+        params: {
+          currentUserId: currentUser?.id, 
+          conversationId,
+          page: pageParam,
+          limit: limit
+        },
+      })
+      return res.data
+    },
+    {
+      onError: (err: any) => {
+        if (err.response?.status === 401) navigate("/");
+      },
+      retry: (_, error: any) => {
+        return error?.response?.status !== 401;
+      },
+      refetchOnWindowFocus: false,
+      getNextPageParam: (lastPage, allPages) => {
+        return lastPage.length ? allPages.length + 1 : undefined
+      }
+    }
+  );
+}
+
 export const useNewMessage = (
   conversationId: number,
   recipientId: number,
@@ -51,9 +84,13 @@ export const useNewMessage = (
     },
     {
       onSuccess: (data) => {
-        queryClient.setQueryData<Message[]>(
+        queryClient.setQueryData<InfiniteData<Message[]>>(
           ["messages", conversationId],
-          (prevMessages) => [data, ...prevMessages!]
+          (prevData) => {
+            const pages = prevData?.pages.map((page) => [...page]) ?? [];
+            pages[0].unshift(data)
+            return { ...prevData!, pages }
+          }
         );
         // Update lastMessageSent
         queryClient.setQueryData<Conversation[]>(

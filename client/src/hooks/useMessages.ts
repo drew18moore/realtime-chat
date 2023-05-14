@@ -70,7 +70,7 @@ export const useNewMessage = (
   const axiosPrivate = useAxiosPrivate();
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
-  const socket = useSocket()
+  const { socket } = useSocket()
 
   return useMutation<Message>(
     async () => {

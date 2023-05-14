@@ -9,9 +9,10 @@ interface ConverasationProps {
   isSelected?: boolean;
   conversationId: number;
   recipient: {
-    id: number
-    display_name: string
-  }
+    id: number;
+    display_name: string;
+  };
+  isOnline: boolean;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -21,29 +22,41 @@ const Converasation: FC<ConverasationProps> = ({
   dateLastMessage,
   isSelected = false,
   conversationId,
-  recipient
+  recipient,
+  isOnline,
 }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "numeric",
   });
 
   const handleClick = () => {
-    const state = { recipient }
-    navigate(`/${conversationId}`, { state })
-  }
+    const state = { recipient };
+    navigate(`/${conversationId}`, { state });
+  };
 
   return (
-    <div onClick={handleClick} className={`${isSelected ? "bg-neutral-200" : "hover:bg-neutral-100"} rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}>
+    <div
+      onClick={handleClick}
+      className={`${
+        isSelected ? "bg-neutral-200" : "hover:bg-neutral-100"
+      } rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}
+    >
       <div className="flex gap-3 items-center">
-        <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-          <img
-            src={img}
-            alt="profile picture"
-            className="object-cover w-full h-full"
-          />
+        <div className="relative">
+          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative">
+            <img
+              src={img}
+              alt="profile picture"
+              className="object-cover w-full h-full"
+            />
+          </div>
+          {isOnline && (
+            <div className="absolute bg-green-500 rounded-full w-3 h-3 bottom-0 right-0"></div>
+          )}
         </div>
+
         <div className="grid items-center">
           <h2 className="text-xl">{displayName}</h2>
           <p className="text-neutral-600 text-sm truncate">{lastMessage}</p>

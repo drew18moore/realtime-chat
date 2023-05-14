@@ -7,7 +7,7 @@ import { useQueryClient } from "@tanstack/react-query";
 const Home = () => {
   const location = useLocation();
   const isRootRoute = location.pathname === "/";
-  const socket = useSocket();
+  const { socket } = useSocket();
   const queryClient = useQueryClient();
   useEffect(() => {
     if (socket) {

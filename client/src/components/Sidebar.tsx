@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import ConverasationSkeleton from "./ConversationSkeleton";
 import useDebounce from "../hooks/useDebounce";
+import { useSocket } from "../contexts/SocketContext";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const Sidebar = () => {
   const { mutate: logout } = useLogout();
   const { conversationId } = useParams();
   const { currentUser } = useAuth();
+  const { onlineUserIds } = useSocket();
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 200);
@@ -63,6 +65,7 @@ const Sidebar = () => {
           conversationId={conversation.id}
           recipient={conversation.recipient}
           key={conversation.id}
+          isOnline={onlineUserIds.includes(conversation.recipient.id)}
         />
       );
     });

@@ -33,10 +33,15 @@ server.listen(3000, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
+const activeUsers = new Set<number>();
+
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
   const id = socket.handshake.query.id as string;
   socket.join(id);
+
+  activeUsers.add(parseInt(id));
+  io.to(socket.id).emit("online-users", Array.from(activeUsers));
+  socket.broadcast.emit("user-connected", parseInt(id));
 
   socket.on(
     "send-message",
@@ -62,4 +67,9 @@ io.on("connection", (socket) => {
       });
     }
   );
+
+  socket.on("disconnect", () => {
+    activeUsers.delete(parseInt(id));
+    socket.broadcast.emit("user-disconnected", parseInt(id));
+  })
 });

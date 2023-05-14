@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useNavigate } from "react-router-dom";
@@ -84,9 +84,13 @@ export const useNewMessage = (
     },
     {
       onSuccess: (data) => {
-        queryClient.setQueryData<Message[]>(
+        queryClient.setQueryData<InfiniteData<Message[]>>(
           ["messages", conversationId],
-          (prevMessages) => [data, ...prevMessages!]
+          (prevData) => {
+            const pages = prevData?.pages.map((page) => [...page]) ?? [];
+            pages[0].unshift(data)
+            return { ...prevData!, pages }
+          }
         );
         // Update lastMessageSent
         queryClient.setQueryData<Conversation[]>(

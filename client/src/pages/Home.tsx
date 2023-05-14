@@ -2,7 +2,7 @@ import Sidebar from "../components/Sidebar";
 import { Outlet, useLocation } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
 import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
   const location = useLocation();
@@ -41,17 +41,18 @@ const Home = () => {
           conversationId,
         ]);
         if (existingMessages) {
-          queryClient.setQueryData<Message[]>(
+          queryClient.setQueryData<InfiniteData<Message[]>>(
             ["messages", conversationId],
-            (prevMessages) => [
-              {
+            (prevData) => {
+              const pages = prevData?.pages.map((page) => [...page]) ?? [];
+              pages[0].unshift({
                 message,
                 receiverId: recipientId,
                 authorId,
                 created_at: timeSent,
-              },
-              ...prevMessages!,
-            ]
+              });
+              return { ...prevData!, pages };
+            }
           );
         }
       });

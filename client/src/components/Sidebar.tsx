@@ -77,10 +77,13 @@ const Sidebar = () => {
         isRootRoute ? "block" : "hidden"
       } sm:w-96 sm:block relative border border-r-neutral-300`}
     >
-      <div className="flex absolute top-0 left-0 right-0 h-14 justify-center">
+      <div className="px-5 py-2 pt-4">
+        <h1 className="text-xl px-4 font-bold">Messages</h1>
+      </div>
+      <div className="flex absolute top-[52px] left-0 right-0 h-14 justify-center">
         <Search search={search} setSearch={setSearch} />
       </div>
-      <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
+      <div className="absolute top-[108px] left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2 overflow-y-auto">
           {!searchResults?.data ? (
             conversationsContent

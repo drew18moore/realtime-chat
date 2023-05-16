@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import PrivateRoute from "./components/PrivateRoute";
 import PersistLogin from "./components/PersistLogin";
 import Chat from "./components/Chat";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Home />} >
               <Route path="/:conversationId" element={<Chat />} />
             </Route>
+            <Route path="/settings" element={<Settings />}/>
           </Route>
         </Route>
       </Routes>

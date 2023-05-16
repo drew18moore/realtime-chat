@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Converasation from "./Converasation";
 import Search from "./Search";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { RiSettings5Fill } from "react-icons/ri";
 import useLogout from "../hooks/auth/useLogout";
@@ -17,6 +17,7 @@ import { useSocket } from "../contexts/SocketContext";
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isRootRoute = location.pathname === "/";
   const axiosPrivate = useAxiosPrivate();
   const { data: conversations, isLoading: isLoadingConversations } =
@@ -76,11 +77,11 @@ const Sidebar = () => {
     <div
       className={`h-[calc(100svh)] w-full ${
         isRootRoute ? "block" : "hidden"
-      } sm:w-96 sm:block relative border border-r-neutral-300`}
+      } sm:w-96 sm:block relative border sm:border-r-neutral-200`}
     >
       <div className="px-5 py-2 flex items-center justify-between">
         <h1 className="text-xl px-4 font-bold">Messages</h1>
-        <button className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200">
+        <button onClick={() => navigate("/settings")} className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200">
           <RiSettings5Fill size={"1.5rem"} />
         </button>
       </div>

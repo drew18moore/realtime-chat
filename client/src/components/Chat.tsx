@@ -55,7 +55,7 @@ const Chat = () => {
   return (
     <div className="relative h-[calc(100svh)]">
       {/* Header bar */}
-      <div className="flex items-center gap-3 bg-white absolute top-0 right-0 left-0 h-14 px-5 sm:px-10">
+      <div className="flex items-center gap-3 bg-white absolute top-0 right-0 left-0 h-14 px-5 sm:px-10 border border-b-neutral-200 border-x-0 border-t-0">
         <button
           className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 sm:hidden"
           onClick={() => navigate(-1)}

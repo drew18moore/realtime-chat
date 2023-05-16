@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
 import { useLocation, useParams } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
+import { RiSettings5Fill } from "react-icons/ri";
 import useLogout from "../hooks/auth/useLogout";
 import { useGetConversations } from "../hooks/useConversations";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
@@ -77,13 +78,16 @@ const Sidebar = () => {
         isRootRoute ? "block" : "hidden"
       } sm:w-96 sm:block relative border border-r-neutral-300`}
     >
-      <div className="px-5 py-2 pt-4">
+      <div className="px-5 py-2 flex items-center justify-between">
         <h1 className="text-xl px-4 font-bold">Messages</h1>
+        <button className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200">
+          <RiSettings5Fill size={"1.5rem"} />
+        </button>
       </div>
-      <div className="flex absolute top-[52px] left-0 right-0 h-14 justify-center">
+      <div className="flex absolute top-14 left-0 right-0 h-14 justify-center">
         <Search search={search} setSearch={setSearch} />
       </div>
-      <div className="absolute top-[108px] left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
+      <div className="absolute top-28 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2 overflow-y-auto">
           {!searchResults?.data ? (
             conversationsContent
@@ -104,7 +108,7 @@ const Sidebar = () => {
             <h2 className="text-center">No results found</h2>
           )}
         </div>
-        <div className="flex justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-12 rounded-full overflow-hidden">
               <img
@@ -122,7 +126,7 @@ const Sidebar = () => {
           </div>
           <button
             onClick={() => logout()}
-            className="hover:bg-neutral-300 px-3 py-2 rounded-xl"
+            className="hover:bg-neutral-300 h-fit p-3 rounded-full bg-neutral-200"
           >
             <FiLogOut />
           </button>

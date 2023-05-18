@@ -77,7 +77,7 @@ const Sidebar = () => {
     <div
       className={`h-[calc(100svh)] w-full ${
         isRootRoute ? "block" : "hidden"
-      } sm:w-96 sm:block relative border sm:border-r-neutral-200`}
+      } sm:w-96 sm:block relative border-0 sm:border-r-[1px] sm:border-r-neutral-200`}
     >
       <div className="px-5 py-2 flex items-center justify-between">
         <h1 className="text-xl px-4 font-bold">Messages</h1>

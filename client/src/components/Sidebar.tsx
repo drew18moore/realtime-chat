@@ -77,11 +77,11 @@ const Sidebar = () => {
     <div
       className={`h-[calc(100svh)] w-full ${
         isRootRoute ? "block" : "hidden"
-      } sm:w-96 sm:block relative border-0 sm:border-r-[1px] sm:border-r-neutral-200`}
+      } sm:w-96 sm:block relative border-0 sm:border-r-[1px] sm:border-r-neutral-200 dark:sm:border-r-neutral-800`}
     >
       <div className="px-5 py-2 flex items-center justify-between">
-        <h1 className="text-xl px-4 font-bold">Messages</h1>
-        <button onClick={() => navigate("/settings")} className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200">
+        <h1 className="text-xl px-4 font-bold dark:text-white">Messages</h1>
+        <button onClick={() => navigate("/settings")} className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900">
           <RiSettings5Fill size={"1.5rem"} />
         </button>
       </div>
@@ -119,15 +119,15 @@ const Sidebar = () => {
               />
             </div>
             <div className="grid items-center">
-              <p className="text-base leading-4">{currentUser?.display_name}</p>
-              <p className="text-neutral-600 text-sm leading-4">
+              <p className="text-base leading-4 dark:text-white">{currentUser?.display_name}</p>
+              <p className="text-neutral-600 text-sm leading-4 dark:text-neutral-500">
                 @{currentUser?.username}
               </p>
             </div>
           </div>
           <button
             onClick={() => logout()}
-            className="hover:bg-neutral-300 h-fit p-3 rounded-full bg-neutral-200"
+            className="hover:bg-neutral-300 h-fit p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900"
           >
             <FiLogOut />
           </button>

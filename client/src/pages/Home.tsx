@@ -65,7 +65,7 @@ const Home = () => {
   }, [socket]);
 
   return (
-    <div className="flex">
+    <div className="flex dark:bg-black">
       <Sidebar />
       <div className={`flex-grow ${isRootRoute ? "hidden" : ""} sm:block`}>
         <Outlet />

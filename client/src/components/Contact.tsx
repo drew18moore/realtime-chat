@@ -24,7 +24,7 @@ const Contact: FC<ContactProps> = ({
         newConversation();
         clearSearch();
       }}
-      className="rounded-xl flex gap-3 p-2 items-center cursor-pointer hover:bg-neutral-200"
+      className="rounded-xl flex gap-3 p-2 items-center cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-800"
     >
       <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
         <img
@@ -34,8 +34,8 @@ const Contact: FC<ContactProps> = ({
         />
       </div>
       <div className="flex flex-col">
-        <h3 className="text-lg leading-5">{displayName}</h3>
-        <h3 className="text-sm text-neutral-600">@{username}</h3>
+        <h3 className="text-lg leading-5 dark:text-white">{displayName}</h3>
+        <h3 className="text-sm text-neutral-600 dark:text-neutral-500">@{username}</h3>
       </div>
     </div>
   );

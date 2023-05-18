@@ -33,7 +33,7 @@ const Login = () => {
           <div className="grid gap-1">
             <label
               htmlFor="username"
-              className="text-lg font-semibold text-blue-600"
+              className="sr-only"
             >
               Username
             </label>
@@ -41,14 +41,15 @@ const Login = () => {
               ref={usernameRef}
               type="text"
               id="username"
-              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600"
               required
+              placeholder="Username"
             />
           </div>
           <div className="grid gap-1">
             <label
               htmlFor="password"
-              className="text-lg font-semibold text-blue-600"
+              className="sr-only"
             >
               Password
             </label>
@@ -56,11 +57,12 @@ const Login = () => {
               ref={passwordRef}
               type="password"
               id="password"
-              className="border border-neutral-300 px-3 py-2 rounded-lg"
+              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600"
               required
+              placeholder="Password"
             />
           </div>
-          <button className="bg-blue-600 p-2 rounded-lg text-white flex justify-center">
+          <button className="bg-blue-600 p-2 rounded-full text-white flex justify-center">
             {isLoading ? (
               <RotatingLines strokeColor="white" width="24" />
             ) : (

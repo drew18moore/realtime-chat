@@ -16,10 +16,10 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-[calc(100svh)] bg-blue-200">
+    <div className="flex justify-center items-center h-[calc(100svh)] dark:bg-black">
       <form
         onSubmit={handleSubmit}
-        className="bg-white w-96 p-6 rounded-lg grid shadow-md"
+        className="w-96 p-6 rounded-lg grid gap-2"
       >
         <h1 className="text-2xl text-center font-bold p-2 text-blue-600">
           Log in
@@ -41,7 +41,7 @@ const Login = () => {
               ref={usernameRef}
               type="text"
               id="username"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600"
+              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
               required
               placeholder="Username"
             />
@@ -57,7 +57,7 @@ const Login = () => {
               ref={passwordRef}
               type="password"
               id="password"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600"
+              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
               required
               placeholder="Password"
             />
@@ -71,7 +71,7 @@ const Login = () => {
           </button>
         </div>
 
-        <p className="text-center mt-2">
+        <p className="text-center mt-2 dark:text-white">
           Need an account?{" "}
           <Link to={"/signup"} className="text-blue-600">
             Sign Up

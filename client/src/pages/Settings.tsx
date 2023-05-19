@@ -1,8 +1,10 @@
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../contexts/ThemeContext";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="h-[calc(100svh)] dark:bg-black">
@@ -33,6 +35,7 @@ const Settings = () => {
                     type="radio"
                     className="accent-blue-600 w-5 h-5 cursor-pointer"
                     id="lightmode"
+                    checked={theme === "light"}
                   />
                   <label htmlFor="lightmode" className="cursor-pointer">Light</label>
                 </div>
@@ -46,6 +49,7 @@ const Settings = () => {
                     type="radio"
                     className="accent-blue-600 w-5 h-5 cursor-pointer"
                     id="darkmode"
+                    checked={theme === "dark"}
                   />
                   <label htmlFor="darkmode" className="cursor-pointer">Dark</label>
                 </div>

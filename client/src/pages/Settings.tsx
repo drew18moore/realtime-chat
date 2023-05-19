@@ -21,8 +21,8 @@ const Settings = () => {
         className="overflow-y-auto"
         style={{ height: "calc(100svh - 3.5rem)" }}
       >
-        <div className="grid gap-2 p-2 max-w-2xl mx-auto">
-          <div className="flex flex-col gap-4 mt-4">
+        <div className="grid gap-2 px-5 max-w-2xl mx-auto">
+          <div className="flex flex-col gap-4 mt-6">
             <h2 className="text-blue-600 font-bold">General</h2>
             <h3 className="dark:text-white">Choose theme</h3>
             <div className="flex gap-5 justify-around dark:text-white flex-wrap">

@@ -25,9 +25,9 @@ const Settings = () => {
           <div className="flex flex-col gap-4 mt-4">
             <h2 className="text-blue-600 font-bold">General</h2>
             <h3 className="dark:text-white">Choose theme</h3>
-            <div className="flex justify-around dark:text-white">
+            <div className="flex gap-5 justify-around dark:text-white flex-wrap">
               <div className="w-40 flex flex-col gap-2">
-                <div onClick={(e) => {setTheme("light")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
+                <div onClick={() => {setTheme("light")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
                   <img src="theme-lightmode.svg" alt="" className="w-full" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -43,7 +43,7 @@ const Settings = () => {
                 </div>
               </div>
               <div className="w-40 flex flex-col gap-2">
-                <div onClick={(e) => {setTheme("dark")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
+                <div onClick={() => {setTheme("dark")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
                   <img src="theme-darkmode.svg" alt="" className="w-full" />
                 </div>
                 <div className="flex items-center gap-2">

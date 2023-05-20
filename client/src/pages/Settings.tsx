@@ -23,11 +23,43 @@ const Settings = () => {
       >
         <div className="grid gap-2 px-5 max-w-2xl mx-auto">
           <div className="flex flex-col gap-4 mt-6">
+            <h2 className="text-blue-600 font-bold">Account</h2>
+            <h3>Profile</h3>
+            <form className="grid gap-5">
+              <div className="flex flex-col">
+                <label htmlFor="display-name" className="sr-only">Display Name</label>
+                <input
+                  type="text"
+                  id="display-name"
+                  className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+                  placeholder="Display Name"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="username" className="sr-only">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+                  placeholder="Username"
+                />
+              </div>
+              <button className="bg-blue-600 px-6 py-2 rounded-full text-white flex justify-center justify-self-end">
+                Save
+              </button>
+            </form>
+          </div>
+          <div className="flex flex-col gap-4 mt-6">
             <h2 className="text-blue-600 font-bold">General</h2>
             <h3 className="dark:text-white">Choose theme</h3>
             <div className="flex gap-5 justify-around dark:text-white flex-wrap">
               <div className="w-40 flex flex-col gap-2">
-                <div onClick={() => {setTheme("light")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
+                <div
+                  onClick={() => {
+                    setTheme("light");
+                  }}
+                  className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer"
+                >
                   <img src="theme-lightmode.svg" alt="" className="w-full" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -39,11 +71,18 @@ const Settings = () => {
                     value="light"
                     checked={theme === "light"}
                   />
-                  <label htmlFor="lightmode" className="cursor-pointer">Light</label>
+                  <label htmlFor="lightmode" className="cursor-pointer">
+                    Light
+                  </label>
                 </div>
               </div>
               <div className="w-40 flex flex-col gap-2">
-                <div onClick={() => {setTheme("dark")}} className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer">
+                <div
+                  onClick={() => {
+                    setTheme("dark");
+                  }}
+                  className="border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden cursor-pointer"
+                >
                   <img src="theme-darkmode.svg" alt="" className="w-full" />
                 </div>
                 <div className="flex items-center gap-2">
@@ -55,7 +94,9 @@ const Settings = () => {
                     value="dark"
                     checked={theme === "dark"}
                   />
-                  <label htmlFor="darkmode" className="cursor-pointer">Dark</label>
+                  <label htmlFor="darkmode" className="cursor-pointer">
+                    Dark
+                  </label>
                 </div>
               </div>
             </div>

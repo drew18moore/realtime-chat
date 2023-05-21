@@ -83,7 +83,6 @@ export const getAllConversations = async (req: Request, res: Response) => {
 
 export const editUser = async (req: Request, res: Response) => {
   const userIdParsed = parseInt(req.userId);
-  // const { display_name, username } = req.body;
   const display_name = req.body.display_name.trim()
   const username = req.body.username.trim()
 

@@ -30,6 +30,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
     const conversations = await db.conversation.findMany({
       where: {
         OR: [{ creatorId: parseInt(userId) }, { joinerId: parseInt(userId) }],
+        messages: {
+          some: {},
+        },
       },
       select: {
         id: true,
@@ -83,8 +86,8 @@ export const getAllConversations = async (req: Request, res: Response) => {
 
 export const editUser = async (req: Request, res: Response) => {
   const userIdParsed = parseInt(req.userId);
-  const display_name = req.body.display_name.trim()
-  const username = req.body.username.trim()
+  const display_name = req.body.display_name.trim();
+  const username = req.body.username.trim();
 
   try {
     const user = await db.user.update({
@@ -92,18 +95,18 @@ export const editUser = async (req: Request, res: Response) => {
       data: {
         display_name: display_name || undefined,
         username: username || undefined,
-      }
-    })
+      },
+    });
 
     const response = {
       display_name: user.display_name,
       username: user.username,
-    }
+    };
     res.json(response);
   } catch (err: any) {
     console.error(err);
     if (err.code === "P2002")
       return res.status(403).json({ message: "Username already in use" });
-    res.status(500).json({ message: err })
+    res.status(500).json({ message: err });
   }
-}
+};

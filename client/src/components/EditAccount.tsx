@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
 import Resizer from "react-image-file-resizer";
+import { useAuth } from "../contexts/AuthContext";
 
 const EditAccount = () => {
   const {
@@ -10,6 +11,7 @@ const EditAccount = () => {
     isError,
     error,
   } = useEditAccount();
+  const { currentUser } = useAuth();
   const displayNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
   const [profileImgBase64, setProfileImgBase64] = useState<string | null>(null);
@@ -22,7 +24,7 @@ const EditAccount = () => {
     console.log(display_name, username);
     editAccount({ display_name, username, profile_picture });
   };
-  
+
   const handleImgChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -52,10 +54,20 @@ const EditAccount = () => {
     <div className="flex flex-col gap-4">
       <h3 className="dark:text-white">Profile</h3>
       <form onSubmit={handleSubmit} className="grid gap-5">
-        <input type="file" accept="image/*" onChange={handleImgChange} />
-        {profileImgBase64 && (
-          <img src={profileImgBase64} alt="uploaded image" />
-        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImgChange}
+          className="w-fit"
+        />
+        <div className="w-24 aspect-square rounded-full overflow-hidden">
+          <img
+            src={profileImgBase64 || currentUser?.profile_picture || "default-pfp.jpg"}
+            alt="uploaded image"
+            className="object-cover w-full h-full"
+          />
+        </div>
+
         <div className="flex flex-col">
           <label htmlFor="display-name" className="sr-only">
             Display Name

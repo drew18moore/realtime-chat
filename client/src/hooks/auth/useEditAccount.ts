@@ -43,6 +43,7 @@ export const useEditAccount = () => {
           ...prev!,
           display_name: data.display_name,
           username: data.username,
+          profile_picture: data.profile_picture,
         }));
         toast.success("Profile has been updated!", {
           style: {

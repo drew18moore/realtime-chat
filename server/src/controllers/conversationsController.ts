@@ -11,16 +11,10 @@ export const newConversation = async (req: Request, res: Response) => {
       where: {
         OR: [
           {
-            AND: [
-              { creatorId: creatorIdParsed },
-              { joinerId: joinerIdParsed },
-            ],
+            AND: [{ creatorId: creatorIdParsed }, { joinerId: joinerIdParsed }],
           },
           {
-            AND: [
-              { creatorId: joinerIdParsed },
-              { joinerId: creatorIdParsed },
-            ],
+            AND: [{ creatorId: joinerIdParsed }, { joinerId: creatorIdParsed }],
           },
         ],
       },
@@ -31,25 +25,30 @@ export const newConversation = async (req: Request, res: Response) => {
           select: {
             id: true,
             display_name: true,
-          }
+            profile_picture: true,
+          },
         },
         joiner: {
           select: {
             id: true,
             display_name: true,
-          }
+            profile_picture: true,
+          },
         },
-      }
+      },
     });
     if (existingConversation.length > 0) {
       const response = {
         ...existingConversation[0],
-        recipient: existingConversation[0].joiner,
+        recipient:
+          existingConversation[0].creator.id === parseInt(req.userId)
+            ? existingConversation[0].joiner
+            : existingConversation[0].creator,
         creator: undefined,
         joiner: undefined,
         messages: undefined,
-      }
-      return res.status(200).json(response)
+      };
+      return res.status(200).json(response);
     }
     const conversation = await db.conversation.create({
       data: {
@@ -63,15 +62,16 @@ export const newConversation = async (req: Request, res: Response) => {
           select: {
             id: true,
             username: true,
-          }
+          },
         },
         joiner: {
           select: {
             id: true,
             display_name: true,
-          }
+            profile_picture: true,
+          },
         },
-      }
+      },
     });
     const response = {
       ...conversation,
@@ -79,7 +79,7 @@ export const newConversation = async (req: Request, res: Response) => {
       creator: undefined,
       joiner: undefined,
       messages: undefined,
-    }
+    };
     res.status(201).json(response);
   } catch (err) {
     console.error(err);

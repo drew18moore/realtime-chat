@@ -9,6 +9,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         id: true,
         display_name: true,
         username: true,
+        profile_picture: true,
       },
       where: {
         OR: [
@@ -42,6 +43,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
             id: true,
             display_name: true,
             username: true,
+            profile_picture: true,
           },
         },
         joiner: {
@@ -49,6 +51,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
             id: true,
             display_name: true,
             username: true,
+            profile_picture: true,
           },
         },
         messages: {

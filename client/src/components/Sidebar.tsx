@@ -55,7 +55,7 @@ const Sidebar = () => {
     conversationsContent = conversations?.map((conversation) => {
       return (
         <Converasation
-          img={"default-pfp.jpg"}
+          img={conversation.recipient.profile_picture || "default-pfp.jpg"}
           displayName={conversation.recipient.display_name}
           lastMessage={conversation.lastMessageSent?.message}
           dateLastMessage={
@@ -96,7 +96,7 @@ const Sidebar = () => {
             searchResults.data.users.map((result) => {
               return (
                 <Contact
-                  img={"default-pfp.jpg"}
+                  img={result.profile_picture || "default-pfp.jpg"}
                   id={result.id}
                   displayName={result.display_name}
                   username={result.username}
@@ -111,9 +111,9 @@ const Sidebar = () => {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-12 rounded-full overflow-hidden">
+            <div className="w-12 aspect-square rounded-full overflow-hidden">
               <img
-                src={currentUser!.profile_picture}
+                src={currentUser?.profile_picture || "default-pfp.jpg"}
                 alt=""
                 className="object-cover w-full h-full"
               />

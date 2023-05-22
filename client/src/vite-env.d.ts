@@ -21,6 +21,8 @@ type Conversation = {
   recipient: {
     id: number
     display_name: string
+    username: string
+    profile_picture?: string
   }
   lastMessageSent?: {
     message: string,

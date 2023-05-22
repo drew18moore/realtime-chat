@@ -2,7 +2,13 @@ import { FormEvent, useRef } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
 
 const EditAccount = () => {
-  const { mutate: editAccount, isLoading, isSuccess } = useEditAccount();
+  const {
+    mutate: editAccount,
+    isLoading,
+    isSuccess,
+    isError,
+    error,
+  } = useEditAccount();
   const displayNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
 
@@ -12,7 +18,8 @@ const EditAccount = () => {
     const username = usernameRef?.current?.value.trim().toLowerCase() as string;
     console.log(display_name, username);
     editAccount({ display_name, username });
-  }
+  };
+  
   return (
     <div className="flex flex-col gap-4">
       <h3 className="dark:text-white">Profile</h3>
@@ -41,7 +48,7 @@ const EditAccount = () => {
             placeholder="Username"
           />
         </div>
-        <button className="bg-blue-600 px-6 py-2 rounded-full text-white flex justify-center justify-self-end">
+        <button className="bg-blue-600 px-6 py-2 rounded-full text-white justify-self-end">
           Save
         </button>
       </form>

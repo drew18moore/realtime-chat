@@ -95,9 +95,15 @@ export const editUser = async (req: Request, res: Response) => {
       }
     })
 
-    res.json(user);
-  } catch (err) {
+    const response = {
+      display_name: user.display_name,
+      username: user.username,
+    }
+    res.json(response);
+  } catch (err: any) {
     console.error(err);
+    if (err.code === "P2002")
+      return res.status(403).json({ message: "Username already in use" });
     res.status(500).json({ message: err })
   }
 }

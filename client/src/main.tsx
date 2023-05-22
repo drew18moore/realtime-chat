@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SocketProvider } from "./contexts/SocketContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <ThemeProvider>
           <HashRouter>
             <App />
+            <Toaster />
           </HashRouter>
         </ThemeProvider>
       </SocketProvider>

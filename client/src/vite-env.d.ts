@@ -4,6 +4,7 @@ type User = {
   display_name: string
   username: string
   accessToken: string
+  profile_picture?: string
 }
 
 type Message = {

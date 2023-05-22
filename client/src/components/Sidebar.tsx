@@ -113,7 +113,7 @@ const Sidebar = () => {
           <div className="flex items-center gap-2">
             <div className="w-12 rounded-full overflow-hidden">
               <img
-                src="default-pfp.jpg"
+                src={currentUser!.profile_picture}
                 alt=""
                 className="object-cover w-full h-full"
               />

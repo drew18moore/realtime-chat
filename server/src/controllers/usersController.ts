@@ -88,6 +88,7 @@ export const editUser = async (req: Request, res: Response) => {
   const userIdParsed = parseInt(req.userId);
   const display_name = req.body.display_name.trim();
   const username = req.body.username.trim();
+  const profile_picture = req.body.profile_picture;
 
   try {
     const user = await db.user.update({
@@ -95,12 +96,14 @@ export const editUser = async (req: Request, res: Response) => {
       data: {
         display_name: display_name || undefined,
         username: username || undefined,
+        profile_picture: profile_picture || undefined,
       },
     });
 
     const response = {
       display_name: user.display_name,
       username: user.username,
+      profile_picture: user.profile_picture,
     };
     res.json(response);
   } catch (err: any) {

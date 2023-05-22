@@ -14,13 +14,16 @@ export const useEditAccount = () => {
     async ({
       display_name,
       username,
+      profile_picture
     }: {
       display_name: string;
       username: string;
+      profile_picture: string;
     }) => {
       const res = await axiosPrivate.put(`/api/users/${currentUser?.id}`, {
         display_name,
         username,
+        profile_picture
       });
       return res.data;
     },

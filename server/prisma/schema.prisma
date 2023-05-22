@@ -12,17 +12,18 @@ datasource db {
 }
 
 model User {
-  id               Int            @id @default(autoincrement())
-  display_name     String
-  username         String         @unique
-  password         String
-  created_at       DateTime       @default(now())
-  updated_at       DateTime       @updatedAt
-  createdMessages  Message[]      @relation("sentMessages")
-  receivedMessages Message[]      @relation("receivedMessages")
-  conversationsCreated    Conversation[] @relation("Creator")
-  conversationsJoined Conversation[] @relation("Joiner")
-  refresh_token    String         @default("")
+  id                   Int            @id @default(autoincrement())
+  display_name         String
+  username             String         @unique
+  password             String
+  created_at           DateTime       @default(now())
+  updated_at           DateTime       @updatedAt
+  createdMessages      Message[]      @relation("sentMessages")
+  receivedMessages     Message[]      @relation("receivedMessages")
+  conversationsCreated Conversation[] @relation("Creator")
+  conversationsJoined  Conversation[] @relation("Joiner")
+  refresh_token        String         @default("")
+  profile_picture      String?
 }
 
 model Message {
@@ -38,13 +39,13 @@ model Message {
 }
 
 model Conversation {
-  id         Int       @id @default(autoincrement())
-  title      String?
-  creator User @relation("Creator", fields: [creatorId], references: [id])
-  creatorId Int
-  joiner User @relation("Joiner", fields: [joinerId], references: [id])
-  joinerId Int
-  messages   Message[]
-  created_at DateTime  @default(now())
+  id              Int       @id @default(autoincrement())
+  title           String?
+  creator         User      @relation("Creator", fields: [creatorId], references: [id])
+  creatorId       Int
+  joiner          User      @relation("Joiner", fields: [joinerId], references: [id])
+  joinerId        Int
+  messages        Message[]
+  created_at      DateTime  @default(now())
   dateLastMessage DateTime?
 }

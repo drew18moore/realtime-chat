@@ -1,5 +1,6 @@
-import { FormEvent, useRef } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
+import Resizer from "react-image-file-resizer";
 
 const EditAccount = () => {
   const {
@@ -11,19 +12,50 @@ const EditAccount = () => {
   } = useEditAccount();
   const displayNameRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
+  const [profileImgBase64, setProfileImgBase64] = useState<string | null>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const display_name = displayNameRef?.current?.value.trim() as string;
     const username = usernameRef?.current?.value.trim().toLowerCase() as string;
+    const profile_picture = profileImgBase64 as string;
     console.log(display_name, username);
-    editAccount({ display_name, username });
+    editAccount({ display_name, username, profile_picture });
   };
   
+  const handleImgChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Resize img
+      Resizer.imageFileResizer(
+        file,
+        400,
+        400,
+        "JPEG",
+        80,
+        0,
+        (uri) => {
+          setProfileImgBase64(uri as string);
+        },
+        "base64"
+      );
+    } else {
+      setProfileImgBase64(null);
+    }
+  };
+
+  useEffect(() => {
+    console.log(profileImgBase64);
+  }, [profileImgBase64]);
+
   return (
     <div className="flex flex-col gap-4">
       <h3 className="dark:text-white">Profile</h3>
       <form onSubmit={handleSubmit} className="grid gap-5">
+        <input type="file" accept="image/*" onChange={handleImgChange} />
+        {profileImgBase64 && (
+          <img src={profileImgBase64} alt="uploaded image" />
+        )}
         <div className="flex flex-col">
           <label htmlFor="display-name" className="sr-only">
             Display Name

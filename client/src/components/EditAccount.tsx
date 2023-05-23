@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
 import Resizer from "react-image-file-resizer";
+// @ts-expect-error https://github.com/onurzorluer/react-image-file-resizer/issues/68
+const resizer: typeof Resizer = (Resizer.default || Resizer);
 import { useAuth } from "../contexts/AuthContext";
 
 const EditAccount = () => {
@@ -29,7 +31,7 @@ const EditAccount = () => {
     const file = e.target.files?.[0];
     if (file) {
       // Resize img
-      Resizer.imageFileResizer(
+      resizer.imageFileResizer(
         file,
         400,
         400,

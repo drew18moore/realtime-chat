@@ -103,7 +103,7 @@ export const loginUser = async (req: Request, res: Response) => {
       display_name: user.display_name,
       username: user.username,
       accessToken,
-      profile_picture: user.profile_picture,
+      profile_picture: user?.profile_picture,
     };
 
     res.cookie("jwt", refreshToken, {
@@ -180,7 +180,7 @@ export const handlePersistentLogin = async (req: Request, res: Response) => {
           display_name: user.display_name,
           username: user.username,
           accessToken,
-          profile_picture: user.profile_picture,
+          profile_picture: user?.profile_picture,
         };
 
         res.status(200).json(response);

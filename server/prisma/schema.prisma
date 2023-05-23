@@ -23,7 +23,7 @@ model User {
   conversationsCreated Conversation[] @relation("Creator")
   conversationsJoined  Conversation[] @relation("Joiner")
   refresh_token        String         @default("")
-  profile_picture      String?
+  profile_picture      String         @default("")
 }
 
 model Message {

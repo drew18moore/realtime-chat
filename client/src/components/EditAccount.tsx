@@ -2,8 +2,9 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
 import Resizer from "react-image-file-resizer";
 // @ts-expect-error https://github.com/onurzorluer/react-image-file-resizer/issues/68
-const resizer: typeof Resizer = (Resizer.default || Resizer);
+const resizer: typeof Resizer = Resizer.default || Resizer;
 import { useAuth } from "../contexts/AuthContext";
+import { FaCamera } from "react-icons/fa";
 
 const EditAccount = () => {
   const {
@@ -54,20 +55,32 @@ const EditAccount = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="dark:text-white">Profile</h3>
       <form onSubmit={handleSubmit} className="grid gap-5">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImgChange}
-          className="w-fit"
-        />
-        <div className="w-24 aspect-square rounded-full overflow-hidden">
-          <img
-            src={profileImgBase64 || currentUser?.profile_picture || "default-pfp.jpg"}
-            alt="uploaded image"
-            className="object-cover w-full h-full"
+        <div className="relative w-fit m-auto">
+          <div className="w-40 aspect-square rounded-full overflow-hidden">
+            <img
+              src={
+                profileImgBase64 ||
+                currentUser?.profile_picture ||
+                "default-pfp.jpg"
+              }
+              alt="uploaded image"
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImgChange}
+            className="hidden"
+            id="file"
           />
+          <label
+            htmlFor="file"
+            className="absolute bottom-1 right-1 bg-blue-600 text-white p-2 rounded-full cursor-pointer text-xl"
+          >
+            <FaCamera />
+          </label>
         </div>
 
         <div className="flex flex-col">

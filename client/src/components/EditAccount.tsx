@@ -88,31 +88,33 @@ const EditAccount = () => {
             <FaCamera />
           </label>
         </div>
+        <div className="flex gap-5 flex-wrap">
+          <div className="flex-grow">
+            <label htmlFor="display-name" className="sr-only">
+              Display Name
+            </label>
+            <input
+              ref={displayNameRef}
+              type="text"
+              id="display-name"
+              className="w-full px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+              placeholder="Display Name"
+            />
+          </div>
+          <div className="flex-grow">
+            <label htmlFor="username" className="sr-only">
+              Username
+            </label>
+            <input
+              ref={usernameRef}
+              type="text"
+              id="username"
+              className="w-full px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+              placeholder="Username"
+            />
+          </div>
+        </div>
 
-        <div className="flex flex-col">
-          <label htmlFor="display-name" className="sr-only">
-            Display Name
-          </label>
-          <input
-            ref={displayNameRef}
-            type="text"
-            id="display-name"
-            className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-            placeholder="Display Name"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label htmlFor="username" className="sr-only">
-            Username
-          </label>
-          <input
-            ref={usernameRef}
-            type="text"
-            id="username"
-            className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-            placeholder="Username"
-          />
-        </div>
         <div className="justify-self-end flex gap-5">
           <button
             onClick={resetForm}

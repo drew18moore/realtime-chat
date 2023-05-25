@@ -49,6 +49,12 @@ const EditAccount = () => {
     }
   };
 
+  const resetForm = () => {
+    setProfileImgBase64(null);
+    displayNameRef.current!.value = "";
+    usernameRef.current!.value = "";
+  };
+
   useEffect(() => {
     console.log(profileImgBase64);
   }, [profileImgBase64]);
@@ -107,9 +113,18 @@ const EditAccount = () => {
             placeholder="Username"
           />
         </div>
-        <button className="bg-blue-600 px-6 py-2 rounded-full text-white justify-self-end">
-          Save
-        </button>
+        <div className="justify-self-end flex gap-5">
+          <button
+            onClick={resetForm}
+            className="text-neutral-600 hover:underline"
+            type="button"
+          >
+            Reset
+          </button>
+          <button className="bg-blue-600 px-6 py-2 rounded-full text-white">
+            Save
+          </button>
+        </div>
       </form>
     </div>
   );

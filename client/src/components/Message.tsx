@@ -31,7 +31,7 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
       >
         {message.message}
       </div>
-      <p className={`${isCurrentUser ? "justify-self-end" : "justify-self-start"} dark:text-neutral-500`}>{dateFormated}</p>
+      <p className={`${isCurrentUser ? "justify-self-end" : "justify-self-start"} text-neutral-600 dark:text-neutral-500`}>{dateFormated}</p>
     </div>
   );
 };

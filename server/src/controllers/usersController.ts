@@ -3,6 +3,9 @@ import { db } from "../db";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   const search = (req.query.search as string) || "";
+  const { page = 1, limit = 10 } = req.query;
+  const parsedPage = parseInt(page as string);
+  const parsedLimit = parseInt(limit as string);
   try {
     const users = await db.user.findMany({
       select: {
@@ -17,6 +20,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
           { display_name: { contains: search, mode: "insensitive" } },
         ],
       },
+      skip: (parsedPage - 1) * parsedLimit,
+      take: parsedLimit,
     });
     res.status(200).json({ users: users, numFound: users.length });
   } catch (err) {

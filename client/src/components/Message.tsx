@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useRef } from "react";
 import { FiMoreHorizontal } from "react-icons/fi"
 
 interface MessageProps {
@@ -34,9 +34,9 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
       <div
         className={`flex gap-1 items-center ${
           isCurrentUser ? "justify-self-end" : "justify-self-start flex-row-reverse"
-        }`}
+        } group`}
       >
-        <button className="hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full">
+        <button className="sm:hidden hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full group-hover:block">
           <FiMoreHorizontal />
         </button>
         <div

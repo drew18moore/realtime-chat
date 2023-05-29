@@ -78,6 +78,7 @@ const Chat = () => {
                   message={message}
                   key={i}
                   isCurrentUser={message.authorId === currentUser?.id}
+                  messagesContainerRef={messagesContainerRef}
                 />
               );
             });

@@ -1,12 +1,15 @@
-import { FC, useEffect, useRef } from "react";
-import { FiMoreHorizontal } from "react-icons/fi"
+import { FC, useEffect, useRef, useState } from "react";
+import { FiMoreHorizontal, FiTrash2 } from "react-icons/fi";
+import Dropdown, { DropdownItem } from "./Dropdown";
 
 interface MessageProps {
   message: Message;
   isCurrentUser: boolean;
+  messagesContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
+const Message: FC<MessageProps> = ({ message, isCurrentUser, messagesContainerRef }) => {
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
   // Format datetime
   const date = new Date(message?.created_at);
   let dateFormated;
@@ -29,16 +32,29 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
     <div
       className={`${
         isCurrentUser ? "justify-self-end" : "justify-self-start"
-      } grid max-w-xl`}
+      } grid max-w-xl relative`}
     >
       <div
         className={`flex gap-1  ${
-          isCurrentUser ? "justify-self-end" : "justify-self-start flex-row-reverse"
+          isCurrentUser
+            ? "justify-self-end"
+            : "justify-self-start flex-row-reverse"
         }`}
       >
-        <button className="hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit">
-          <FiMoreHorizontal />
-        </button>
+        <div className="relative h-fit">
+          {showDropdown && (
+            <Dropdown setShowDropdown={setShowDropdown} messagesContainerRef={messagesContainerRef}>
+              <DropdownItem icon={<FiTrash2 />}>Delete</DropdownItem>
+            </Dropdown>
+          )}
+          <button
+            onClick={() => setShowDropdown((prev) => !prev)}
+            className="hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
+          >
+            <FiMoreHorizontal />
+          </button>
+        </div>
+
         <div
           className={`${
             isCurrentUser

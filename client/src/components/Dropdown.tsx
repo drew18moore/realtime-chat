@@ -24,15 +24,26 @@ const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown }) => {
   const [dropdownPositioning, setDropdownPositioning] = useState<string>("");
 
   useLayoutEffect(() => {
-    // Prevent dropdown from overflowing over y
-    const rect = dropdownRef.current!.getBoundingClientRect();
-    console.log(rect.bottom); //844 - 808
-    console.log(window.innerHeight - 80 - 36);
-    if (rect.bottom > window.innerHeight - 80 - 36) {
-      setDropdownPositioning("bottom-full top-auto");
-    } else {
-      setDropdownPositioning("top-full");
-    }
+    setDropdownPositioning(() => {
+      let positioning: string = "";
+
+      const rect = dropdownRef.current!.getBoundingClientRect();
+      console.log(rect.bottom); //844 - 808
+      console.log(window.innerHeight - 80 - 36 - 8);
+      // Prevent dropdown from overflowing over y
+      if (rect.bottom > window.innerHeight - 80 - 36 - 8) {
+        positioning += "bottom-full top-auto ";
+      } else {
+        positioning += "top-full ";
+      }
+
+      // Prevent dropdown from overflowing over x
+      if (rect.right > window.innerWidth - 15) {
+        positioning += "right-0";
+      }
+      console.log(positioning);
+      return positioning;
+    });
 
     // Close dropdown on click outside
     let initialClickInside = false;

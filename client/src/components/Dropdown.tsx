@@ -7,7 +7,7 @@ interface DropdownItemProps {
 
 export const DropdownItem: FC<DropdownItemProps> = ({ icon, children }) => {
   return (
-    <li className="flex gap-3 items-center px-3 py-2 hover:bg-neutral-200 cursor-pointer">
+    <li className="flex gap-3 items-center px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer">
       <span>{icon}</span>
       {children}
     </li>
@@ -26,7 +26,9 @@ const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown }) => {
   useLayoutEffect(() => {
     // Prevent dropdown from overflowing over y
     const rect = dropdownRef.current!.getBoundingClientRect();
-    if (rect.bottom > window.innerHeight - 80) {
+    console.log(rect.bottom); //844 - 808
+    console.log(window.innerHeight - 80 - 36);
+    if (rect.bottom > window.innerHeight - 80 - 36) {
       setDropdownPositioning("bottom-full top-auto");
     } else {
       setDropdownPositioning("top-full");
@@ -61,7 +63,7 @@ const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown }) => {
     <>
       <ul
         ref={dropdownRef}
-        className={`absolute top-full ${dropdownPositioning} z-50 bg-white border rounded-xl overflow-hidden`}
+        className={`absolute ${dropdownPositioning} z-50 bg-white dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden`}
       >
         {children}
       </ul>

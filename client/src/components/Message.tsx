@@ -32,11 +32,11 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
       } grid max-w-xl`}
     >
       <div
-        className={`flex gap-1 items-center ${
+        className={`flex gap-1  ${
           isCurrentUser ? "justify-self-end" : "justify-self-start flex-row-reverse"
-        } group`}
+        }`}
       >
-        <button className="sm:hidden hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full group-hover:block">
+        <button className="hover:bg-neutral-200 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit">
           <FiMoreHorizontal />
         </button>
         <div

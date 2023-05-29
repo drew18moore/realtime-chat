@@ -40,7 +40,9 @@ const Converasation: FC<ConverasationProps> = ({
     <div
       onClick={handleClick}
       className={`${
-        isSelected ? "bg-neutral-200 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
+        isSelected
+          ? "bg-neutral-200 dark:bg-neutral-800"
+          : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
       } rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}
     >
       <div className="flex gap-3 items-center">
@@ -59,7 +61,9 @@ const Converasation: FC<ConverasationProps> = ({
 
         <div className="grid items-center">
           <h2 className="text-xl dark:text-white">{displayName}</h2>
-          <p className="text-neutral-600 text-sm truncate dark:text-neutral-500">{lastMessage}</p>
+          <p className="text-neutral-600 text-sm truncate dark:text-neutral-500">
+            {lastMessage}
+          </p>
         </div>
       </div>
       <div className="flex self-start text-sm text-neutral-600 flex-shrink-0 dark:text-neutral-500">

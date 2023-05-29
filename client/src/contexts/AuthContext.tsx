@@ -3,7 +3,7 @@ import React, { ReactNode, useContext, useEffect, useState } from "react";
 type AuthContextType = {
   currentUser: User | undefined;
   setCurrentUser: React.Dispatch<React.SetStateAction<User | undefined>>;
-}
+};
 
 const AuthContext = React.createContext<any>(undefined);
 
@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     console.log(currentUser);
   }, [currentUser]);
-  
+
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
       {children}

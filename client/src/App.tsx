@@ -15,10 +15,10 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route element={<PersistLogin />}>
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<Home />} >
+            <Route path="/" element={<Home />}>
               <Route path="/:conversationId" element={<Chat />} />
             </Route>
-            <Route path="/settings" element={<Settings />}/>
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
       </Routes>

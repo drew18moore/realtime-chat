@@ -11,7 +11,7 @@ import { useAuth } from "./AuthContext";
 type SocketContextType = {
   socket: Socket;
   onlineUserIds: number[];
-}
+};
 
 const SocketContext = createContext<any>(undefined);
 
@@ -29,14 +29,16 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     socket?.on("online-users", (userIds) => {
       setOnlineUserIds(userIds);
-    })
+    });
 
     socket?.on("user-connected", (userId) => {
-      setOnlineUserIds((prevUserIds) => [...prevUserIds, userId])
+      setOnlineUserIds((prevUserIds) => [...prevUserIds, userId]);
     });
 
     socket?.on("user-disconnected", (userId) => {
-      setOnlineUserIds((prevUserIds) => prevUserIds.filter((id) => id !== userId));
+      setOnlineUserIds((prevUserIds) =>
+        prevUserIds.filter((id) => id !== userId)
+      );
     });
 
     return () => {
@@ -47,7 +49,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (currentUser) {
-      const newSocket = io(BASE_URL, { query: { id: currentUser.id.toString() } });
+      const newSocket = io(BASE_URL, {
+        query: { id: currentUser.id.toString() },
+      });
       setSocket(newSocket);
 
       return () => {
@@ -59,7 +63,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     socket,
     onlineUserIds,
-  }
+  };
 
   return (
     <SocketContext.Provider value={value}>{children}</SocketContext.Provider>

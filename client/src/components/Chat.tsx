@@ -2,10 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  useGetMessagesInfinite,
-  useNewMessage,
-} from "../hooks/useMessages";
+import { useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
 import { BiSend, BiArrowBack } from "react-icons/bi";
 
 interface ConversationState {
@@ -24,7 +21,10 @@ const Chat = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const LIMIT = 20;
-  const { data: messages, fetchNextPage } = useGetMessagesInfinite(parseInt(conversationId!), LIMIT);
+  const { data: messages, fetchNextPage } = useGetMessagesInfinite(
+    parseInt(conversationId!),
+    LIMIT
+  );
 
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
@@ -62,7 +62,9 @@ const Chat = () => {
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl dark:text-white">{state?.recipient.display_name}</h1>
+        <h1 className="text-2xl dark:text-white">
+          {state?.recipient.display_name}
+        </h1>
       </div>
 
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
@@ -70,19 +72,31 @@ const Chat = () => {
           ref={messagesContainerRef}
           className="grid gap-2 p-2 overflow-y-auto relative"
         >
-          {messages?.pages[messages.pages.length - 1].length! >= LIMIT && <button onClick={() => fetchNextPage()} className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto">Show More</button>}
-          {messages?.pages.slice().reverse().map((page) => {
-            return page.slice().reverse().map((message, i) => {
-              return (
-                <Message
-                  message={message}
-                  key={i}
-                  isCurrentUser={message.authorId === currentUser?.id}
-                  messagesContainerRef={messagesContainerRef}
-                />
-              );
-            });
-          })}
+          {messages?.pages[messages.pages.length - 1].length! >= LIMIT && (
+            <button
+              onClick={() => fetchNextPage()}
+              className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto"
+            >
+              Show More
+            </button>
+          )}
+          {messages?.pages
+            .slice()
+            .reverse()
+            .map((page) => {
+              return page
+                .slice()
+                .reverse()
+                .map((message, i) => {
+                  return (
+                    <Message
+                      message={message}
+                      key={i}
+                      isCurrentUser={message.authorId === currentUser?.id}
+                    />
+                  );
+                });
+            })}
         </div>
       </div>
 

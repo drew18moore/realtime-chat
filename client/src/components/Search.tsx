@@ -1,9 +1,9 @@
 import { FiSearch } from "react-icons/fi";
-import { RiCloseFill } from "react-icons/ri"
+import { RiCloseFill } from "react-icons/ri";
 
 type SearchProps = {
   search: string;
-  setSearch: React.Dispatch<React.SetStateAction<string>>
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const Search: React.FC<SearchProps> = ({ search, setSearch }) => {
@@ -19,7 +19,14 @@ const Search: React.FC<SearchProps> = ({ search, setSearch }) => {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      { search && <div className="absolute right-3 cursor-pointer dark:text-white" onClick={() => setSearch("")}><RiCloseFill /></div> }
+      {search && (
+        <div
+          className="absolute right-3 cursor-pointer dark:text-white"
+          onClick={() => setSearch("")}
+        >
+          <RiCloseFill />
+        </div>
+      )}
     </div>
   );
 };

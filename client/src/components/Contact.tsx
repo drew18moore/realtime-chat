@@ -35,7 +35,9 @@ const Contact: FC<ContactProps> = ({
       </div>
       <div className="flex flex-col">
         <h3 className="text-lg leading-5 dark:text-white">{displayName}</h3>
-        <h3 className="text-sm text-neutral-600 dark:text-neutral-500">@{username}</h3>
+        <h3 className="text-sm text-neutral-600 dark:text-neutral-500">
+          @{username}
+        </h3>
       </div>
     </div>
   );

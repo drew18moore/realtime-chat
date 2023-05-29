@@ -7,7 +7,7 @@ const ConverasationSkeleton = () => {
         <div className="bg-neutral-400 h-3 w-36 rounded-full animate-pulse" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ConverasationSkeleton
+export default ConverasationSkeleton;

@@ -21,10 +21,7 @@ const Signup = ({}) => {
 
   return (
     <div className="flex justify-center items-center h-[calc(100svh)] dark:bg-black">
-      <form
-        onSubmit={handleSubmit}
-        className="w-96 p-6 rounded-lg grid gap-2"
-      >
+      <form onSubmit={handleSubmit} className="w-96 p-6 rounded-lg grid gap-2">
         <h1 className="text-2xl text-center font-bold p-2 text-blue-600">
           Sign Up
         </h1>
@@ -35,10 +32,7 @@ const Signup = ({}) => {
         )}
         <div className="grid gap-5">
           <div className="grid gap-1">
-            <label
-              htmlFor="display-name"
-              className="sr-only"
-            >
+            <label htmlFor="display-name" className="sr-only">
               Display Name
             </label>
             <input
@@ -51,10 +45,7 @@ const Signup = ({}) => {
             />
           </div>
           <div className="grid gap-1">
-            <label
-              htmlFor="username"
-              className="sr-only"
-            >
+            <label htmlFor="username" className="sr-only">
               Username
             </label>
             <input
@@ -67,10 +58,7 @@ const Signup = ({}) => {
             />
           </div>
           <div className="grid gap-1">
-            <label
-              htmlFor="password"
-              className="sr-only"
-            >
+            <label htmlFor="password" className="sr-only">
               Password
             </label>
             <input
@@ -83,10 +71,7 @@ const Signup = ({}) => {
             />
           </div>
           <div className="grid gap-1">
-            <label
-              htmlFor="repeat-password"
-              className="sr-only"
-            >
+            <label htmlFor="repeat-password" className="sr-only">
               Repeat Password
             </label>
             <input

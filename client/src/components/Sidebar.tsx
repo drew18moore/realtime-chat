@@ -81,7 +81,10 @@ const Sidebar = () => {
     >
       <div className="px-5 py-2 flex items-center justify-between">
         <h1 className="text-xl px-4 font-bold dark:text-white">Messages</h1>
-        <button onClick={() => navigate("/settings")} className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900">
+        <button
+          onClick={() => navigate("/settings")}
+          className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900"
+        >
           <RiSettings5Fill size={"1.5rem"} />
         </button>
       </div>
@@ -119,7 +122,9 @@ const Sidebar = () => {
               />
             </div>
             <div className="grid items-center">
-              <p className="text-base leading-4 dark:text-white">{currentUser?.display_name}</p>
+              <p className="text-base leading-4 dark:text-white">
+                {currentUser?.display_name}
+              </p>
               <p className="text-neutral-600 text-sm leading-4 dark:text-neutral-500">
                 @{currentUser?.username}
               </p>

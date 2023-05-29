@@ -71,7 +71,7 @@ class Resizer {
     ctx.fillRect(0, 0, width, height);
 
     if (ctx.imageSmoothingEnabled && ctx.imageSmoothingQuality) {
-      ctx.imageSmoothingQuality = 'high';
+      ctx.imageSmoothingQuality = "high";
     }
 
     if (rotation) {
@@ -117,13 +117,19 @@ class Resizer {
 
   static b64toBlob(b64Data, contentType) {
     const byteArrays = this.b64toByteArrays(b64Data, contentType);
-    var blob = new Blob(byteArrays, { type: contentType, lastModified: new Date() });
+    var blob = new Blob(byteArrays, {
+      type: contentType,
+      lastModified: new Date(),
+    });
     return blob;
   }
 
   static b64toFile(b64Data, fileName, contentType) {
     const byteArrays = this.b64toByteArrays(b64Data, contentType);
-    const file = new File(byteArrays, fileName, { type: contentType, lastModified: new Date() });
+    const file = new File(byteArrays, fileName, {
+      type: contentType,
+      lastModified: new Date(),
+    });
     return file;
   }
 
@@ -137,7 +143,7 @@ class Resizer {
     responseUriFunc,
     outputType = "base64",
     minWidth = null,
-    minHeight = null,
+    minHeight = null
   ) {
     const reader = new FileReader();
     if (file) {
@@ -164,17 +170,25 @@ class Resizer {
               case "blob":
                 const blob = Resizer.b64toBlob(resizedDataUrl, contentType);
                 responseUriFunc(blob);
-              break;
+                break;
               case "base64":
                 responseUriFunc(resizedDataUrl);
-              break;
+                break;
               case "file":
                 let fileName = file.name;
-                let fileNameWithoutFormat = fileName.toString().replace(/(png|jpeg|jpg|webp)$/i, "");
-                let newFileName = fileNameWithoutFormat.concat(compressFormat.toString());
-                const newFile = Resizer.b64toFile(resizedDataUrl, newFileName, contentType);
+                let fileNameWithoutFormat = fileName
+                  .toString()
+                  .replace(/(png|jpeg|jpg|webp)$/i, "");
+                let newFileName = fileNameWithoutFormat.concat(
+                  compressFormat.toString()
+                );
+                const newFile = Resizer.b64toFile(
+                  resizedDataUrl,
+                  newFileName,
+                  contentType
+                );
                 responseUriFunc(newFile);
-              break;
+                break;
               default:
                 responseUriFunc(resizedDataUrl);
             }
@@ -200,7 +214,7 @@ export default {
     responseUriFunc,
     outputType,
     minWidth,
-    minHeight,
+    minHeight
   ) => {
     return Resizer.createResizedImage(
       file,
@@ -212,7 +226,7 @@ export default {
       responseUriFunc,
       outputType,
       minWidth,
-      minHeight,
+      minHeight
     );
   },
 };

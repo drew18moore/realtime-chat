@@ -1,36 +1,38 @@
 /// <reference types="vite/client" />
 type User = {
-  id: number
-  display_name: string
-  username: string
-  accessToken: string
-  profile_picture?: string
-}
+  id: number;
+  display_name: string;
+  username: string;
+  accessToken: string;
+  profile_picture?: string;
+};
 
 type Message = {
-  id?: number
-  message: string
-  receiverId: number
-  authorId: number
-  created_at: Date
-}
+  id?: number;
+  message: string;
+  receiverId: number;
+  authorId: number;
+  created_at: Date;
+};
 
 type Conversation = {
-  id: number
-  title?: string | null
+  id: number;
+  title?: string | null;
   recipient: {
-    id: number
-    display_name: string
-    username: string
-    profile_picture?: string
-  }
-  lastMessageSent?: {
-    message: string,
-    created_at: Date
-  } | undefined
-}
+    id: number;
+    display_name: string;
+    username: string;
+    profile_picture?: string;
+  };
+  lastMessageSent?:
+    | {
+        message: string;
+        created_at: Date;
+      }
+    | undefined;
+};
 
 type SearchResults = {
-  users: User[],
-  numFound: number
-}
+  users: User[];
+  numFound: number;
+};

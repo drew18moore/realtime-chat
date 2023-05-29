@@ -1,14 +1,13 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { FiMoreHorizontal, FiTrash2 } from "react-icons/fi";
 import Dropdown, { DropdownItem } from "./Dropdown";
 
 interface MessageProps {
   message: Message;
   isCurrentUser: boolean;
-  messagesContainerRef: React.RefObject<HTMLDivElement>;
 }
 
-const Message: FC<MessageProps> = ({ message, isCurrentUser, messagesContainerRef }) => {
+const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   // Format datetime
   const date = new Date(message?.created_at);
@@ -43,7 +42,7 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser, messagesContainerRe
       >
         <div className="relative h-fit">
           {showDropdown && (
-            <Dropdown setShowDropdown={setShowDropdown} messagesContainerRef={messagesContainerRef}>
+            <Dropdown setShowDropdown={setShowDropdown}>
               <DropdownItem icon={<FiTrash2 />}>Delete</DropdownItem>
             </Dropdown>
           )}

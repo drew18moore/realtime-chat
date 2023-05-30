@@ -17,9 +17,10 @@ export const DropdownItem: FC<DropdownItemProps> = ({ icon, children }) => {
 interface DropdownProps {
   children: ReactNode;
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleBtnRef: React.RefObject<HTMLButtonElement>;
 }
 
-const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown }) => {
+const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown, toggleBtnRef }) => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [dropdownPositioning, setDropdownPositioning] = useState<string>("");
 
@@ -56,7 +57,9 @@ const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown }) => {
       if (
         !initialClickInside &&
         dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        !dropdownRef.current.contains(e.target as Node) &&
+        toggleBtnRef.current &&
+        !toggleBtnRef.current.contains(e.target as Node)
       )
         setShowDropdown(false);
       initialClickInside = false;

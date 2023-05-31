@@ -46,15 +46,16 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
             <MessageDropdown
               setShowDropdown={setShowDropdown}
               toggleBtnRef={toggleBtnRef}
+              isCurrentUser={isCurrentUser}
             />
           )}
-          <button
+          {isCurrentUser && <button
             onClick={() => setShowDropdown((prev) => !prev)}
             ref={toggleBtnRef}
             className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
           >
             <FiMoreHorizontal />
-          </button>
+          </button>}
         </div>
 
         <div

@@ -5,12 +5,13 @@ import { FiTrash2 } from "react-icons/fi";
 interface MessageDropdownProps {
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBtnRef: React.RefObject<HTMLButtonElement>;
+  isCurrentUser: boolean;
 }
 
-const MessageDropdown: FC<MessageDropdownProps> = ({ setShowDropdown, toggleBtnRef }) => {
+const MessageDropdown: FC<MessageDropdownProps> = ({ setShowDropdown, toggleBtnRef, isCurrentUser }) => {
   return (
     <Dropdown setShowDropdown={setShowDropdown} toggleBtnRef={toggleBtnRef}>
-      <DropdownItem icon={<FiTrash2 />}>Delete</DropdownItem>
+      {isCurrentUser && <DropdownItem icon={<FiTrash2 />}>Delete</DropdownItem>}
     </Dropdown>
   );
 };

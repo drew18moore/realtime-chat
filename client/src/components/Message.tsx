@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
-import { FiMoreHorizontal, FiTrash2 } from "react-icons/fi";
-import Dropdown, { DropdownItem } from "./Dropdown";
+import { FiMoreHorizontal } from "react-icons/fi";
+import MessageDropdown from "./MessageDropdown";
 
 interface MessageProps {
   message: Message;
@@ -43,9 +43,10 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
       >
         <div className="relative h-fit">
           {showDropdown && (
-            <Dropdown setShowDropdown={setShowDropdown} toggleBtnRef={toggleBtnRef}>
-              <DropdownItem icon={<FiTrash2 />}>Delete</DropdownItem>
-            </Dropdown>
+            <MessageDropdown
+              setShowDropdown={setShowDropdown}
+              toggleBtnRef={toggleBtnRef}
+            />
           )}
           <button
             onClick={() => setShowDropdown((prev) => !prev)}

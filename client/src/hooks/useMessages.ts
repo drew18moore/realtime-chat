@@ -133,11 +133,6 @@ export const useNewMessage = (
   );
 };
 
-interface deleteMessageType {
-  message: string;
-  messageId: number;
-}
-
 export const useDeleteMessage = ( conversationId: number) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();

@@ -91,22 +91,30 @@ export const getMessagesInConversation = async (
 };
 
 export const deleteMessage = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.id);
   try {
     const message = await db.message.findUnique({
-      where: { id }
+      where: { id },
     });
 
+    if (message?.authorId !== parseInt(req.userId)) {
+      return res
+        .status(403)
+        .json({ message: "You can only delete your own messages" });
+    }
+    
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
     }
 
     await db.message.delete({
-      where: { id }
+      where: { id },
     });
 
-    res.status(200).json({ message: "Message deleted successfully", messageId: id });
+    res
+      .status(200)
+      .json({ message: "Message deleted successfully", messageId: id });
   } catch (err) {
-    res.status(500).json({ message: err })
+    res.status(500).json({ message: err });
   }
-}
+};

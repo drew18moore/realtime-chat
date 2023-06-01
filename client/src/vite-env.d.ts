@@ -8,7 +8,7 @@ type User = {
 };
 
 type Message = {
-  id?: number;
+  id: number;
   message: string;
   receiverId: number;
   authorId: number;

@@ -16,7 +16,7 @@ const MessageDropdown: FC<MessageDropdownProps> = ({ setShowDropdown, toggleBtnR
   const { mutate: deleteMessage } = useDeleteMessage(parseInt(conversationId!));
   return (
     <Dropdown setShowDropdown={setShowDropdown} toggleBtnRef={toggleBtnRef}>
-      {isCurrentUser && <DropdownItem icon={<FiTrash2 />} onClick={() => deleteMessage(messageId)}>Delete</DropdownItem>}
+      {isCurrentUser && <DropdownItem icon={<FiTrash2 />} onClick={() => deleteMessage(messageId)} setShowDropdown={setShowDropdown}>Delete</DropdownItem>}
     </Dropdown>
   );
 };

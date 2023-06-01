@@ -47,7 +47,7 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
               setShowDropdown={setShowDropdown}
               toggleBtnRef={toggleBtnRef}
               isCurrentUser={isCurrentUser}
-              messageId={message.id!}
+              messageId={message.id}
             />
           )}
           {isCurrentUser && <button

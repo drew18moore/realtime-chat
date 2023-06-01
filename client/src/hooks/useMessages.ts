@@ -132,3 +132,34 @@ export const useNewMessage = (
     }
   );
 };
+
+interface deleteMessageType {
+  message: string;
+  messageId: number;
+}
+
+export const useDeleteMessage = ( conversationId: number) => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (messageId: number) => {
+      const res = await axiosPrivate.delete(`/api/messages/${messageId}`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData<InfiniteData<Message[]>>(
+          ["messages", conversationId],
+          (prevData) => {
+            if (prevData) {
+              const updatedPages = prevData!.pages.map((page) => page.filter((message) => message.id !== data.messageId))
+              return { ...prevData, pages: updatedPages }
+            }
+            return prevData
+          }
+        )
+      }
+    }
+  )
+}

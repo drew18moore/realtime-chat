@@ -2,12 +2,13 @@ import React, { useRef, useState, useLayoutEffect, ReactNode, FC } from "react";
 
 interface DropdownItemProps {
   icon: ReactNode;
+  onClick: any;
   children: ReactNode;
 }
 
-export const DropdownItem: FC<DropdownItemProps> = ({ icon, children }) => {
+export const DropdownItem: FC<DropdownItemProps> = ({ icon, onClick, children }) => {
   return (
-    <li className="flex gap-3 items-center px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer">
+    <li onClick={onClick} className="flex gap-3 items-center px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer">
       <span>{icon}</span>
       {children}
     </li>

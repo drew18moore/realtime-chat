@@ -119,6 +119,7 @@ export const useNewMessage = (
         );
         // Send to other user
         socket.emit("send-message", {
+          id: data.id,
           authorId: data.authorId,
           recipientId,
           conversationId,

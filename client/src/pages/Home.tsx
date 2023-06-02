@@ -12,7 +12,7 @@ const Home = () => {
   useEffect(() => {
     if (socket) {
       socket.on("receive-message", (receivedMessage) => {
-        const { conversationId, recipientId, authorId, message, timeSent } =
+        const { id, conversationId, recipientId, authorId, message, timeSent } =
           receivedMessage;
 
         // Update conversations cache
@@ -46,6 +46,7 @@ const Home = () => {
             (prevData) => {
               const pages = prevData?.pages.map((page) => [...page]) ?? [];
               pages[0].unshift({
+                id,
                 message,
                 receiverId: recipientId,
                 authorId,

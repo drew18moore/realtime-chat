@@ -25,6 +25,7 @@ const Home = () => {
             const updatedConversation: Conversation = {
               ...prevConversations![conversationIndex],
               lastMessageSent: {
+                id: id,
                 message,
                 created_at: timeSent,
               },

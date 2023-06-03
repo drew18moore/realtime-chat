@@ -108,6 +108,7 @@ export const useNewMessage = (
             const updatedConversation: Conversation = {
               ...prevConversations![conversationIndex],
               lastMessageSent: {
+                id: data.id,
                 message: data.message,
                 created_at: data.created_at,
               },
@@ -134,7 +135,7 @@ export const useNewMessage = (
   );
 };
 
-export const useDeleteMessage = ( conversationId: number) => {
+export const useDeleteMessage = (conversationId: number) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
 
@@ -145,17 +146,55 @@ export const useDeleteMessage = ( conversationId: number) => {
     },
     {
       onSuccess: (data) => {
+        // Remove message from query
         queryClient.setQueryData<InfiniteData<Message[]>>(
           ["messages", conversationId],
           (prevData) => {
             if (prevData) {
-              const updatedPages = prevData!.pages.map((page) => page.filter((message) => message.id !== data.messageId))
-              return { ...prevData, pages: updatedPages }
+              const updatedPages = prevData!.pages.map((page) =>
+                page.filter((message) => message.id !== data.messageId)
+              );
+              return { ...prevData, pages: updatedPages };
             }
-            return prevData
+            return prevData;
           }
-        )
-      }
+        );
+        // Update lastMessageSent in conversation query
+        queryClient.setQueryData<Conversation[]>(
+          ["conversations"],
+          (prevConversations) => {
+            const conversationIndex = prevConversations!.findIndex(
+              (conv) => conv.id === conversationId
+            );
+            if (
+              prevConversations![conversationIndex].lastMessageSent!.id ===
+              data.messageId
+            ) {
+              let newLastMessageSent = null;
+              const messagesData = queryClient.getQueryData<
+                InfiniteData<Message[]>
+              >(["messages", conversationId]);
+              if (messagesData && messagesData.pages.length > 0) {
+                const firstPage = messagesData.pages[0];
+                newLastMessageSent = firstPage[0];
+              }
+              const updatedConversation: Conversation = {
+                ...prevConversations![conversationIndex],
+                lastMessageSent: {
+                  id: newLastMessageSent!.id,
+                  message: newLastMessageSent!.message,
+                  created_at: newLastMessageSent!.created_at,
+                },
+              };
+              const updatedConversations = [...prevConversations!];
+              updatedConversations[conversationIndex] = updatedConversation;
+
+              return updatedConversations;
+            }
+            return prevConversations;
+          }
+        );
+      },
     }
-  )
-}
+  );
+};

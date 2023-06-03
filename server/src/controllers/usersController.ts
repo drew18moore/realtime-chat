@@ -61,6 +61,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
         },
         messages: {
           select: {
+            id: true,
             message: true,
             created_at: true,
           },

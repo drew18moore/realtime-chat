@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "../hooks/auth/useLogin";
 import { RotatingLines } from "react-loader-spinner";
+import Input from "../components/ui/Input";
 
 const Login = () => {
   const { mutate: login, isLoading, isError, error } = useLogin();
@@ -31,13 +32,13 @@ const Login = () => {
             <label htmlFor="username" className="sr-only">
               Username
             </label>
-            <input
+            <Input
               ref={usernameRef}
               type="text"
+              size="md"
               id="username"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-              required
               placeholder="Username"
+              required
             />
           </div>
           <div className="grid gap-1">

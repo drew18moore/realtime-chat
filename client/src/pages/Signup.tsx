@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useRef } from "react";
 import useSignup from "../hooks/auth/useSignup";
 import { RotatingLines } from "react-loader-spinner";
+import Input from "../components/ui/Input";
 
 const Signup = ({}) => {
   const { mutate: signup, isLoading, isError, error } = useSignup();
@@ -35,26 +36,26 @@ const Signup = ({}) => {
             <label htmlFor="display-name" className="sr-only">
               Display Name
             </label>
-            <input
+            <Input
               ref={displayNameRef}
               type="text"
+              size="md"
               id="display-name"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-              required
               placeholder="Display Name"
+              required
             />
           </div>
           <div className="grid gap-1">
             <label htmlFor="username" className="sr-only">
               Username
             </label>
-            <input
+            <Input
               ref={usernameRef}
               type="text"
+              size="md"
               id="username"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-              required
               placeholder="Username"
+              required
             />
           </div>
           <div className="grid gap-1">

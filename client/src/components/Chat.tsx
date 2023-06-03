@@ -4,6 +4,7 @@ import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
 import { BiSend, BiArrowBack } from "react-icons/bi";
+import Input from "./ui/Input";
 
 interface ConversationState {
   recipient: {
@@ -105,11 +106,11 @@ const Chat = () => {
           onSubmit={sendMessage}
           className="absolute bottom-0 w-full h-20 px-5 flex items-center gap-2"
         >
-          <input
+          <Input
             type="text"
-            className="w-full rounded-full px-4 py-3 bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-            value={message}
+            size="lg"
             placeholder="Type a message..."
+            value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
           <button

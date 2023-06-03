@@ -5,6 +5,7 @@ import Resizer from "react-image-file-resizer";
 const resizer: typeof Resizer = Resizer.default || Resizer;
 import { useAuth } from "../contexts/AuthContext";
 import { FaCamera } from "react-icons/fa";
+import Input from "./ui/Input";
 
 const EditAccount = () => {
   const {
@@ -93,24 +94,24 @@ const EditAccount = () => {
             <label htmlFor="display-name" className="sr-only">
               Display Name
             </label>
-            <input
+            <Input
               ref={displayNameRef}
               type="text"
-              id="display-name"
-              className="w-full px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+              size="md"
               placeholder="Display Name"
+              id="display-name"
             />
           </div>
           <div className="flex-grow">
             <label htmlFor="username" className="sr-only">
               Username
             </label>
-            <input
+            <Input
               ref={usernameRef}
               type="text"
-              id="username"
-              className="w-full px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
+              size="md"
               placeholder="Username"
+              id="username"
             />
           </div>
         </div>

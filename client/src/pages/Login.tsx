@@ -45,13 +45,13 @@ const Login = () => {
             <label htmlFor="password" className="sr-only">
               Password
             </label>
-            <input
+            <Input
               ref={passwordRef}
               type="password"
+              size="md"
               id="password"
-              className="px-4 py-2 rounded-full bg-neutral-200 placeholder:text-neutral-600 dark:bg-neutral-800 dark:placeholder:text-neutral-500 dark:text-white"
-              required
               placeholder="Password"
+              required
             />
           </div>
           <button className="bg-blue-600 p-2 rounded-full text-white flex justify-center">

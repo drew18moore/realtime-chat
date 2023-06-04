@@ -75,11 +75,10 @@ const EditAccount = () => {
               className="object-cover w-full h-full"
             />
           </div>
-          <input
+          <Input
             type="file"
             accept="image/*"
             onChange={handleImgChange}
-            className="hidden"
             id="file"
           />
           <label

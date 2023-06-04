@@ -3,16 +3,17 @@ import { FC } from "react";
 
 interface InputProps {
   type: "text" | "password" | "search" | "file" | "radio";
-  size: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg";
   placeholder?: string;
   value?: string | number | readonly string[];
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   id?: string;
   required?: boolean;
+  accept?: string;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ type, size, placeholder, value, onChange, id, required = false }, ref) => {
+  ({ type, size = "md", placeholder, value, onChange, id, required = false, accept }, ref) => {
     let sizeStyles: string;
     switch (size) {
       case "sm":
@@ -63,7 +64,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         content = <input type="text" />;
         break;
       case "file":
-        content = <input type="file" />;
+        content = (
+          <input
+            type="file"
+            accept={accept}
+            onChange={onChange}
+            className="hidden"
+            id={id}
+          />
+        );
         break;
       case "radio":
         content = <input type="radio" />;

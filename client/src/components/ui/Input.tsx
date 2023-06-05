@@ -11,6 +11,7 @@ interface InputProps {
   required?: boolean;
   accept?: string;
   className?: string;
+  checked?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -25,6 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       required = false,
       accept,
       className,
+      checked,
     },
     ref
   ) => {
@@ -86,7 +88,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         );
         break;
       case "radio":
-        content = <input type="radio" />;
+        content = (
+          <input
+            type="radio"
+            className={`${className} accent-blue-600 w-5 h-5 cursor-pointer`}
+            onChange={onChange}
+            id={id}
+            value={value}
+            checked={checked}
+          />
+        );
         break;
       default:
         break;

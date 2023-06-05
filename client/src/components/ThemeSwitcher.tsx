@@ -1,4 +1,5 @@
 import { useTheme } from "../contexts/ThemeContext";
+import Input from "./ui/Input";
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
@@ -16,9 +17,8 @@ const ThemeSwitcher = () => {
             <img src="theme-lightmode.svg" alt="" className="w-full" />
           </div>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="radio"
-              className="accent-blue-600 w-5 h-5 cursor-pointer"
               onChange={(e) => setTheme(e.target.value)}
               id="lightmode"
               value="light"
@@ -39,9 +39,8 @@ const ThemeSwitcher = () => {
             <img src="theme-darkmode.svg" alt="" className="w-full" />
           </div>
           <div className="flex items-center gap-2">
-            <input
+            <Input
               type="radio"
-              className="accent-blue-600 w-5 h-5 cursor-pointer"
               onChange={(e) => setTheme(e.target.value)}
               id="darkmode"
               value="dark"

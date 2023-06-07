@@ -71,7 +71,7 @@ const Chat = () => {
       <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
         <div
           ref={messagesContainerRef}
-          className="grid gap-2 p-2 overflow-y-auto relative"
+          className="grid gap-2 p-2 pb-8 overflow-y-auto relative"
         >
           {messages?.pages[messages.pages.length - 1].length! >= LIMIT && (
             <button

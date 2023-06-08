@@ -31,7 +31,6 @@ export const useNewConversation = (joinerId: number) => {
   return useMutation<Conversation>(
     async () => {
       const res = await axiosPrivate.post("/api/conversations/new", {
-        creatorId: currentUser?.id,
         joinerId,
       });
       return res.data;

@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const newMessage = async (req: Request, res: Response) => {
-  const { receiverId, authorId, message, conversationId } = req.body;
+  const { receiverId, message, conversationId } = req.body;
+  const authorId = req.userId;
   const parsedReceiverId = parseInt(receiverId);
   const parsedAuthorId = parseInt(authorId);
   const parsedConversationId = parseInt(conversationId);

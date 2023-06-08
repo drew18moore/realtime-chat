@@ -81,7 +81,6 @@ export const useNewMessage = (
   return useMutation<Message>(
     async () => {
       const res = await axiosPrivate.post("/api/messages/new", {
-        authorId: currentUser?.id,
         receiverId: recipientId,
         message: message,
         conversationId: conversationId,

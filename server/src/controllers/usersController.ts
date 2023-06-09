@@ -35,7 +35,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
   try {
     const conversations = await db.conversation.findMany({
       where: {
-        OR: [{ creatorId: parseInt(userId) }, { joinerId: parseInt(userId) }],
+        participants: {
+          some: { userId: userIdParsed }
+        },
         messages: {
           some: {},
         },
@@ -43,22 +45,6 @@ export const getAllConversations = async (req: Request, res: Response) => {
       select: {
         id: true,
         title: true,
-        creator: {
-          select: {
-            id: true,
-            display_name: true,
-            username: true,
-            profile_picture: true,
-          },
-        },
-        joiner: {
-          select: {
-            id: true,
-            display_name: true,
-            username: true,
-            profile_picture: true,
-          },
-        },
         messages: {
           select: {
             id: true,
@@ -70,22 +56,37 @@ export const getAllConversations = async (req: Request, res: Response) => {
           },
           take: 1,
         },
+        participants: {
+          select: {
+            isRead: true,
+            user: {
+              select: {
+                id: true,
+                display_name: true,
+                username: true,
+                profile_picture: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         dateLastMessage: "desc",
       },
     });
-    const response = conversations.map((conversation) => ({
-      ...conversation,
-      recipient:
-        conversation.creator.id === userIdParsed
-          ? conversation.joiner
-          : conversation.creator,
-      creator: undefined,
-      joiner: undefined,
-      lastMessageSent: conversation.messages[0],
-      messages: undefined,
-    }));
+    const response = conversations.map((conversation) => {
+      const recipient =
+        conversation.participants[0].user.id === userIdParsed
+          ? conversation.participants[1].user
+          : conversation.participants[0].user;
+      return {
+        ...conversation,
+        recipient: recipient,
+        lastMessageSent: conversation.messages[0],
+        messages: undefined,
+        participants: undefined,
+      };
+    });
     res.status(200).json(response);
   } catch (err) {
     console.error(err);

@@ -12,18 +12,17 @@ datasource db {
 }
 
 model User {
-  id                   Int            @id @default(autoincrement())
+  id                   Int                @id @default(autoincrement())
   display_name         String
-  username             String         @unique
+  username             String             @unique
   password             String
-  created_at           DateTime       @default(now())
-  updated_at           DateTime       @updatedAt
-  createdMessages      Message[]      @relation("sentMessages")
-  receivedMessages     Message[]      @relation("receivedMessages")
-  conversationsCreated Conversation[] @relation("Creator")
-  conversationsJoined  Conversation[] @relation("Joiner")
-  refresh_token        String         @default("")
-  profile_picture      String         @default("")
+  created_at           DateTime           @default(now())
+  updated_at           DateTime           @updatedAt
+  createdMessages      Message[]          @relation("sentMessages")
+  receivedMessages     Message[]          @relation("receivedMessages")
+  conversations        ConversationUser[]
+  refresh_token        String             @default("")
+  profile_picture      String             @default("")
 }
 
 model Message {
@@ -39,13 +38,19 @@ model Message {
 }
 
 model Conversation {
-  id              Int       @id @default(autoincrement())
+  id              Int                @id @default(autoincrement())
   title           String?
-  creator         User      @relation("Creator", fields: [creatorId], references: [id])
-  creatorId       Int
-  joiner          User      @relation("Joiner", fields: [joinerId], references: [id])
-  joinerId        Int
   messages        Message[]
-  created_at      DateTime  @default(now())
+  created_at      DateTime           @default(now())
   dateLastMessage DateTime?
+  participants    ConversationUser[]
+}
+
+model ConversationUser {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  conversationId Int
+  isRead         Boolean      @default(false)
 }

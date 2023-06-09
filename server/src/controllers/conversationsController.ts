@@ -7,79 +7,109 @@ export const newConversation = async (req: Request, res: Response) => {
   const joinerIdParsed = parseInt(joinerId);
   const creatorIdParsed = parseInt(creatorId);
   try {
-    // Check if a conversation exists
-    const existingConversation = await db.conversation.findMany({
-      where: {
-        OR: [
+    let query;
+    if (creatorIdParsed === joinerIdParsed) {
+      query = {
+        participants: {
+          every: {
+            AND: [
+              {
+                userId: creatorIdParsed,
+              },
+              {
+                userId: joinerIdParsed,
+              },
+            ],
+          },
+        },
+      };
+    } else {
+      query = {
+        AND: [
           {
-            AND: [{ creatorId: creatorIdParsed }, { joinerId: joinerIdParsed }],
+            participants: {
+              some: {
+                userId: creatorIdParsed,
+              },
+            },
           },
           {
-            AND: [{ creatorId: joinerIdParsed }, { joinerId: creatorIdParsed }],
+            participants: {
+              some: {
+                userId: joinerIdParsed,
+              },
+            },
           },
         ],
-      },
+      };
+    }
+    // Check if a conversation exists
+    const existingConversation = await db.conversation.findMany({
+      where: query,
       select: {
         id: true,
         title: true,
-        creator: {
+        participants: {
           select: {
-            id: true,
-            display_name: true,
-            profile_picture: true,
-          },
-        },
-        joiner: {
-          select: {
-            id: true,
-            display_name: true,
-            profile_picture: true,
+            user: {
+              select: {
+                id: true,
+                display_name: true,
+                profile_picture: true,
+              },
+            },
           },
         },
       },
     });
     if (existingConversation.length > 0) {
+      const recipient =
+        existingConversation[0].participants[0].user.id === creatorIdParsed
+          ? existingConversation[0].participants[1].user
+          : existingConversation[0].participants[0].user;
       const response = {
         ...existingConversation[0],
-        recipient:
-          existingConversation[0].creator.id === parseInt(req.userId)
-            ? existingConversation[0].joiner
-            : existingConversation[0].creator,
-        creator: undefined,
-        joiner: undefined,
+        recipient: recipient,
         messages: undefined,
+        participants: undefined,
       };
       return res.status(200).json(response);
     }
     const conversation = await db.conversation.create({
       data: {
-        creator: { connect: { id: creatorIdParsed } },
-        joiner: { connect: { id: joinerIdParsed } },
+        participants: {
+          create: [
+            { user: { connect: { id: creatorIdParsed } } },
+            { user: { connect: { id: joinerIdParsed } } },
+          ],
+        },
       },
       select: {
         id: true,
         title: true,
-        creator: {
+        participants: {
           select: {
-            id: true,
-            username: true,
-          },
-        },
-        joiner: {
-          select: {
-            id: true,
-            display_name: true,
-            profile_picture: true,
+            user: {
+              select: {
+                id: true,
+                display_name: true,
+                username: true,
+                profile_picture: true,
+              },
+            },
           },
         },
       },
     });
+    const recipient =
+      conversation.participants[0].user.id === creatorIdParsed
+        ? conversation.participants[1].user
+        : conversation.participants[0].user;
     const response = {
       ...conversation,
-      recipient: conversation.joiner,
-      creator: undefined,
-      joiner: undefined,
+      recipient: recipient,
       messages: undefined,
+      participants: undefined,
     };
     res.status(201).json(response);
   } catch (err) {

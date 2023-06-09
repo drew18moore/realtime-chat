@@ -57,11 +57,11 @@ export const getMessagesInConversation = async (
   try {
     const conversation = await db.conversation.findUnique({
       where: { id: parsedConversationId },
-      include: { creator: true, joiner: true },
+      include: { participants: true }
     });
     if (
-      conversation?.creatorId !== parsedCurrentUserId &&
-      conversation?.joinerId !== parsedCurrentUserId
+      conversation?.participants[0].userId !== parsedCurrentUserId &&
+      conversation?.participants[1].userId !== parsedCurrentUserId
     ) {
       return res.status(401).json({ message: "Unauthorized" });
     }

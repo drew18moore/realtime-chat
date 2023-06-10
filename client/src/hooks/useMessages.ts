@@ -177,13 +177,20 @@ export const useDeleteMessage = (conversationId: number) => {
                 const firstPage = messagesData.pages[0];
                 newLastMessageSent = firstPage[0];
               }
-              const updatedConversation: Conversation = {
-                ...prevConversations![conversationIndex],
-                lastMessageSent: {
+
+              let lastMessageSent;
+              if (newLastMessageSent === undefined) {
+                lastMessageSent = undefined;
+              } else {
+                lastMessageSent = {
                   id: newLastMessageSent!.id,
                   message: newLastMessageSent!.message,
                   created_at: newLastMessageSent!.created_at,
-                },
+                }
+              }
+              const updatedConversation: Conversation = {
+                ...prevConversations![conversationIndex],
+                lastMessageSent: lastMessageSent,
               };
               const updatedConversations = [...prevConversations!];
               updatedConversations[conversationIndex] = updatedConversation;

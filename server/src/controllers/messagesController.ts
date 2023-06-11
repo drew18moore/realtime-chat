@@ -31,6 +31,15 @@ export const newMessage = async (req: Request, res: Response) => {
         data: { dateLastMessage: new Date() },
       });
     }
+    
+    await db.conversationUser.updateMany({
+      where: {
+        conversationId: parsedConversationId,
+        userId: parsedReceiverId,
+      },
+      data: { isRead: false }
+    })
+
     const response = {
       id: newMessage.id,
       message: newMessage.message,

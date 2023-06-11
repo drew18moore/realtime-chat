@@ -75,16 +75,22 @@ export const getAllConversations = async (req: Request, res: Response) => {
       },
     });
     const response = conversations.map((conversation) => {
-      const recipient =
-        conversation.participants[0].user.id === userIdParsed
-          ? conversation.participants[1].user
-          : conversation.participants[0].user;
+      let recipient;
+      let isRead: boolean;
+      if (conversation.participants[0].user.id === userIdParsed) {
+        recipient = conversation.participants[1].user;
+        isRead = conversation.participants[0].isRead;
+      } else {
+        recipient = conversation.participants[0].user;
+        isRead = conversation.participants[1].isRead;
+      }
       return {
         ...conversation,
         recipient: recipient,
         lastMessageSent: conversation.messages[0],
         messages: undefined,
         participants: undefined,
+        isRead: isRead,
       };
     });
     res.status(200).json(response);

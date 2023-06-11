@@ -31,6 +31,7 @@ type Conversation = {
         created_at: Date;
       }
     | undefined;
+  isRead: boolean;
 };
 
 type SearchResults = {

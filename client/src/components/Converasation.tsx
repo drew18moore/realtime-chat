@@ -66,8 +66,9 @@ const Converasation: FC<ConverasationProps> = ({
           </p>
         </div>
       </div>
-      <div className="flex self-start text-sm text-neutral-600 flex-shrink-0 dark:text-neutral-500">
-        {dateFormatted}
+      <div className="flex flex-col-reverse items-end self-end gap-1 text-sm text-neutral-600 flex-shrink-0 dark:text-neutral-500">
+        <span>{dateFormatted}</span>
+        <span className="w-3 aspect-square bg-blue-600 rounded-full"></span>
       </div>
     </div>
   );

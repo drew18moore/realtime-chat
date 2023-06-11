@@ -13,6 +13,7 @@ interface ConverasationProps {
     display_name: string;
   };
   isOnline: boolean;
+  isRead: boolean;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -24,6 +25,7 @@ const Converasation: FC<ConverasationProps> = ({
   conversationId,
   recipient,
   isOnline,
+  isRead,
 }) => {
   const navigate = useNavigate();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
@@ -68,7 +70,7 @@ const Converasation: FC<ConverasationProps> = ({
       </div>
       <div className="flex flex-col-reverse items-end self-end gap-1 text-sm text-neutral-600 flex-shrink-0 dark:text-neutral-500">
         <span>{dateFormatted}</span>
-        <span className="w-3 aspect-square bg-blue-600 rounded-full"></span>
+        {!isRead && <span className="w-3 aspect-square bg-blue-600 rounded-full"></span>}
       </div>
     </div>
   );

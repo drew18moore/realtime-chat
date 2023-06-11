@@ -68,6 +68,7 @@ const Sidebar = () => {
           recipient={conversation.recipient}
           key={conversation.id}
           isOnline={onlineUserIds.includes(conversation.recipient.id)}
+          isRead={conversation.isRead}
         />
       );
     });

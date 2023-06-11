@@ -65,6 +65,13 @@ export const getMessagesInConversation = async (
     ) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    await db.conversationUser.updateMany({
+      where: {
+        conversationId: parsedConversationId,
+        userId: parsedCurrentUserId,
+      },
+      data: { isRead: true }
+    })
 
     let messages;
     if (page) {

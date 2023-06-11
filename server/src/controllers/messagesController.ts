@@ -49,7 +49,8 @@ export const getMessagesInConversation = async (
   req: Request,
   res: Response
 ) => {
-  const { currentUserId, conversationId, page, limit = 10 } = req.query;
+  const { conversationId, page, limit = 10 } = req.query;
+  const currentUserId = req.userId;
   const parsedCurrentUserId = parseInt(currentUserId as string);
   const parsedConversationId = parseInt(conversationId as string);
   const parsedPage = parseInt(page as string);

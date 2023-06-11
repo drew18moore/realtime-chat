@@ -12,14 +12,13 @@ import { useSocket } from "../contexts/SocketContext";
 
 export const useGetMessages = (conversationId: number) => {
   const axiosPrivate = useAxiosPrivate();
-  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   return useQuery<Message[]>(
     ["messages", conversationId],
     async () => {
       const res = await axiosPrivate.get("/api/messages", {
-        params: { currentUserId: currentUser?.id, conversationId },
+        params: { conversationId },
       });
       return res.data;
     },
@@ -37,7 +36,6 @@ export const useGetMessages = (conversationId: number) => {
 
 export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
   const axiosPrivate = useAxiosPrivate();
-  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   return useInfiniteQuery<Message[]>(
@@ -45,7 +43,6 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
     async ({ pageParam = 1 }) => {
       const res = await axiosPrivate.get("/api/messages", {
         params: {
-          currentUserId: currentUser?.id,
           conversationId,
           page: pageParam,
           limit: limit,

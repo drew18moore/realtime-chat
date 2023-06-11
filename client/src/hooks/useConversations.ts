@@ -24,7 +24,6 @@ export const useGetConversations = () => {
 
 export const useNewConversation = (joinerId: number) => {
   const axiosPrivate = useAxiosPrivate();
-  const { currentUser } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 

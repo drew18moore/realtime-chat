@@ -1,12 +1,15 @@
-import React, {
+import {
   ReactNode,
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
+import { useLocation } from "react-router-dom";
+import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
 type SocketContextType = {
   socket: Socket;
@@ -25,6 +28,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { currentUser } = useAuth();
   const [socket, setSocket] = useState<Socket>();
   const [onlineUserIds, setOnlineUserIds] = useState<number[]>([]);
+  const location = useLocation();
+  const queryClient = useQueryClient();
+  const pathnameRef = useRef<string>(location.pathname);
+  useEffect(() => {
+    console.log(location.pathname);
+    pathnameRef.current = location.pathname;
+  }, [location]);
 
   useEffect(() => {
     socket?.on("online-users", (userIds) => {
@@ -39,6 +49,55 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       setOnlineUserIds((prevUserIds) =>
         prevUserIds.filter((id) => id !== userId)
       );
+    });
+
+    socket?.on("receive-message", (receivedMessage) => {
+      const { id, conversationId, recipientId, authorId, message, timeSent } =
+        receivedMessage;
+
+      // Update conversations cache
+      queryClient.setQueryData<Conversation[]>(
+        ["conversations"],
+        (prevConversations) => {
+          const conversationIndex = prevConversations!.findIndex(
+            (conv) => conv.id === conversationId
+          );
+          const updatedConversation: Conversation = {
+            ...prevConversations![conversationIndex],
+            lastMessageSent: {
+              id: id,
+              message,
+              created_at: timeSent,
+            },
+            isRead: pathnameRef.current === `/${conversationId}` ? true : false,
+          };
+          const updatedConversations = [...prevConversations!];
+          updatedConversations[conversationIndex] = updatedConversation;
+          return updatedConversations;
+        }
+      );
+
+      // Update messages cache
+      const existingMessages = queryClient.getQueryData<Message[]>([
+        "messages",
+        conversationId,
+      ]);
+      if (existingMessages) {
+        queryClient.setQueryData<InfiniteData<Message[]>>(
+          ["messages", conversationId],
+          (prevData) => {
+            const pages = prevData?.pages.map((page) => [...page]) ?? [];
+            pages[0].unshift({
+              id,
+              message,
+              receiverId: recipientId,
+              authorId,
+              created_at: timeSent,
+            });
+            return { ...prevData!, pages };
+          }
+        );
+      }
     });
 
     return () => {

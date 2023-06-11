@@ -16,14 +16,14 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <SocketProvider>
-        <ThemeProvider>
-          <HashRouter>
+      <HashRouter>
+        <SocketProvider>
+          <ThemeProvider>
             <App />
             <Toaster />
-          </HashRouter>
-        </ThemeProvider>
-      </SocketProvider>
+          </ThemeProvider>
+        </SocketProvider>
+      </HashRouter>
     </AuthProvider>
     <ReactQueryDevtools />
   </QueryClientProvider>

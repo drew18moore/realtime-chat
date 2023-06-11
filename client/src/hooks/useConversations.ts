@@ -18,6 +18,7 @@ export const useGetConversations = () => {
       onError: (err) => {
         console.error(err);
       },
+      refetchOnWindowFocus: false,
     }
   );
 };

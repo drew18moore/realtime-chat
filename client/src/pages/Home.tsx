@@ -1,7 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import { Outlet, useLocation } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 
 const Home = () => {
@@ -9,6 +9,11 @@ const Home = () => {
   const isRootRoute = location.pathname === "/";
   const { socket } = useSocket();
   const queryClient = useQueryClient();
+  const pathnameRef = useRef<string>(location.pathname);
+  useEffect(() => {
+    console.log(location.pathname);
+    pathnameRef.current = location.pathname;
+  }, [location])
   useEffect(() => {
     if (socket) {
       socket.on("receive-message", (receivedMessage) => {
@@ -29,6 +34,7 @@ const Home = () => {
                 message,
                 created_at: timeSent,
               },
+              isRead: pathnameRef.current === `/${conversationId}` ? true : false,
             };
             const updatedConversations = [...prevConversations!];
             updatedConversations[conversationIndex] = updatedConversation;

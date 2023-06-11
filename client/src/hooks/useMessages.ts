@@ -37,7 +37,7 @@ export const useGetMessages = (conversationId: number) => {
 export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   return useInfiniteQuery<Message[]>(
     ["messages", conversationId],
     async ({ pageParam = 1 }) => {
@@ -51,6 +51,21 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
       return res.data;
     },
     {
+      onSuccess: () => {
+        // Set conversation isRead to true
+        queryClient.setQueryData<Conversation[]>(["conversations"], (prevConversations) => {
+          const conversationIndex = prevConversations!.findIndex(
+            (conv) => conv.id === conversationId
+          );
+          const updatedConversation: Conversation = {
+            ...prevConversations![conversationIndex],
+            isRead: true,
+          };
+          const updatedConversations = [...prevConversations!];
+          updatedConversations[conversationIndex] = updatedConversation;
+          return updatedConversations;
+        })
+      },
       onError: (err: any) => {
         if (err.response?.status === 401) navigate("/");
       },

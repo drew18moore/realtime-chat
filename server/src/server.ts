@@ -15,7 +15,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://127.0.0.1:5173", "https://realtime-chat-phi.vercel.app", "http://127.0.0.1:4173"],
+    origin: [
+      "http://127.0.0.1:5173",
+      "https://realtime-chat-phi.vercel.app",
+      "http://127.0.0.1:4173",
+    ],
   },
 });
 
@@ -74,5 +78,5 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     activeUsers.delete(parseInt(id));
     socket.broadcast.emit("user-disconnected", parseInt(id));
-  })
+  });
 });

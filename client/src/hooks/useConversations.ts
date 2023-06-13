@@ -55,3 +55,16 @@ export const useNewConversation = (joinerId: number) => {
     }
   );
 };
+
+export const useReadConversation = () => {
+  const axiosPrivate = useAxiosPrivate();
+
+  return useMutation(async (conversationId: number) => {
+    const res = await axiosPrivate.put(`/api/conversations/${conversationId}/read`);
+    return res.data;
+  }, {
+    onSuccess: (data) => {
+      console.log("SUCCESS", data);
+    }
+  });
+};

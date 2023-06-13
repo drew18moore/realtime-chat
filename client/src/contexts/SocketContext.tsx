@@ -10,6 +10,7 @@ import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { useLocation } from "react-router-dom";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
+import { useReadConversation } from "../hooks/useConversations";
 
 type SocketContextType = {
   socket: Socket;
@@ -31,6 +32,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const pathnameRef = useRef<string>(location.pathname);
+  const { mutate: readConversation } = useReadConversation();
   useEffect(() => {
     console.log(location.pathname);
     pathnameRef.current = location.pathname;
@@ -54,6 +56,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     socket?.on("receive-message", (receivedMessage) => {
       const { id, conversationId, recipientId, authorId, message, timeSent } =
         receivedMessage;
+      const isViewingConversation = pathnameRef.current === `/${conversationId}`
 
       // Update conversations cache
       queryClient.setQueryData<Conversation[]>(
@@ -69,8 +72,9 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
               message,
               created_at: timeSent,
             },
-            isRead: pathnameRef.current === `/${conversationId}` ? true : false,
+            isRead: isViewingConversation,
           };
+          isViewingConversation && readConversation(conversationId)
           const updatedConversations = [...prevConversations!];
           updatedConversations[conversationIndex] = updatedConversation;
           return updatedConversations;

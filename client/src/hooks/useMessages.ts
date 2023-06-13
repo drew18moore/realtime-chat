@@ -7,8 +7,9 @@ import {
 } from "@tanstack/react-query";
 import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";
+import { useEffect, useRef } from "react";
 
 export const useGetMessages = (conversationId: number) => {
   const axiosPrivate = useAxiosPrivate();
@@ -86,9 +87,14 @@ export const useNewMessage = (
   message: string
 ) => {
   const axiosPrivate = useAxiosPrivate();
-  const { currentUser } = useAuth();
   const queryClient = useQueryClient();
   const { socket } = useSocket();
+  const location = useLocation();
+  const pathnameRef = useRef<string>(location.pathname);
+  useEffect(() => {
+    console.log(location.pathname);
+    pathnameRef.current = location.pathname;
+  }, [location]);
 
   return useMutation<Message>(
     async () => {

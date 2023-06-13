@@ -117,3 +117,24 @@ export const newConversation = async (req: Request, res: Response) => {
     res.status(500).json({ message: err });
   }
 };
+
+export const readConversation = async (req: Request, res: Response) => {
+  const { conversationId } = req.params;
+  const parsedConversationId = parseInt(conversationId);
+  const userId = req.userId;
+  const parsedUserId = parseInt(userId);
+  try {
+    await db.conversationUser.updateMany({
+      where: {
+        conversationId: parsedConversationId,
+        userId: parsedUserId,
+      },
+      data: {
+        isRead: true,
+      },
+    });
+    res.status(200).json({ message: "Conversation has been read successfully" })
+  } catch (err) {
+    console.error(err);
+  }
+};

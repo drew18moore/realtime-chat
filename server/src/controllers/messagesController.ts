@@ -163,7 +163,8 @@ export const editMessage = async (req: Request, res: Response) => {
         id,
       },
       data: {
-        message: newMessageBody
+        message: newMessageBody,
+        isEdited: true,
       }
     })
 

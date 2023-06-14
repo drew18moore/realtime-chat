@@ -8,7 +8,7 @@ export const newMessage = async (req: Request, res: Response) => {
   const parsedAuthorId = parseInt(authorId);
   const parsedConversationId = parseInt(conversationId);
 
-  if (message.trim() === "" || !message)
+  if (!message || message.trim() === "")
     return res.status(400).json({ message: "Message cannot be empty" });
 
   try {
@@ -31,14 +31,14 @@ export const newMessage = async (req: Request, res: Response) => {
         data: { dateLastMessage: new Date() },
       });
     }
-    
+
     await db.conversationUser.updateMany({
       where: {
         conversationId: parsedConversationId,
         userId: parsedReceiverId,
       },
-      data: { isRead: false }
-    })
+      data: { isRead: false },
+    });
 
     const response = {
       id: newMessage.id,
@@ -67,7 +67,7 @@ export const getMessagesInConversation = async (
   try {
     const conversation = await db.conversation.findUnique({
       where: { id: parsedConversationId },
-      include: { participants: true }
+      include: { participants: true },
     });
     if (
       conversation?.participants[0].userId !== parsedCurrentUserId &&
@@ -80,8 +80,8 @@ export const getMessagesInConversation = async (
         conversationId: parsedConversationId,
         userId: parsedCurrentUserId,
       },
-      data: { isRead: true }
-    })
+      data: { isRead: true },
+    });
 
     let messages;
     if (page) {
@@ -120,7 +120,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
         .status(403)
         .json({ message: "You can only delete your own messages" });
     }
-    
+
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
     }
@@ -134,5 +134,41 @@ export const deleteMessage = async (req: Request, res: Response) => {
       .json({ message: "Message deleted successfully", messageId: id });
   } catch (err) {
     res.status(500).json({ message: err });
+  }
+};
+
+export const editMessage = async (req: Request, res: Response) => {
+  const { message: newMessageBody } = req.body;
+  const id = parseInt(req.params.id);
+  try {
+    const message = await db.message.findUnique({
+      where: { id },
+    });
+    
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+
+    if (message?.authorId !== parseInt(req.userId)) {
+      return res
+        .status(403)
+        .json({ message: "You can only edit your own messages" });
+    }
+
+    if (!newMessageBody || newMessageBody.trim() === "")
+      return res.status(400).json({ message: "Message cannot be empty" });
+
+    const updatedMessage = await db.message.update({
+      where: {
+        id,
+      },
+      data: {
+        message: newMessageBody
+      }
+    })
+
+    res.status(200).json({ updatedMessage });
+  } catch (err) {
+    res.status(500).json(err);
   }
 };

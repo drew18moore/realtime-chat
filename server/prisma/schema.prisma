@@ -12,17 +12,17 @@ datasource db {
 }
 
 model User {
-  id                   Int                @id @default(autoincrement())
-  display_name         String
-  username             String             @unique
-  password             String
-  created_at           DateTime           @default(now())
-  updated_at           DateTime           @updatedAt
-  createdMessages      Message[]          @relation("sentMessages")
-  receivedMessages     Message[]          @relation("receivedMessages")
-  conversations        ConversationUser[]
-  refresh_token        String             @default("")
-  profile_picture      String             @default("")
+  id               Int                @id @default(autoincrement())
+  display_name     String
+  username         String             @unique
+  password         String
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  createdMessages  Message[]          @relation("sentMessages")
+  receivedMessages Message[]          @relation("receivedMessages")
+  conversations    ConversationUser[]
+  refresh_token    String             @default("")
+  profile_picture  String             @default("")
 }
 
 model Message {
@@ -35,6 +35,7 @@ model Message {
   created_at     DateTime      @default(now())
   conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId Int?
+  isEdited       Boolean       @default(false)
 }
 
 model Conversation {

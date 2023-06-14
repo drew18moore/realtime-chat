@@ -13,6 +13,7 @@ type Message = {
   receiverId: number;
   authorId: number;
   created_at: Date;
+  isEdited: boolean;
 };
 
 type Conversation = {

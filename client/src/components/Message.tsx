@@ -50,13 +50,15 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
               messageId={message.id}
             />
           )}
-          {isCurrentUser && <button
-            onClick={() => setShowDropdown((prev) => !prev)}
-            ref={toggleBtnRef}
-            className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
-          >
-            <FiMoreHorizontal />
-          </button>}
+          {isCurrentUser && (
+            <button
+              onClick={() => setShowDropdown((prev) => !prev)}
+              ref={toggleBtnRef}
+              className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
+            >
+              <FiMoreHorizontal />
+            </button>
+          )}
         </div>
 
         <div
@@ -69,14 +71,21 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
           {message.message}
         </div>
       </div>
-
-      <p
+      <div
         className={`${
           isCurrentUser ? "justify-self-end" : "justify-self-start"
-        } text-neutral-600 dark:text-neutral-500`}
+        } text-neutral-600 dark:text-neutral-500 flex gap-1`}
       >
-        {dateFormated}
-      </p>
+        {message.isEdited && (
+          <>
+            <p>Edited</p>
+            <span>&#8226;</span>
+          </>
+        )}
+        <p className={`text-neutral-600 dark:text-neutral-500`}>
+          {dateFormated}
+        </p>
+      </div>
     </div>
   );
 };

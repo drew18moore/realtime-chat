@@ -1,19 +1,33 @@
 import React, { useRef, useState, useLayoutEffect, ReactNode, FC } from "react";
 
 interface DropdownItemProps {
-  icon: ReactNode;
+  icon?: ReactNode;
   onClick: () => void;
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
-  children: ReactNode;
+  children?: ReactNode;
+  variant?: "danger";
 }
 
-export const DropdownItem: FC<DropdownItemProps> = ({ icon, onClick, setShowDropdown, children }) => {
+export const DropdownItem: FC<DropdownItemProps> = ({
+  icon,
+  onClick,
+  setShowDropdown,
+  children,
+  variant,
+}) => {
   return (
-    <li onClick={() => {
-      onClick()
-      setShowDropdown(false);
-    }} className="flex gap-3 items-center px-3 py-2 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer">
-      <span>{icon}</span>
+    <li
+      onClick={() => {
+        onClick();
+        setShowDropdown(false);
+      }}
+      className={`flex gap-3 items-center px-3 py-3 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer ${
+        variant === "danger"
+          ? `text-red-600 bg-red-100 hover:bg-red-200 dark:bg-red-600 dark:text-white dark:hover:bg-red-500`
+          : ""
+      }`}
+    >
+      {icon && <span>{icon}</span>}
       {children}
     </li>
   );
@@ -23,9 +37,15 @@ interface DropdownProps {
   children: ReactNode;
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBtnRef: React.RefObject<HTMLButtonElement>;
+  orientation?: "horizontal" | "vertical";
 }
 
-const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown, toggleBtnRef }) => {
+const Dropdown: FC<DropdownProps> = ({
+  children,
+  setShowDropdown,
+  toggleBtnRef,
+  orientation = "vertical",
+}) => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const [dropdownPositioning, setDropdownPositioning] = useState<string>("");
 
@@ -82,7 +102,13 @@ const Dropdown: FC<DropdownProps> = ({ children, setShowDropdown, toggleBtnRef }
     <>
       <ul
         ref={dropdownRef}
-        className={`absolute ${dropdownPositioning} z-50 bg-white dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden`}
+        className={`${
+          orientation === "horizontal"
+            ? "flex"
+            : orientation === "vertical"
+            ? "flex flex-col"
+            : ""
+        } absolute ${dropdownPositioning} z-50 bg-white dark:bg-black dark:text-white border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden`}
       >
         {children}
       </ul>

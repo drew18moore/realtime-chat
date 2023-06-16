@@ -3,8 +3,8 @@ import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
-import { BiSend, BiArrowBack } from "react-icons/bi";
-import Input from "./ui/Input";
+import { BiArrowBack } from "react-icons/bi";
+import NewMessageInputForm from "./NewMessageInputForm";
 
 interface ConversationState {
   recipient: {
@@ -102,28 +102,11 @@ const Chat = () => {
       </div>
 
       {conversationId && (
-        <form
+        <NewMessageInputForm
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           onSubmit={sendMessage}
-          className="absolute bottom-0 w-full h-20 px-5 flex items-center gap-2"
-        >
-          <Input
-            type="text"
-            size="lg"
-            placeholder="Type a message..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <button
-            type="submit"
-            className={`bg-neutral-200 rounded-full h-12 aspect-square flex items-center justify-center p-2.5 ${
-              message.trim() === ""
-                ? "text-neutral-400 cursor-default"
-                : "text-blue-600"
-            } dark:bg-neutral-800`}
-          >
-            <BiSend size={"100%"} />
-          </button>
-        </form>
+        />
       )}
     </div>
   );

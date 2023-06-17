@@ -34,6 +34,13 @@ const Chat = () => {
     message
   );
 
+  useEffect(() => {
+    setMessage(() => {
+      if (messageToEdit?.message) return messageToEdit.message;
+      return "";
+    });
+  }, [messageToEdit]);
+
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (message.trim() === "") {
@@ -44,11 +51,11 @@ const Chat = () => {
   };
   useEffect(() => {
     console.log(messageToEdit);
-  }, [messageToEdit])
+  }, [messageToEdit]);
 
   useEffect(() => {
     setMessageToEdit(null);
-  }, [conversationId])
+  }, [conversationId]);
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -115,7 +122,6 @@ const Chat = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onSubmit={sendMessage}
-          isEditing={messageToEdit !== null}
           messageToEdit={messageToEdit}
           setMessageToEdit={setMessageToEdit}
         />

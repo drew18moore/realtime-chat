@@ -8,7 +8,6 @@ interface NewMessageInputFormProps {
   value: string;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
-  isEditing: boolean;
   messageToEdit: Message | null;
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
 }
@@ -17,9 +16,10 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
   value,
   onSubmit,
   onChange,
-  isEditing,
+  messageToEdit,
   setMessageToEdit,
 }) => {
+  const isEditing = messageToEdit !== null;
   return (
     <form
       onSubmit={onSubmit}

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import Dropdown, { DropdownItem } from "./Dropdown";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useDeleteMessage } from "../hooks/useMessages";
 import { useParams } from "react-router-dom";
 
@@ -8,14 +8,16 @@ interface MessageDropdownProps {
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBtnRef: React.RefObject<HTMLButtonElement>;
   isCurrentUser: boolean;
-  messageId: number;
+  message: Message;
+  setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
 }
 
 const MessageDropdown: FC<MessageDropdownProps> = ({
   setShowDropdown,
   toggleBtnRef,
   isCurrentUser,
-  messageId,
+  message,
+  setMessageToEdit,
 }) => {
   const { conversationId } = useParams();
   const { mutate: deleteMessage } = useDeleteMessage(parseInt(conversationId!));
@@ -28,15 +30,15 @@ const MessageDropdown: FC<MessageDropdownProps> = ({
       {isCurrentUser && (
         <DropdownItem
           icon={<FiTrash2 />}
-          onClick={() => deleteMessage(messageId)}
+          onClick={() => deleteMessage(message.id)}
           setShowDropdown={setShowDropdown}
           variant="danger"
         />
       )}
       {isCurrentUser && (
         <DropdownItem
-          icon={<FiEdit />}
-          onClick={() => {}}
+          icon={<FiEdit2 />}
+          onClick={() => setMessageToEdit(message)}
           setShowDropdown={setShowDropdown}
         />
       )}

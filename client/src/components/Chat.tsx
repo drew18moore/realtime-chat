@@ -20,6 +20,7 @@ const Chat = () => {
   const { currentUser } = useAuth();
   const [message, setMessage] = useState("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [messageToEdit, setMessageToEdit] = useState<Message | null>(null);
 
   const LIMIT = 20;
   const { data: messages, fetchNextPage } = useGetMessagesInfinite(
@@ -41,6 +42,13 @@ const Chat = () => {
     }
     newMessage();
   };
+  useEffect(() => {
+    console.log(messageToEdit);
+  }, [messageToEdit])
+
+  useEffect(() => {
+    setMessageToEdit(null);
+  }, [conversationId])
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -94,6 +102,7 @@ const Chat = () => {
                       message={message}
                       key={i}
                       isCurrentUser={message.authorId === currentUser?.id}
+                      setMessageToEdit={setMessageToEdit}
                     />
                   );
                 });
@@ -106,6 +115,9 @@ const Chat = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onSubmit={sendMessage}
+          isEditing={messageToEdit !== null}
+          messageToEdit={messageToEdit}
+          setMessageToEdit={setMessageToEdit}
         />
       )}
     </div>

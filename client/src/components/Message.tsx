@@ -5,9 +5,10 @@ import MessageDropdown from "./MessageDropdown";
 interface MessageProps {
   message: Message;
   isCurrentUser: boolean;
+  setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
 }
 
-const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
+const Message: FC<MessageProps> = ({ message, isCurrentUser, setMessageToEdit }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   // Format datetime
@@ -47,7 +48,8 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser }) => {
               setShowDropdown={setShowDropdown}
               toggleBtnRef={toggleBtnRef}
               isCurrentUser={isCurrentUser}
-              messageId={message.id}
+              message={message}
+              setMessageToEdit={setMessageToEdit}
             />
           )}
           {isCurrentUser && (

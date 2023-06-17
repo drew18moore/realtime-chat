@@ -24,7 +24,7 @@ const ThemeSwitcher = () => {
               value="light"
               checked={theme === "light"}
             />
-            <label htmlFor="lightmode" className="cursor-pointer">
+            <label htmlFor="lightmode" className="cursor-pointer text-black dark:text-white">
               Light
             </label>
           </div>
@@ -46,7 +46,7 @@ const ThemeSwitcher = () => {
               value="dark"
               checked={theme === "dark"}
             />
-            <label htmlFor="darkmode" className="cursor-pointer">
+            <label htmlFor="darkmode" className="cursor-pointer text-black dark:text-white">
               Dark
             </label>
           </div>

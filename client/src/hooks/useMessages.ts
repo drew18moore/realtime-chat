@@ -239,12 +239,10 @@ export const useEditMessage = (conversationId: number) => {
     },
     {
       onSuccess: (data, variables) => {
-        console.log(data, variables);
         // Update message in query
         queryClient.setQueryData<InfiniteData<Message[]>>(
           ["messages", conversationId],
           (prevData) => {
-            console.log(prevData);
             if (prevData) {
               const updatedPages = prevData.pages.map((page) =>
                 page.map((message) => {
@@ -258,7 +256,6 @@ export const useEditMessage = (conversationId: number) => {
                   return message;
                 })
               );
-              console.log(updatedPages);
               return {
                 ...prevData,
                 pages: updatedPages,
@@ -268,7 +265,29 @@ export const useEditMessage = (conversationId: number) => {
           }
         );
         // Update lastMessageSent in conversation query
-
+        queryClient.setQueryData<Conversation[]>(
+          ["conversations"],
+          (prevConversations) => {
+            if (prevConversations) {
+              const updatedConversations = prevConversations.map(
+                (conversation) => {
+                  if (conversation.id === conversationId) {
+                    return {
+                      ...conversation,
+                      lastMessageSent: {
+                        ...conversation.lastMessageSent!,
+                        message: variables.message,
+                      },
+                    };
+                  }
+                  return conversation;
+                }
+              );
+              return updatedConversations;
+            }
+            return prevConversations;
+          }
+        );
       },
     }
   );

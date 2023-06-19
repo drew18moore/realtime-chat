@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEditMessage, useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
+import {
+  useEditMessage,
+  useGetMessagesInfinite,
+  useNewMessage,
+} from "../hooks/useMessages";
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
 
@@ -34,7 +38,7 @@ const Chat = () => {
     message
   );
 
-  const { mutate: editMessage } = useEditMessage(parseInt(conversationId!))
+  const { mutate: editMessage } = useEditMessage(parseInt(conversationId!));
 
   useEffect(() => {
     setMessage(() => {
@@ -58,11 +62,8 @@ const Chat = () => {
       setMessage("");
       return;
     }
-    editMessage({ messageId: messageToEdit?.id!, message })
-  }
-  useEffect(() => {
-    console.log(messageToEdit);
-  }, [messageToEdit]);
+    editMessage({ messageId: messageToEdit?.id!, message });
+  };
 
   useEffect(() => {
     setMessageToEdit(null);

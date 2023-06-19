@@ -34,7 +34,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const pathnameRef = useRef<string>(location.pathname);
   const { mutate: readConversation } = useReadConversation();
   useEffect(() => {
-    console.log(location.pathname);
     pathnameRef.current = location.pathname;
   }, [location]);
 
@@ -56,7 +55,8 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     socket?.on("receive-message", (receivedMessage) => {
       const { id, conversationId, recipientId, authorId, message, timeSent } =
         receivedMessage;
-      const isViewingConversation = pathnameRef.current === `/${conversationId}`
+      const isViewingConversation =
+        pathnameRef.current === `/${conversationId}`;
 
       // Update conversations cache
       queryClient.setQueryData<Conversation[]>(
@@ -74,7 +74,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             },
             isRead: isViewingConversation,
           };
-          isViewingConversation && readConversation(conversationId)
+          isViewingConversation && readConversation(conversationId);
           const updatedConversations = [...prevConversations!];
           updatedConversations[conversationIndex] = updatedConversation;
           return updatedConversations;

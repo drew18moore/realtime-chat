@@ -54,8 +54,6 @@ const Dropdown: FC<DropdownProps> = ({
       let positioning: string = "";
 
       const rect = dropdownRef.current!.getBoundingClientRect();
-      console.log(rect.bottom); //844 - 808
-      console.log(window.innerHeight - 80 - 36 - 8);
       // Prevent dropdown from overflowing over y
       if (rect.bottom > window.innerHeight - 80 - 36 - 8) {
         positioning += "bottom-full top-auto ";
@@ -67,7 +65,6 @@ const Dropdown: FC<DropdownProps> = ({
       if (rect.right > window.innerWidth - 15) {
         positioning += "right-0";
       }
-      console.log(positioning);
       return positioning;
     });
 

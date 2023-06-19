@@ -57,16 +57,19 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
         queryClient.setQueryData<Conversation[]>(
           ["conversations"],
           (prevConversations) => {
-            const conversationIndex = prevConversations!.findIndex(
-              (conv) => conv.id === conversationId
-            );
-            const updatedConversation: Conversation = {
-              ...prevConversations![conversationIndex],
-              isRead: true,
-            };
-            const updatedConversations = [...prevConversations!];
-            updatedConversations[conversationIndex] = updatedConversation;
-            return updatedConversations;
+            if (prevConversations) {
+              const conversationIndex = prevConversations!.findIndex(
+                (conv) => conv.id === conversationId
+              );
+              const updatedConversation: Conversation = {
+                ...prevConversations![conversationIndex],
+                isRead: true,
+              };
+              const updatedConversations = [...prevConversations!];
+              updatedConversations[conversationIndex] = updatedConversation;
+              return updatedConversations;
+            }
+            return prevConversations;
           }
         );
       },
@@ -95,7 +98,6 @@ export const useNewMessage = (
   const location = useLocation();
   const pathnameRef = useRef<string>(location.pathname);
   useEffect(() => {
-    console.log(location.pathname);
     pathnameRef.current = location.pathname;
   }, [location]);
 

@@ -222,3 +222,23 @@ export const useDeleteMessage = (conversationId: number) => {
     }
   );
 };
+
+export const useEditMessage = (conversationId: number) => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (data: { messageId: number, message: string }) => {
+      const res = await axiosPrivate.put(`/api/messages/${data.messageId}`, {
+        message: data.message,
+      });
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        
+      },
+    }
+  );
+};

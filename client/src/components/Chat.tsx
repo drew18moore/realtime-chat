@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import Message from "./Message";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
+import { useEditMessage, useGetMessagesInfinite, useNewMessage } from "../hooks/useMessages";
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
 
@@ -34,6 +34,8 @@ const Chat = () => {
     message
   );
 
+  const { mutate: editMessage } = useEditMessage(parseInt(conversationId!))
+
   useEffect(() => {
     setMessage(() => {
       if (messageToEdit?.message) return messageToEdit.message;
@@ -49,6 +51,15 @@ const Chat = () => {
     }
     newMessage();
   };
+
+  const updateMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (message.trim() === "") {
+      setMessage("");
+      return;
+    }
+    editMessage({ messageId: messageToEdit?.id!, message })
+  }
   useEffect(() => {
     console.log(messageToEdit);
   }, [messageToEdit]);
@@ -121,7 +132,7 @@ const Chat = () => {
         <NewMessageInputForm
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onSubmit={sendMessage}
+          onSubmit={messageToEdit !== null ? updateMessage : sendMessage}
           messageToEdit={messageToEdit}
           setMessageToEdit={setMessageToEdit}
         />

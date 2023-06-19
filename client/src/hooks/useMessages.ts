@@ -54,18 +54,21 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
     {
       onSuccess: () => {
         // Set conversation isRead to true
-        queryClient.setQueryData<Conversation[]>(["conversations"], (prevConversations) => {
-          const conversationIndex = prevConversations!.findIndex(
-            (conv) => conv.id === conversationId
-          );
-          const updatedConversation: Conversation = {
-            ...prevConversations![conversationIndex],
-            isRead: true,
-          };
-          const updatedConversations = [...prevConversations!];
-          updatedConversations[conversationIndex] = updatedConversation;
-          return updatedConversations;
-        })
+        queryClient.setQueryData<Conversation[]>(
+          ["conversations"],
+          (prevConversations) => {
+            const conversationIndex = prevConversations!.findIndex(
+              (conv) => conv.id === conversationId
+            );
+            const updatedConversation: Conversation = {
+              ...prevConversations![conversationIndex],
+              isRead: true,
+            };
+            const updatedConversations = [...prevConversations!];
+            updatedConversations[conversationIndex] = updatedConversation;
+            return updatedConversations;
+          }
+        );
       },
       onError: (err: any) => {
         if (err.response?.status === 401) navigate("/");
@@ -204,7 +207,7 @@ export const useDeleteMessage = (conversationId: number) => {
                   id: newLastMessageSent!.id,
                   message: newLastMessageSent!.message,
                   created_at: newLastMessageSent!.created_at,
-                }
+                };
               }
               const updatedConversation: Conversation = {
                 ...prevConversations![conversationIndex],
@@ -228,16 +231,44 @@ export const useEditMessage = (conversationId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation(
-    async (data: { messageId: number, message: string }) => {
+    async (data: { messageId: number; message: string }) => {
       const res = await axiosPrivate.put(`/api/messages/${data.messageId}`, {
         message: data.message,
       });
       return res.data;
     },
     {
-      onSuccess: (data) => {
-        console.log(data);
-        
+      onSuccess: (data, variables) => {
+        console.log(data, variables);
+        // Update message in query
+        queryClient.setQueryData<InfiniteData<Message[]>>(
+          ["messages", conversationId],
+          (prevData) => {
+            console.log(prevData);
+            if (prevData) {
+              const updatedPages = prevData.pages.map((page) =>
+                page.map((message) => {
+                  if (message.id === variables.messageId) {
+                    return {
+                      ...message,
+                      message: variables.message,
+                      isEdited: true,
+                    };
+                  }
+                  return message;
+                })
+              );
+              console.log(updatedPages);
+              return {
+                ...prevData,
+                pages: updatedPages,
+              };
+            }
+            return prevData;
+          }
+        );
+        // Update lastMessageSent in conversation query
+
       },
     }
   );

@@ -97,6 +97,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
               receiverId: recipientId,
               authorId,
               created_at: timeSent,
+              isEdited: false,
             });
             return { ...prevData!, pages };
           }

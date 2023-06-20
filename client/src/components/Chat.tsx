@@ -38,7 +38,7 @@ const Chat = () => {
     message
   );
 
-  const { mutate: editMessage } = useEditMessage(parseInt(conversationId!));
+  const { mutate: editMessage, isSuccess: messageHasBeenUpdated } = useEditMessage(parseInt(conversationId!));
 
   useEffect(() => {
     setMessage(() => {
@@ -78,7 +78,8 @@ const Chat = () => {
 
   useEffect(() => {
     setMessage("");
-  }, [messageHasBeenSent]);
+    setMessageToEdit(null);
+  }, [messageHasBeenSent, messageHasBeenUpdated]);
 
   return (
     <div className="relative h-[calc(100svh)]">

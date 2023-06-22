@@ -10,7 +10,7 @@ export const useGetConversations = () => {
     ["conversations"],
     async () => {
       const res = await axiosPrivate.get(
-        `/api/users/${currentUser?.id}/conversations`
+        `/api/conversations/${currentUser?.id}`
       );
       return res.data;
     },

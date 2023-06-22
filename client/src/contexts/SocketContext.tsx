@@ -94,7 +94,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             pages[0].unshift({
               id,
               message,
-              receiverId: recipientId,
               authorId,
               created_at: timeSent,
               isEdited: false,

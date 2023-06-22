@@ -104,7 +104,6 @@ export const useNewMessage = (
   return useMutation<Message>(
     async () => {
       const res = await axiosPrivate.post("/api/messages/new", {
-        receiverId: recipientId,
         message: message,
         conversationId: conversationId,
       });

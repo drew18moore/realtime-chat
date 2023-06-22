@@ -19,7 +19,6 @@ model User {
   created_at       DateTime           @default(now())
   updated_at       DateTime           @updatedAt
   createdMessages  Message[]          @relation("sentMessages")
-  receivedMessages Message[]          @relation("receivedMessages")
   conversations    ConversationUser[]
   refresh_token    String             @default("")
   profile_picture  String             @default("")
@@ -28,9 +27,7 @@ model User {
 model Message {
   id             Int           @id @default(autoincrement())
   message        String
-  to             User          @relation("sentMessages", fields: [receiverId], references: [id])
-  receiverId     Int
-  from           User          @relation("receivedMessages", fields: [authorId], references: [id])
+  author           User          @relation("sentMessages", fields: [authorId], references: [id])
   authorId       Int
   created_at     DateTime      @default(now())
   conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)

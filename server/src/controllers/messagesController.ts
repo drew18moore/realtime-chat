@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const newMessage = async (req: Request, res: Response) => {
-  const { receiverId, message, conversationId } = req.body;
+  const { message, conversationId } = req.body;
   const authorId = req.userId;
-  const parsedReceiverId = parseInt(receiverId);
   const parsedAuthorId = parseInt(authorId);
   const parsedConversationId = parseInt(conversationId);
 
@@ -16,14 +15,18 @@ export const newMessage = async (req: Request, res: Response) => {
       data: {
         message,
         authorId: parsedAuthorId,
-        receiverId: parsedReceiverId,
         conversationId: parsedConversationId,
       },
       include: {
-        conversation: true,
+        conversation: {
+          include: {
+            participants: true,
+          },
+        },
       },
     });
 
+    // Update dateLastMessage
     const conversation = newMessage.conversation;
     if (conversation) {
       await db.conversation.update({
@@ -32,18 +35,22 @@ export const newMessage = async (req: Request, res: Response) => {
       });
     }
 
-    await db.conversationUser.updateMany({
-      where: {
-        conversationId: parsedConversationId,
-        userId: parsedReceiverId,
-      },
-      data: { isRead: false },
-    });
+    // Set all participants' isRead to false except author
+    conversation?.participants
+      .filter((participant) => participant.userId !== parsedAuthorId)
+      .map(async (participant) => {
+        await db.conversationUser.updateMany({
+          where: {
+            conversationId: parsedConversationId,
+            userId: participant.userId,
+          },
+          data: { isRead: false },
+        });
+      });
 
     const response = {
       id: newMessage.id,
       message: newMessage.message,
-      receiverId: newMessage.receiverId,
       authorId: newMessage.authorId,
       created_at: newMessage.created_at,
     };
@@ -144,7 +151,7 @@ export const editMessage = async (req: Request, res: Response) => {
     const message = await db.message.findUnique({
       where: { id },
     });
-    
+
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
     }
@@ -165,8 +172,8 @@ export const editMessage = async (req: Request, res: Response) => {
       data: {
         message: newMessageBody,
         isEdited: true,
-      }
-    })
+      },
+    });
 
     res.status(200).json({ updatedMessage });
   } catch (err) {

@@ -23,7 +23,7 @@ export const useGetConversations = () => {
   );
 };
 
-export const useNewConversation = (joinerId: number) => {
+export const useNewConversation = (participants: number[]) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export const useNewConversation = (joinerId: number) => {
   return useMutation<Conversation>(
     async () => {
       const res = await axiosPrivate.post("/api/conversations/new", {
-        joinerId,
+        participants,
       });
       return res.data;
     },
@@ -46,7 +46,7 @@ export const useNewConversation = (joinerId: number) => {
             [...prevConversations!, data]
           );
         }
-        const state = { recipient: data.recipient };
+        const state = { recipient: data.participants[0] };
         navigate(`/${data.id}`, { state });
       },
       onError: (err) => {

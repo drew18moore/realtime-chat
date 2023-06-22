@@ -18,12 +18,12 @@ type Message = {
 type Conversation = {
   id: number;
   title?: string | null;
-  recipient: {
+  participants: {
     id: number;
     display_name: string;
     username: string;
     profile_picture?: string;
-  };
+  }[];
   lastMessageSent?:
     | {
         id: number;

@@ -16,7 +16,7 @@ const Contact: FC<ContactProps> = ({
   username,
   clearSearch,
 }) => {
-  const { mutate: newConversation } = useNewConversation(id);
+  const { mutate: newConversation } = useNewConversation([id]);
 
   return (
     <div

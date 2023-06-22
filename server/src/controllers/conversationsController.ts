@@ -2,45 +2,32 @@ import { Request, Response } from "express";
 import { db } from "../db";
 
 export const newConversation = async (req: Request, res: Response) => {
-  const { joinerId } = req.body;
+  const participantIds: number[] = req.body.participants;
   const creatorId = req.userId;
-  const joinerIdParsed = parseInt(joinerId);
   const creatorIdParsed = parseInt(creatorId);
+  const participants = [creatorIdParsed, ...participantIds];
+  const conversationWithSelf =
+    participantIds.length === 1 && participantIds[0] === creatorIdParsed;
   try {
+    // Conditionally write query
     let query;
-    if (creatorIdParsed === joinerIdParsed) {
+    if (conversationWithSelf) {
       query = {
         participants: {
           every: {
-            AND: [
-              {
-                userId: creatorIdParsed,
-              },
-              {
-                userId: joinerIdParsed,
-              },
-            ],
+            userId: { in: [creatorIdParsed, ...participantIds] },
           },
         },
       };
     } else {
       query = {
-        AND: [
-          {
-            participants: {
-              some: {
-                userId: creatorIdParsed,
-              },
+        AND: participants.map((participantId) => ({
+          participants: {
+            some: {
+              userId: participantId,
             },
           },
-          {
-            participants: {
-              some: {
-                userId: joinerIdParsed,
-              },
-            },
-          },
-        ],
+        })),
       };
     }
     // Check if a conversation exists
@@ -75,13 +62,20 @@ export const newConversation = async (req: Request, res: Response) => {
       };
       return res.status(200).json(response);
     }
+    // New conversation data
+    let data;
+    if (conversationWithSelf) {
+      data = [{ user: { connect: { id: creatorIdParsed } } }];
+    } else {
+      data = participants.map((participantId) => ({
+        user: { connect: { id: participantId } },
+      }));
+    }
+    // Create new conversation
     const conversation = await db.conversation.create({
       data: {
         participants: {
-          create: [
-            { user: { connect: { id: creatorIdParsed } } },
-            { user: { connect: { id: joinerIdParsed } } },
-          ],
+          create: data,
         },
       },
       select: {
@@ -101,15 +95,12 @@ export const newConversation = async (req: Request, res: Response) => {
         },
       },
     });
-    const recipient =
-      conversation.participants[0].user.id === creatorIdParsed
-        ? conversation.participants[1].user
-        : conversation.participants[0].user;
     const response = {
       ...conversation,
-      recipient: recipient,
       messages: undefined,
-      participants: undefined,
+      participants: conversation.participants.map(
+        (participant) => participant.user
+      ),
     };
     res.status(201).json(response);
   } catch (err) {
@@ -125,7 +116,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
     const conversations = await db.conversation.findMany({
       where: {
         participants: {
-          some: { userId: userIdParsed }
+          some: { userId: userIdParsed },
         },
         messages: {
           some: {},
@@ -164,21 +155,17 @@ export const getAllConversations = async (req: Request, res: Response) => {
       },
     });
     const response = conversations.map((conversation) => {
-      let recipient;
-      let isRead: boolean;
-      if (conversation.participants[0].user.id === userIdParsed) {
-        recipient = conversation.participants[1].user;
-        isRead = conversation.participants[0].isRead;
-      } else {
-        recipient = conversation.participants[0].user;
-        isRead = conversation.participants[1].isRead;
-      }
+      let isRead =
+        conversation.participants[0].user.id === userIdParsed
+          ? conversation.participants[0].isRead
+          : conversation.participants[1].isRead;
       return {
         ...conversation,
-        recipient: recipient,
         lastMessageSent: conversation.messages[0],
         messages: undefined,
-        participants: undefined,
+        participants: conversation.participants.map(
+          (participant) => participant.user
+        ),
         isRead: isRead,
       };
     });
@@ -204,7 +191,9 @@ export const readConversation = async (req: Request, res: Response) => {
         isRead: true,
       },
     });
-    res.status(200).json({ message: "Conversation has been read successfully" })
+    res
+      .status(200)
+      .json({ message: "Conversation has been read successfully" });
   } catch (err) {
     console.error(err);
   }

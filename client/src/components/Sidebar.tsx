@@ -55,8 +55,8 @@ const Sidebar = () => {
     conversationsContent = conversations?.map((conversation) => {
       return (
         <Converasation
-          img={conversation.recipient.profile_picture || "default-pfp.jpg"}
-          displayName={conversation.recipient.display_name}
+          img={conversation.participants[0].profile_picture || "default-pfp.jpg"}
+          displayName={conversation.participants[0].display_name}
           lastMessage={conversation.lastMessageSent?.message}
           dateLastMessage={
             conversation.lastMessageSent?.created_at
@@ -65,9 +65,9 @@ const Sidebar = () => {
           }
           isSelected={conversation.id.toString() === conversationId}
           conversationId={conversation.id}
-          recipient={conversation.recipient}
+          recipient={conversation.participants[0]}
           key={conversation.id}
-          isOnline={onlineUserIds.includes(conversation.recipient.id)}
+          isOnline={onlineUserIds.includes(conversation.participants[0].id)}
           isRead={conversation.isRead}
         />
       );

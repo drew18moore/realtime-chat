@@ -56,10 +56,6 @@ const EditAccount = () => {
     usernameRef.current!.value = "";
   };
 
-  useEffect(() => {
-    console.log(profileImgBase64);
-  }, [profileImgBase64]);
-
   return (
     <div className="flex flex-col gap-4">
       <form onSubmit={handleSubmit} className="grid gap-5">

@@ -56,7 +56,6 @@ const Sidebar = () => {
       const conversationWithSelf =
         conversation.participants.length === 1 &&
         conversation.participants[0].id === currentUser?.id;
-      console.log(conversationWithSelf);
       const recipient = conversation.participants.filter(
         (participant) => participant.id !== currentUser?.id
       );

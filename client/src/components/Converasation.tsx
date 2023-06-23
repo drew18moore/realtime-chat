@@ -25,7 +25,6 @@ const Converasation: FC<ConverasationProps> = ({
   isOnline,
   isRead,
 }) => {
-  console.log(recipient);
   const navigate = useNavigate();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
     hour: "numeric",

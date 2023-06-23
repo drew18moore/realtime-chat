@@ -38,8 +38,6 @@ export const useNewConversation = (participants: number[]) => {
     },
     {
       onSuccess: (data) => {
-        console.log(data);
-        console.log(data.participants);
         const prevConversations = queryClient.getQueryData<Conversation[]>([
           "conversations",
         ]);
@@ -52,7 +50,6 @@ export const useNewConversation = (participants: number[]) => {
         const conversationWithSelf =
           data.participants.length === 1 &&
           data.participants[0].id === currentUser?.id;
-        console.log(conversationWithSelf);
         const recipient = conversationWithSelf
           ? data.participants[0]
           : data.participants.filter(

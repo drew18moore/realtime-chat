@@ -27,6 +27,7 @@ export const useNewConversation = (participants: number[]) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   return useMutation<Conversation>(
     async () => {
@@ -37,6 +38,8 @@ export const useNewConversation = (participants: number[]) => {
     },
     {
       onSuccess: (data) => {
+        console.log(data);
+        console.log(data.participants);
         const prevConversations = queryClient.getQueryData<Conversation[]>([
           "conversations",
         ]);
@@ -46,7 +49,16 @@ export const useNewConversation = (participants: number[]) => {
             [...prevConversations!, data]
           );
         }
-        const state = { recipient: data.participants[0] };
+        const conversationWithSelf =
+          data.participants.length === 1 &&
+          data.participants[0].id === currentUser?.id;
+        console.log(conversationWithSelf);
+        const recipient = conversationWithSelf
+          ? data.participants[0]
+          : data.participants.filter(
+              (participant) => participant.id !== currentUser?.id
+            )[0];
+        const state = { recipient };
         navigate(`/${data.id}`, { state });
       },
       onError: (err) => {
@@ -59,12 +71,17 @@ export const useNewConversation = (participants: number[]) => {
 export const useReadConversation = () => {
   const axiosPrivate = useAxiosPrivate();
 
-  return useMutation(async (conversationId: number) => {
-    const res = await axiosPrivate.put(`/api/conversations/${conversationId}/read`);
-    return res.data;
-  }, {
-    onSuccess: (data) => {
-      console.log("SUCCESS", data);
+  return useMutation(
+    async (conversationId: number) => {
+      const res = await axiosPrivate.put(
+        `/api/conversations/${conversationId}/read`
+      );
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        console.log("SUCCESS", data);
+      },
     }
-  });
+  );
 };

@@ -50,15 +50,12 @@ export const newConversation = async (req: Request, res: Response) => {
       },
     });
     if (existingConversation.length > 0) {
-      const recipient =
-        existingConversation[0].participants[0].user.id === creatorIdParsed
-          ? existingConversation[0].participants[1].user
-          : existingConversation[0].participants[0].user;
       const response = {
         ...existingConversation[0],
-        recipient: recipient,
         messages: undefined,
-        participants: undefined,
+        participants: existingConversation[0].participants.map(
+          (participant) => participant.user
+        ),
       };
       return res.status(200).json(response);
     }

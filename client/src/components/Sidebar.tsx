@@ -53,10 +53,13 @@ const Sidebar = () => {
     }
   } else {
     conversationsContent = conversations?.map((conversation) => {
+      const conversationWithSelf =
+        conversation.participants.length === 1 &&
+        conversation.participants[0].id === currentUser?.id;
+      console.log(conversationWithSelf);
+      const recipient = conversation.participants.filter((participant) => participant.id !== currentUser?.id);
       return (
         <Converasation
-          img={conversation.participants[0].profile_picture || "default-pfp.jpg"}
-          displayName={conversation.participants[0].display_name}
           lastMessage={conversation.lastMessageSent?.message}
           dateLastMessage={
             conversation.lastMessageSent?.created_at
@@ -65,7 +68,7 @@ const Sidebar = () => {
           }
           isSelected={conversation.id.toString() === conversationId}
           conversationId={conversation.id}
-          recipient={conversation.participants[0]}
+          recipient={conversationWithSelf ? conversation.participants[0] : conversation.participants.filter((participant) => participant.id !== currentUser?.id)[0]}
           key={conversation.id}
           isOnline={onlineUserIds.includes(conversation.participants[0].id)}
           isRead={conversation.isRead}

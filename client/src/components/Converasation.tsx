@@ -2,8 +2,6 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface ConverasationProps {
-  img: string;
-  displayName: string;
   lastMessage: string | undefined;
   dateLastMessage: Date | undefined;
   isSelected?: boolean;
@@ -11,14 +9,14 @@ interface ConverasationProps {
   recipient: {
     id: number;
     display_name: string;
+    username: string;
+    profile_picture?: string;
   };
   isOnline: boolean;
   isRead: boolean;
 }
 
 const Converasation: FC<ConverasationProps> = ({
-  img,
-  displayName,
   lastMessage,
   dateLastMessage,
   isSelected = false,
@@ -27,6 +25,7 @@ const Converasation: FC<ConverasationProps> = ({
   isOnline,
   isRead,
 }) => {
+  console.log(recipient);
   const navigate = useNavigate();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -51,7 +50,7 @@ const Converasation: FC<ConverasationProps> = ({
         <div className="relative">
           <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative">
             <img
-              src={img}
+              src={recipient.profile_picture || "default-pfp.jpg"}
               alt="profile picture"
               className="object-cover w-full h-full"
             />
@@ -62,7 +61,7 @@ const Converasation: FC<ConverasationProps> = ({
         </div>
 
         <div className="grid items-center">
-          <h2 className="text-xl dark:text-white">{displayName}</h2>
+          <h2 className="text-xl dark:text-white">{recipient.display_name}</h2>
           <p className="text-neutral-600 text-sm truncate dark:text-neutral-500">
             {lastMessage}
           </p>

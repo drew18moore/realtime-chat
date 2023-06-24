@@ -56,7 +56,7 @@ const Sidebar = () => {
       const conversationWithSelf =
         conversation.participants.length === 1 &&
         conversation.participants[0].id === currentUser?.id;
-      const recipient = conversation.participants.filter(
+      const recipients = conversation.participants.filter(
         (participant) => participant.id !== currentUser?.id
       );
       return (
@@ -70,14 +70,14 @@ const Sidebar = () => {
           isSelected={conversation.id.toString() === conversationId}
           conversationId={conversation.id}
           recipient={
-            conversationWithSelf
-              ? conversation.participants[0]
-              : conversation.participants.filter(
-                  (participant) => participant.id !== currentUser?.id
-                )[0]
+            conversationWithSelf ? conversation.participants[0] : recipients[0]
           }
           key={conversation.id}
-          isOnline={onlineUserIds.includes(conversation.participants[0].id)}
+          isOnline={
+            conversationWithSelf
+              ? onlineUserIds.includes(conversation.participants[0].id)
+              : onlineUserIds.includes(recipients[0].id)
+          }
           isRead={conversation.isRead}
         />
       );

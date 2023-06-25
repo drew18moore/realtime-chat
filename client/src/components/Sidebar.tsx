@@ -94,6 +94,7 @@ const Sidebar = () => {
         <h1 className="text-xl px-4 font-bold dark:text-white">Messages</h1>
         <button
           onClick={() => navigate("/settings")}
+          name="settings"
           className="cursor-pointer hover:bg-neutral-300 p-2 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900"
         >
           <RiSettings5Fill size={"1.5rem"} />
@@ -143,6 +144,7 @@ const Sidebar = () => {
           </div>
           <button
             onClick={() => logout()}
+            name="logout"
             className="hover:bg-neutral-300 h-fit p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900"
           >
             <FiLogOut />

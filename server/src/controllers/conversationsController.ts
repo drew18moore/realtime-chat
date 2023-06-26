@@ -3,11 +3,17 @@ import { db } from "../db";
 
 export const newConversation = async (req: Request, res: Response) => {
   const participantIds: number[] = req.body.participants;
+
+  if (!participantIds || participantIds.length === 0)
+    res.status(400).json({ message: "Must provide array of participants" });
+
   const creatorId = req.userId;
   const creatorIdParsed = parseInt(creatorId);
+  
   const participants = [creatorIdParsed, ...participantIds];
   const conversationWithSelf =
     participantIds.length === 1 && participantIds[0] === creatorIdParsed;
+
   try {
     // Conditionally write query
     let query;
@@ -15,7 +21,7 @@ export const newConversation = async (req: Request, res: Response) => {
       query = {
         participants: {
           every: {
-            userId: { in: [creatorIdParsed, ...participantIds] },
+            userId: { in: participants },
           },
         },
       };

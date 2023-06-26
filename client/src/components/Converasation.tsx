@@ -1,5 +1,7 @@
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
+import { CgLoadbarDoc } from "react-icons/cg";
+import { MdVerified } from "react-icons/md";
 
 interface ConverasationProps {
   lastMessage: string | undefined;
@@ -14,6 +16,7 @@ interface ConverasationProps {
   };
   isOnline: boolean;
   isRead: boolean;
+  conversationWithSelf: boolean;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -24,6 +27,7 @@ const Converasation: FC<ConverasationProps> = ({
   recipient,
   isOnline,
   isRead,
+  conversationWithSelf,
 }) => {
   const navigate = useNavigate();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
@@ -47,20 +51,34 @@ const Converasation: FC<ConverasationProps> = ({
     >
       <div className="flex gap-3 items-center">
         <div className="relative">
-          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative">
-            <img
-              src={recipient.profile_picture || "default-pfp.jpg"}
-              alt="profile picture"
-              className="object-cover w-full h-full"
-            />
+          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative flex items-center justify-center bg-purple-100 text-purple-700">
+            {conversationWithSelf ? (
+              <CgLoadbarDoc size={"2rem"} />
+            ) : (
+              <img
+                src={recipient.profile_picture || "default-pfp.jpg"}
+                alt="profile picture"
+                className="object-cover w-full h-full"
+              />
+            )}
           </div>
-          {isOnline && (
+          {isOnline && !conversationWithSelf && (
             <div className="absolute bg-green-500 rounded-full w-3 h-3 bottom-0 right-0"></div>
           )}
         </div>
 
         <div className="grid items-center">
-          <h2 className="text-xl dark:text-white">{recipient.display_name}</h2>
+          <h2 className="text-xl dark:text-white flex items-center gap-2">
+            {conversationWithSelf ? (
+              <>
+                <p>Note to self</p>
+                <span className="text-blue-600"><MdVerified /></span>
+                
+              </>
+            ) : (
+              recipient.display_name
+            )}
+          </h2>
           <p className="text-neutral-600 text-sm truncate dark:text-neutral-500">
             {lastMessage}
           </p>
@@ -68,7 +86,9 @@ const Converasation: FC<ConverasationProps> = ({
       </div>
       <div className="flex flex-col-reverse items-end self-end gap-1 text-sm text-neutral-600 flex-shrink-0 dark:text-neutral-500">
         <span>{dateFormatted}</span>
-        {!isRead && <span className="w-3 aspect-square bg-blue-600 rounded-full"></span>}
+        {!isRead && (
+          <span className="w-3 aspect-square bg-blue-600 rounded-full"></span>
+        )}
       </div>
     </div>
   );

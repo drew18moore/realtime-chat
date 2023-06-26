@@ -79,6 +79,7 @@ const Sidebar = () => {
               : onlineUserIds.includes(recipients[0].id)
           }
           isRead={conversation.isRead}
+          conversationWithSelf={conversationWithSelf}
         />
       );
     });

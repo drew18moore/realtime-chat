@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import Input from "./ui/Input";
 import { BiCheck, BiSend } from "react-icons/bi";
 import { FiEdit2 } from "react-icons/fi";
@@ -10,6 +10,7 @@ interface NewMessageInputFormProps {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   messageToEdit: Message | null;
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
@@ -18,6 +19,7 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
   onChange,
   messageToEdit,
   setMessageToEdit,
+  inputRef,
 }) => {
   const isEditing = messageToEdit !== null;
   return (
@@ -41,6 +43,7 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
           className={`${
             isEditing ? "pl-24 outline outline-2 outline-blue-600" : ""
           }`}
+          ref={inputRef}
         />
       </div>
 

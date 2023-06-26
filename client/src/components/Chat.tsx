@@ -24,6 +24,7 @@ const Chat = () => {
   const { currentUser } = useAuth();
   const [message, setMessage] = useState("");
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [messageToEdit, setMessageToEdit] = useState<Message | null>(null);
 
   const LIMIT = 20;
@@ -38,7 +39,8 @@ const Chat = () => {
     message
   );
 
-  const { mutate: editMessage, isSuccess: messageHasBeenUpdated } = useEditMessage(parseInt(conversationId!));
+  const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
+    useEditMessage(parseInt(conversationId!));
 
   useEffect(() => {
     setMessage(() => {
@@ -67,6 +69,7 @@ const Chat = () => {
 
   useEffect(() => {
     setMessageToEdit(null);
+    inputRef.current?.focus();
   }, [conversationId]);
 
   useEffect(() => {
@@ -137,6 +140,7 @@ const Chat = () => {
           onSubmit={messageToEdit !== null ? updateMessage : sendMessage}
           messageToEdit={messageToEdit}
           setMessageToEdit={setMessageToEdit}
+          inputRef={inputRef}
         />
       )}
     </div>

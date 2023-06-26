@@ -3,12 +3,16 @@ import { db } from "../db";
 
 export const newMessage = async (req: Request, res: Response) => {
   const { message, conversationId } = req.body;
+
+  if (!message || message.trim() === "")
+    return res.status(400).json({ message: "Must provide a message" });
+
+  if (!conversationId)
+    return res.status(400).json({ message: "Must provide a conversationId" });
+
   const authorId = req.userId;
   const parsedAuthorId = parseInt(authorId);
   const parsedConversationId = parseInt(conversationId);
-
-  if (!message || message.trim() === "")
-    return res.status(400).json({ message: "Message cannot be empty" });
 
   try {
     const newMessage = await db.message.create({
@@ -66,6 +70,12 @@ export const getMessagesInConversation = async (
   res: Response
 ) => {
   const { conversationId, page, limit = 10 } = req.query;
+
+  if (!conversationId)
+    return res.status(400).json({ message: "Must provide a conversationId" });
+
+  if (!page) return res.status(400).json({ message: "Must provide a page" });
+
   const currentUserId = req.userId;
   const parsedCurrentUserId = parseInt(currentUserId as string);
   const parsedConversationId = parseInt(conversationId as string);
@@ -146,6 +156,10 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
 export const editMessage = async (req: Request, res: Response) => {
   const { message: newMessageBody } = req.body;
+
+  if (!newMessageBody || newMessageBody.trim() === "")
+    return res.status(400).json({ message: "Must provide a message" });
+
   const id = parseInt(req.params.id);
   try {
     const message = await db.message.findUnique({

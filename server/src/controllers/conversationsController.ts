@@ -9,7 +9,7 @@ export const newConversation = async (req: Request, res: Response) => {
 
   const creatorId = req.userId;
   const creatorIdParsed = parseInt(creatorId);
-  
+
   const participants = [creatorIdParsed, ...participantIds];
   const conversationWithSelf =
     participantIds.length === 1 && participantIds[0] === creatorIdParsed;

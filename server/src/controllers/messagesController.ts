@@ -69,12 +69,10 @@ export const getMessagesInConversation = async (
   req: Request,
   res: Response
 ) => {
-  const { conversationId, page, limit = 10 } = req.query;
+  const { conversationId, page = 1, limit = 10 } = req.query;
 
   if (!conversationId)
     return res.status(400).json({ message: "Must provide a conversationId" });
-
-  if (!page) return res.status(400).json({ message: "Must provide a page" });
 
   const currentUserId = req.userId;
   const parsedCurrentUserId = parseInt(currentUserId as string);

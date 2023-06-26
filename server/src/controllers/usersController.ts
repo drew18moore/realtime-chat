@@ -30,17 +30,18 @@ export const getAllUsers = async (req: Request, res: Response) => {
 };
 
 export const editUser = async (req: Request, res: Response) => {
+  const { display_name, username, profile_picture } = req.body;
+  
   const userIdParsed = parseInt(req.userId);
-  const display_name = req.body.display_name.trim();
-  const username = req.body.username.trim();
-  const profile_picture = req.body.profile_picture;
+  const displayNameTrimmed = req.body.display_name?.trim();
+  const usernameTrimmed = req.body.username?.trim();
 
   try {
     const user = await db.user.update({
       where: { id: userIdParsed },
       data: {
-        display_name: display_name || undefined,
-        username: username || undefined,
+        display_name: displayNameTrimmed || undefined,
+        username: usernameTrimmed || undefined,
         profile_picture: profile_picture || undefined,
       },
     });

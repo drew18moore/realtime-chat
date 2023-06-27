@@ -9,11 +9,13 @@ import {
 } from "../hooks/useMessages";
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
+import { MdVerified } from "react-icons/md";
 
 interface ConversationState {
   recipient: {
     id: number;
-    display_name: string;
+    title: string;
+    conversationWithSelf: boolean;
   };
 }
 
@@ -94,8 +96,17 @@ const Chat = () => {
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl dark:text-white">
-          {state?.recipient.display_name}
+        <h1 className="text-2xl dark:text-white flex items-center gap-2">
+          {state?.recipient.conversationWithSelf ? (
+            <>
+              <p>Note to self</p>
+              <span className="text-blue-600">
+                <MdVerified />
+              </span>
+            </>
+          ) : (
+            state?.recipient.title
+          )}
         </h1>
       </div>
 

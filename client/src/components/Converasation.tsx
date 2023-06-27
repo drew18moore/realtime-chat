@@ -36,7 +36,13 @@ const Converasation: FC<ConverasationProps> = ({
   });
 
   const handleClick = () => {
-    const state = { recipient };
+    const state = {
+      recipient: {
+        id: recipient.id,
+        title: recipient.display_name,
+        conversationWithSelf,
+      },
+    };
     navigate(`/${conversationId}`, { state });
   };
 
@@ -72,8 +78,9 @@ const Converasation: FC<ConverasationProps> = ({
             {conversationWithSelf ? (
               <>
                 <p>Note to self</p>
-                <span className="text-blue-600"><MdVerified /></span>
-                
+                <span className="text-blue-600">
+                  <MdVerified />
+                </span>
               </>
             ) : (
               recipient.display_name

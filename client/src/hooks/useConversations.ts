@@ -55,7 +55,13 @@ export const useNewConversation = (participants: number[]) => {
           : data.participants.filter(
               (participant) => participant.id !== currentUser?.id
             )[0];
-        const state = { recipient };
+        const state: ConversationState = {
+          recipient: {
+            id: recipient.id,
+            title: recipient.display_name,
+            conversationWithSelf: recipient.id === currentUser?.id,
+          },
+        };
         navigate(`/${data.id}`, { state });
       },
       onError: (err) => {

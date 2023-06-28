@@ -5,7 +5,6 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useAuth } from "../contexts/AuthContext";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../contexts/SocketContext";

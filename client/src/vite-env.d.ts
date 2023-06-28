@@ -38,3 +38,11 @@ type SearchResults = {
   users: User[];
   numFound: number;
 };
+
+interface ConversationState {
+  recipient: {
+    id: number;
+    title: string;
+    conversationWithSelf: boolean;
+  };
+}

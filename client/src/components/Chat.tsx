@@ -11,14 +11,6 @@ import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
 import { MdVerified } from "react-icons/md";
 
-interface ConversationState {
-  recipient: {
-    id: number;
-    title: string;
-    conversationWithSelf: boolean;
-  };
-}
-
 const Chat = () => {
   const navigate = useNavigate();
   const { conversationId } = useParams();

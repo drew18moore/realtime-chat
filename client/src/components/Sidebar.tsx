@@ -97,7 +97,11 @@ const Sidebar = () => {
       <div className="absolute top-28 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2 overflow-y-auto">
           {!searchResults ? (
-            conversationsContent
+            conversationsContent?.length === 0 ? (
+              <p className="px-5 text-center text-neutral-600 dark:text-neutral-500 absolute top-1/2 -translate-y-1/2 justify-self-center">Use the search bar above to find users to message.</p>
+            ) : (
+              conversationsContent
+            )
           ) : searchResults.users.length > 0 ? (
             searchResults.users.map((result) => {
               return (

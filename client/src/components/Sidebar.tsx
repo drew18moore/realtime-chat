@@ -8,41 +8,31 @@ import { FiLogOut } from "react-icons/fi";
 import { RiSettings5Fill } from "react-icons/ri";
 import useLogout from "../hooks/auth/useLogout";
 import { useGetConversations } from "../hooks/useConversations";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
 import ConverasationSkeleton from "./ConversationSkeleton";
 import useDebounce from "../hooks/useDebounce";
 import { useSocket } from "../contexts/SocketContext";
+import useSearch from "../hooks/useSearch";
 
 const Sidebar = () => {
+  const { conversationId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
   const isRootRoute = location.pathname === "/";
-  const axiosPrivate = useAxiosPrivate();
+
   const { data: conversations, isLoading: isLoadingConversations } =
     useGetConversations();
   const { mutate: logout } = useLogout();
-  const { conversationId } = useParams();
   const { currentUser } = useAuth();
   const { onlineUserIds } = useSocket();
 
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 200);
+  const { data: searchResults } = useSearch(debouncedSearch);
 
   const clearSearch = () => {
     setSearch("");
   };
-
-  const { data: searchResults } = useQuery<AxiosResponse<SearchResults>>(
-    ["searchUsers", debouncedSearch.trim()],
-    () => {
-      return axiosPrivate.get("/api/users", {
-        params: { search: debouncedSearch.trim() },
-      });
-    },
-    { enabled: debouncedSearch.trim() !== "" }
-  );
 
   let conversationsContent: JSX.Element[] | undefined = [];
 
@@ -106,10 +96,10 @@ const Sidebar = () => {
       </div>
       <div className="absolute top-28 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         <div className="grid gap-2 overflow-y-auto">
-          {!searchResults?.data ? (
+          {!searchResults ? (
             conversationsContent
-          ) : searchResults.data.users.length > 0 ? (
-            searchResults.data.users.map((result) => {
+          ) : searchResults.users.length > 0 ? (
+            searchResults.users.map((result) => {
               return (
                 <Contact
                   img={result.profile_picture || "default-pfp.jpg"}

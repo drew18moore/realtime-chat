@@ -98,12 +98,15 @@ const Sidebar = () => {
         <div className="grid gap-2 overflow-y-auto">
           {!searchResults ? (
             conversationsContent?.length === 0 ? (
-              <p className="px-5 text-center text-neutral-600 dark:text-neutral-500 absolute top-1/2 -translate-y-1/2 justify-self-center">Use the search bar above to find users to message.</p>
+              <p className="px-5 text-center text-neutral-600 dark:text-neutral-500 absolute top-1/2 -translate-y-1/2 justify-self-center">
+                Use the search bar above to find users to message.
+              </p>
             ) : (
               conversationsContent
             )
           ) : searchResults.users.length > 0 ? (
             searchResults.users.map((result) => {
+              const isCurrentUser = result.id === currentUser?.id;
               return (
                 <Contact
                   img={result.profile_picture || "default-pfp.jpg"}
@@ -112,6 +115,7 @@ const Sidebar = () => {
                   username={result.username}
                   key={result.id}
                   clearSearch={clearSearch}
+                  isCurrentUser={isCurrentUser}
                 />
               );
             })

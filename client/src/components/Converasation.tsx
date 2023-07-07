@@ -57,7 +57,7 @@ const Converasation: FC<ConverasationProps> = ({
     >
       <div className="flex gap-3 items-center">
         <div className="relative">
-          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative flex items-center justify-center bg-purple-100 text-purple-700">
+          <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-purple-100 text-purple-700">
             {conversationWithSelf ? (
               <CgLoadbarDoc size={"2rem"} />
             ) : (

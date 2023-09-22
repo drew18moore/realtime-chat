@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  server:
+    container_name: chat-server
+    restart: always
+    image: chat-server:latest
+    build: ./server
+    ports:
+      - 3000:3000
+  client:
+    container_name: chat-client
+    restart: always
+    image: chat-client:latest
+    build: ./client
+    ports:
+      - 4173:4173

@@ -1,0 +1,15 @@
+{
+  "name": "realtime-chat",
+  "version": "1.0.0",
+  "description": "A realtime chat application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

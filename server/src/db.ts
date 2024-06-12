@@ -1,15 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import postgres from "postgres";
 
-let db: PrismaClient;
+const sql = postgres("postgres://drew18moore:nC9mdSqEh0NT@ep-broad-union-740792.us-east-2.aws.neon.tech/neondb?sslmode=require");
 
-declare global {
-  var __db: PrismaClient | undefined;
-}
-
-if (!global.__db) {
-  global.__db = new PrismaClient();
-}
-
-db = global.__db;
-
-export { db };
+export default sql;

@@ -9,6 +9,7 @@ import messagesRouter from "./routes/messages";
 import conversationsRouter from "./routes/conversations";
 import { credentials } from "./middleware/credentials";
 import cookieParser from "cookie-parser";
+require('dotenv').config();
 
 const PORT = 3000;
 const app = express();

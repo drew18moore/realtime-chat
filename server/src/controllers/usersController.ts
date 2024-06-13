@@ -13,7 +13,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
       SELECT id, display_name, username, profile_picture
       FROM "User"
       WHERE username ILIKE ${'%' + search + '%'} OR display_name ILIKE ${'%' + search + '%'}
-      LIMIT ${parsedLimit} OFFSET ${(parsedPage - 1) * parsedLimit}
+      LIMIT ${parsedLimit} 
+      OFFSET ${(parsedPage - 1) * parsedLimit}
     `
     res.status(200).json({ users: users, numFound: users.length });
   } catch (err) {
@@ -31,11 +32,21 @@ export const editUser = async (req: Request, res: Response) => {
   try {
     const [user] = await sql<UserDetails[]>`
       UPDATE "User"
-      SET 
-        display_name = COALESCE(${displayNameTrimmed}, display_name),
-        username = COALESCE(${usernameTrimmed}, username),
-        profile_picture = COALESCE(${profile_picture}, profile_picture)
-      WHERE id = ${userIdParsed}
+      SET
+        display_name = CASE
+          WHEN ${displayNameTrimmed}::TEXT IS NOT NULL AND ${displayNameTrimmed}::TEXT != '' THEN ${displayNameTrimmed}::TEXT
+          ELSE display_name
+        END,
+        username = CASE
+          WHEN ${usernameTrimmed}::TEXT IS NOT NULL AND ${usernameTrimmed}::TEXT != '' THEN ${usernameTrimmed}::TEXT
+          ELSE username
+        END,
+        profile_picture = CASE
+          WHEN ${profile_picture}::TEXT IS NOT NULL AND ${profile_picture}::TEXT != '' THEN ${profile_picture}::TEXT
+          ELSE profile_picture
+        END
+      WHERE
+        id = ${userIdParsed}
       RETURNING id, display_name, username, profile_picture
   `;
 

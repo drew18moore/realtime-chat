@@ -3,8 +3,8 @@ import sql from "../db";
 import {
   ConversationDetails,
   ConversationWithParticipants,
-  GetConversationResponse,
   ParticipantDetails,
+  dbUser,
 } from "../types";
 ("../types");
 
@@ -102,73 +102,84 @@ export const newConversation = async (req: Request, res: Response) => {
 };
 
 export const getAllConversations = async (req: Request, res: Response) => {
+  type Conversation = {
+    id: number;
+    title: string | null;
+    participants: Participant[];
+    lastMessageSent:
+      | {
+          id: number;
+          message: string;
+          created_at: Date;
+        }
+      | undefined;
+  };
+  type Participant = {
+    isRead: boolean;
+    user: dbUser
+  }
+
   const { userId } = req.params;
   const userIdParsed = parseInt(userId);
+
   try {
-    const conversations = await sql<ConversationDetails[]>`
-      SELECT
-        c.id AS conversation_id,
-        c.title AS conversation_title,
-        m.id AS last_message_id,
-        m.message AS last_message_content,
-        m.created_at AS last_message_created_at,
-        cu."isRead" AS is_read,
-        u.id AS participant_id,
-        u.display_name AS participant_display_name,
-        u.username AS participant_username,
-        u.profile_picture AS participant_profile_picture
-      FROM
-        "Conversation" c
-        JOIN "ConversationUser" cu ON c.id = cu."conversationId"
-        JOIN "User" u ON cu."userId" = u.id
-        LEFT JOIN "Message" m ON m.id = (
-          SELECT m2.id
-          FROM "Message" m2
-          WHERE m2."conversationId" = c.id
-          ORDER BY m2.created_at DESC
-          LIMIT 1
+    const conversations = await sql<Conversation[]>`
+      SELECT c.id, c.title,
+        (
+          SELECT row_to_json(m)
+          FROM (
+            SELECT m.id, m.message, m.created_at
+            FROM "Message" m
+            WHERE m."conversationId" = c.id
+            ORDER BY m.created_at DESC
+            LIMIT 1
+          ) m
+        ) AS "lastMessageSent",
+        (
+          SELECT json_agg(p)
+          FROM (
+            SELECT p."isRead", json_build_object(
+              'id', u.id,
+              'username', u.username,
+              'display_name', u.display_name,
+              'profile_picture', u.profile_picture
+            ) AS user
+            FROM "ConversationUser" p
+            JOIN "User" u ON p."userId" = u.id
+            WHERE p."conversationId" = c.id
+          ) p
+        ) AS participants
+      FROM "Conversation" c
+      WHERE EXISTS (
+        SELECT 1
+        FROM "ConversationUser" p
+        WHERE p."conversationId" = c.id
+          AND p."userId" = ${userIdParsed}
+      )
+        AND EXISTS (
+          SELECT 1
+          FROM "Message" m
+          WHERE m."conversationId" = c.id
         )
-      WHERE
-        EXISTS (
-          SELECT 1 FROM "ConversationUser" cu
-          WHERE cu."conversationId" = c.id AND cu."userId" = ${userIdParsed}
-        )
-      ORDER BY
-        c."dateLastMessage" DESC;
+      ORDER BY c."dateLastMessage" DESC
     `;
-    // Process the results into the desired structure
-    const conversationMap: { [key: number]: GetConversationResponse } = {};
-    conversations.forEach((row: any) => {
-      const conversationId = row.conversation_id;
 
-      if (!conversationMap[conversationId]) {
-        conversationMap[conversationId] = {
-          id: row.conversation_id,
-          title: row.conversation_title,
-          participants: [],
-          lastMessageSent: row.last_message_id
-            ? {
-                id: row.last_message_id,
-                message: row.last_message_content,
-                created_at: row.last_message_created_at,
-              }
-            : undefined,
-          isRead: row.is_read,
-        };
-      }
+    const response = conversations.map((conversation) => {
+      let participants = conversation.participants.map(
+        (participant) => participant.user
+      );
+      let isRead = conversation.participants.find((p) => p.user.id === userIdParsed)?.isRead;
 
-      conversationMap[conversationId].participants.push({
-        id: row.participant_id,
-        display_name: row.participant_display_name,
-        username: row.participant_username,
-        profile_picture: row.participant_profile_picture,
-      });
+      return {
+        id: conversation.id,
+        title: conversation.title,
+        lastMessageSent: conversation.lastMessageSent,
+        participants: participants,
+        isRead: isRead,
+      };
     });
 
-    const conversationList: ConversationDetails[] =
-      Object.values(conversationMap);
-
-    res.status(200).json(conversationList);
+    res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });

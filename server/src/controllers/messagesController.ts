@@ -17,21 +17,21 @@ export const newMessage = async (req: Request, res: Response) => {
 
   try {
     const [newMessage] = await sql<MessageDetails[]>`
-    INSERT INTO "Messages" (message, author_id, conversation_id)
+    INSERT INTO "Message" (message, "authorId", "conversationId")
     VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
-      RETURNING id, message, author_id, created_at, is_edited, conversation_id
+      RETURNING id, message, "authorId", created_at, "isEdited", "conversationId"
     `;
 
     await sql`
       UPDATE "Conversation"
-      SET date_last_message = NOW()
+      SET "dateLastMessage" = NOW()
       WHERE id = ${parsedConversationId}
     `;
 
     await sql`
       UPDATE "ConversationUser"
-      SET is_read = FALSE
-      WHERE conversation_id = ${parsedConversationId} AND user_id <> ${parsedAuthorId}
+      SET "isRead" = FALSE
+      WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
     `;
 
     const response = {
@@ -99,7 +99,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   try {
     const [message] = await sql<MessageDetails[]>`
-      SELECT author_id
+      SELECT "authorId"
       FROM "Message"
       WHERE id = ${id}
     `;
@@ -136,8 +136,8 @@ export const editMessage = async (req: Request, res: Response) => {
 
   const id = parseInt(req.params.id);
   try {
-    const [message] = await sql<MessageDetails[]>`
-      SELECT author_id
+    const [message] = await sql<{ authorId: number }[]>`
+      SELECT "authorId"
       FROM "Message"
       WHERE id = ${id}
     `;
@@ -152,14 +152,11 @@ export const editMessage = async (req: Request, res: Response) => {
         .json({ message: "You can only edit your own messages" });
     }
 
-    if (!newMessageBody || newMessageBody.trim() === "")
-      return res.status(400).json({ message: "Message cannot be empty" });
-
     const [updatedMessage] = await sql<MessageDetails[]>`
       UPDATE "Message"
-      SET message = ${newMessageBody}, is_edited = TRUE
+      SET message = ${newMessageBody}, "isEdited" = TRUE
       WHERE id = ${id}
-      RETURNING id, message, author_id, created_at, is_edited, conversation_id
+      RETURNING id, message, "authorId", created_at, "isEdited", "conversationId"
     `;
 
     res.status(200).json(updatedMessage);

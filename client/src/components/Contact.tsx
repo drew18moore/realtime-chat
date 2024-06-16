@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useNewConversation } from "../hooks/useConversations";
 import { CgLoadbarDoc } from "react-icons/cg";
 import { MdVerified } from "react-icons/md";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ContactProps {
   img: string;
@@ -20,7 +21,9 @@ const Contact: FC<ContactProps> = ({
   clearSearch,
   isCurrentUser,
 }) => {
-  const { mutate: newConversation } = useNewConversation([id]);
+  const { currentUser } = useAuth();
+  const participants = currentUser!.id === id ? [id] : [id, currentUser!.id]
+  const { mutate: newConversation } = useNewConversation(participants);
 
   return (
     <div

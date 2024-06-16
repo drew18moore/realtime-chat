@@ -1,12 +1,89 @@
 import { Request, Response } from "express";
 import sql from "../db";
-import {
-  ConversationDetails,
-  ConversationWithParticipants,
-  ParticipantDetails,
-  dbUser,
-} from "../types";
+import { dbUser } from "../types";
 ("../types");
+
+type ConversationWithParticipants = {
+  id: number;
+  title: string;
+  created_at: Date;
+  dateLastMessage: Date;
+  participants: {
+    id: number;
+    userId: number;
+    display_name: string;
+    profile_picture: string;
+  }[];
+};
+
+const findConversationByParticipants = async (
+  currUserId: string,
+  participantIds: number[]
+) => {
+  try {
+    const allUserConversations = await sql<ConversationWithParticipants[]>`
+      SELECT 
+      c.id,
+      c.title,
+      c.created_at,
+      c."dateLastMessage",
+      json_agg(
+        json_build_object(
+          'id', cu.id,
+          'userId', cu."userId",
+          'display_name', u.display_name,
+          'profile_picture', u.profile_picture
+        )
+      ) as participants
+      FROM 
+        "Conversation" c
+      JOIN 
+        "ConversationUser" cu
+      ON 
+        c.id = cu."conversationId"
+      JOIN
+        "User" u
+      ON
+        cu."userId" = u.id
+      WHERE 
+        c.id IN (
+          SELECT "conversationId" 
+          FROM "ConversationUser" 
+          WHERE "userId" = ${currUserId}
+        )
+      GROUP BY 
+        c.id
+    `;
+
+    let conversationTargetId = -1;
+    const participants = allUserConversations.map((c) =>
+      c.participants.map((p) => p.userId)
+    );
+    for (let i = 0; i < participants.length; i++) {
+      if (participantIds.every((e) => participants[i].includes(e))) {
+        conversationTargetId = i;
+      }
+    }
+
+    if (conversationTargetId !== -1) {
+      const conversation = allUserConversations[conversationTargetId];
+      const response = {
+        id: conversation.id,
+        title: conversation.title,
+        participants: conversation.participants.map((p) => ({
+          id: p.userId,
+          display_name: p.display_name,
+          profile_picture: p.profile_picture,
+        })),
+      };
+      return response;
+    }
+
+    return null;
+  } catch (err) {
+    console.error(err);
+  }
+};
 
 export const newConversation = async (req: Request, res: Response) => {
   const participantIds: number[] = req.body.participants;
@@ -14,85 +91,70 @@ export const newConversation = async (req: Request, res: Response) => {
   if (!participantIds || participantIds.length === 0)
     res.status(400).json({ message: "Must provide array of participants" });
 
-  const creatorId = req.userId;
-  const creatorIdParsed = parseInt(creatorId);
-
-  const participants = [creatorIdParsed, ...participantIds];
-  const conversationWithSelf =
-    participantIds.length === 1 && participantIds[0] === creatorIdParsed;
-
   try {
-    // Conditionally write query
-    let existingConversation: ConversationWithParticipants[];
-    if (conversationWithSelf) {
-      existingConversation = await sql<ConversationWithParticipants[]>`
-      SELECT c.id, c.title, cu.user_id
-      FROM "Conversation" c
-      JOIN "ConversationUser" cu ON c.id = cu.conversation_id
-      WHERE cu.user_id = ${creatorIdParsed}
-    `;
-    } else {
-      existingConversation = await sql`
-      SELECT c.id, c.title, cu.user_id
-      FROM "Conversation" c
-      JOIN "ConversationUser" cu ON c.id = cu.conversation_id
-      WHERE cu.user_id = ANY(${participants})
-      GROUP BY c.id, cu.user_id
-      HAVING COUNT(DISTINCT cu.user_id) = ${participants.length}
-    `;
+    const existingConversation = await findConversationByParticipants(
+      req.userId,
+      participantIds
+    );
+
+    if (existingConversation !== null) {
+      return res.status(200).json(existingConversation);
     }
 
-    if (existingConversation.length > 0) {
-      const participantDetails = await sql<ParticipantDetails[]>`
-        SELECT u.id, u.display_name, u.profile_picture
-        FROM "User" u
-        JOIN "ConversationUser" cu ON u.id = cu.user_id
-        WHERE cu.conversation_id = ${existingConversation[0].id}
-      `;
+    const [conversation] = await sql<{ id: number; title: string | null }[]>`
+      INSERT INTO "Conversation" (title)
+      VALUES (NULL)
+      RETURNING id, title
+    `;
 
-      const response = {
-        ...existingConversation[0],
-        participants: existingConversation[0].participants.map(
-          (participant) => ({
-            id: participant.id,
-            display_name: participant.display_name,
-            profile_picture: participant.profile_picture,
-          })
-        ),
-      };
-      return res.status(200).json(response);
-    }
+    const conversationId = conversation.id;
+    // Create the insert values for participants
+    const participantValues = participantIds.map(participantId => `(${participantId}, ${conversationId}, true)`).join(', ');
 
-    const conversation = await sql<ConversationDetails[]>`
-    INSERT INTO "Conversation" (title)
-    VALUES (NULL)
-    RETURNING id, title
-  `;
+    // Insert participants into ConversationUser
+    await sql.unsafe(`
+      INSERT INTO "ConversationUser" ("userId", "conversationId", "isRead")
+      VALUES ${participantValues}
+    `);
 
-    const conversationId = conversation[0].id;
+    const [createdConversation] = await sql<ConversationWithParticipants[]>`
+      SELECT 
+      c.id,
+      c.title,
+      c.created_at,
+      c."dateLastMessage",
+      json_agg(
+        json_build_object(
+          'id', cu.id,
+          'userId', cu."userId",
+          'display_name', u.display_name,
+          'profile_picture', u.profile_picture
+        )
+      ) as participants
+      FROM 
+        "Conversation" c
+      JOIN 
+        "ConversationUser" cu
+      ON 
+        c.id = cu."conversationId"
+      JOIN
+        "User" u
+      ON
+        cu."userId" = u.id
+      WHERE 
+        c.id = ${conversationId}
+      GROUP BY 
+        c.id
+    `;
 
-    const participantData = participants.map((participantId) => ({
-      userId: participantId,
-      conversationId,
-    }));
-
-    await sql`
-    INSERT INTO "ConversationUser" (user_id, conversation_id)
-    SELECT userId, conversationId FROM json_populate_recordset(NULL::"ConversationUser", ${JSON.stringify(
-      participantData
-    )})
-  `;
-
-    const participantDetails = await sql<ParticipantDetails[]>`
-    SELECT u.id, u.display_name, u.profile_picture
-    FROM users u
-    JOIN "ConversationUser" cu ON u.id = cu.user_id
-    WHERE cu.conversation_id = ${conversationId}
-  `;
     const response = {
-      ...conversation,
-      messages: undefined,
-      participants: participantDetails,
+      id: createdConversation.id,
+      title: createdConversation.title,
+      participants: createdConversation.participants.map((p) => ({
+        id: p.userId,
+        display_name: p.display_name,
+        profile_picture: p.profile_picture,
+      })),
     };
     res.status(201).json(response);
   } catch (err) {
@@ -116,8 +178,8 @@ export const getAllConversations = async (req: Request, res: Response) => {
   };
   type Participant = {
     isRead: boolean;
-    user: dbUser
-  }
+    user: dbUser;
+  };
 
   const { userId } = req.params;
   const userIdParsed = parseInt(userId);
@@ -168,7 +230,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
       let participants = conversation.participants.map(
         (participant) => participant.user
       );
-      let isRead = conversation.participants.find((p) => p.user.id === userIdParsed)?.isRead;
+      let isRead = conversation.participants.find(
+        (p) => p.user.id === userIdParsed
+      )?.isRead;
 
       return {
         id: conversation.id,

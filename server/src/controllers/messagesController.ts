@@ -19,7 +19,7 @@ export const newMessage = async (req: Request, res: Response) => {
     const [newMessage] = await sql<MessageDetails[]>`
     INSERT INTO "Message" (message, "authorId", "conversationId")
     VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
-      RETURNING id, message, "authorId", created_at, "isEdited", "conversationId"
+      RETURNING id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
     `;
 
     await sql`
@@ -80,7 +80,7 @@ export const getMessagesInConversation = async (
     `;
 
     const messages = await sql<MessageDetails[]>`
-      SELECT id, message, "authorId", created_at, "isEdited", "conversationId"
+      SELECT id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
       FROM "Message"
       WHERE "conversationId" = ${parsedConversationId}
       ORDER BY created_at DESC

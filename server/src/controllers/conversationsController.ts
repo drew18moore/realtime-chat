@@ -101,23 +101,26 @@ export const newConversation = async (req: Request, res: Response) => {
       return res.status(200).json(existingConversation);
     }
 
-    const [conversation] = await sql<{ id: number; title: string | null }[]>`
+    await sql.begin(async (sql) => {
+      const [conversation] = await sql<{ id: number; title: string | null }[]>`
       INSERT INTO "Conversation" (title)
       VALUES (NULL)
       RETURNING id, title
     `;
 
-    const conversationId = conversation.id;
-    // Create the insert values for participants
-    const participantValues = participantIds.map(participantId => `(${participantId}, ${conversationId}, true)`).join(', ');
+      const conversationId = conversation.id;
+      // Create the insert values for participants
+      const participantValues = participantIds
+        .map((participantId) => `(${participantId}, ${conversationId}, true)`)
+        .join(", ");
 
-    // Insert participants into ConversationUser
-    await sql.unsafe(`
+      // Insert participants into ConversationUser
+      await sql.unsafe(`
       INSERT INTO "ConversationUser" ("userId", "conversationId", "isRead")
       VALUES ${participantValues}
     `);
 
-    const [createdConversation] = await sql<ConversationWithParticipants[]>`
+      const [createdConversation] = await sql<ConversationWithParticipants[]>`
       SELECT 
       c.id,
       c.title,
@@ -147,16 +150,17 @@ export const newConversation = async (req: Request, res: Response) => {
         c.id
     `;
 
-    const response = {
-      id: createdConversation.id,
-      title: createdConversation.title,
-      participants: createdConversation.participants.map((p) => ({
-        id: p.userId,
-        display_name: p.display_name,
-        profile_picture: p.profile_picture,
-      })),
-    };
-    res.status(201).json(response);
+      const response = {
+        id: createdConversation.id,
+        title: createdConversation.title,
+        participants: createdConversation.participants.map((p) => ({
+          id: p.userId,
+          display_name: p.display_name,
+          profile_picture: p.profile_picture,
+        })),
+      };
+      res.status(201).json(response);
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });

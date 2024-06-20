@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { CgLoadbarDoc } from "react-icons/cg";
 import { MdVerified } from "react-icons/md";
@@ -45,11 +45,6 @@ const Converasation: FC<ConverasationProps> = ({
     };
     navigate(`/${conversationId}`, { state });
   };
-
-  useEffect(() => {
-    console.log(dateLastMessage);
-    console.log(dateFormatted);
-  }, [dateFormatted, dateLastMessage])
 
   return (
     <div

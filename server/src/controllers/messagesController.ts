@@ -16,32 +16,34 @@ export const newMessage = async (req: Request, res: Response) => {
   const parsedConversationId = parseInt(conversationId);
 
   try {
-    const [newMessage] = await sql<MessageDetails[]>`
-    INSERT INTO "Message" (message, "authorId", "conversationId")
-    VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
-      RETURNING id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
-    `;
-
-    await sql`
-      UPDATE "Conversation"
-      SET "dateLastMessage" = NOW()
-      WHERE id = ${parsedConversationId}
-    `;
-
-    await sql`
-      UPDATE "ConversationUser"
-      SET "isRead" = FALSE
-      WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
-    `;
-
-    const response = {
-      id: newMessage.id,
-      message: newMessage.message,
-      authorId: newMessage.authorId,
-      created_at: newMessage.created_at,
-    };
-
-    res.status(200).json(response);
+    await sql.begin(async (sql) => {
+      const [newMessage] = await sql<MessageDetails[]>`
+      INSERT INTO "Message" (message, "authorId", "conversationId")
+      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
+        RETURNING id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      `;
+  
+      await sql`
+        UPDATE "Conversation"
+        SET "dateLastMessage" = NOW()
+        WHERE id = ${parsedConversationId}
+      `;
+  
+      await sql`
+        UPDATE "ConversationUser"
+        SET "isRead" = FALSE
+        WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
+      `;
+  
+      const response = {
+        id: newMessage.id,
+        message: newMessage.message,
+        authorId: newMessage.authorId,
+        created_at: newMessage.created_at,
+      };
+  
+      res.status(200).json(response);
+    })
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { db } from "../db";
+import sql from "../db";
+import { MessageDetails } from "../types";
 
 export const newMessage = async (req: Request, res: Response) => {
   const { message, conversationId } = req.body;
@@ -15,50 +16,34 @@ export const newMessage = async (req: Request, res: Response) => {
   const parsedConversationId = parseInt(conversationId);
 
   try {
-    const newMessage = await db.message.create({
-      data: {
-        message,
-        authorId: parsedAuthorId,
-        conversationId: parsedConversationId,
-      },
-      include: {
-        conversation: {
-          include: {
-            participants: true,
-          },
-        },
-      },
-    });
-
-    // Update dateLastMessage
-    const conversation = newMessage.conversation;
-    if (conversation) {
-      await db.conversation.update({
-        where: { id: conversation.id },
-        data: { dateLastMessage: new Date() },
-      });
-    }
-
-    // Set all participants' isRead to false except author
-    conversation?.participants
-      .filter((participant) => participant.userId !== parsedAuthorId)
-      .map(async (participant) => {
-        await db.conversationUser.updateMany({
-          where: {
-            conversationId: parsedConversationId,
-            userId: participant.userId,
-          },
-          data: { isRead: false },
-        });
-      });
-
-    const response = {
-      id: newMessage.id,
-      message: newMessage.message,
-      authorId: newMessage.authorId,
-      created_at: newMessage.created_at,
-    };
-    res.status(200).json(response);
+    await sql.begin(async (sql) => {
+      const [newMessage] = await sql<MessageDetails[]>`
+      INSERT INTO "Message" (message, "authorId", "conversationId")
+      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
+        RETURNING id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      `;
+  
+      await sql`
+        UPDATE "Conversation"
+        SET "dateLastMessage" = NOW()
+        WHERE id = ${parsedConversationId}
+      `;
+  
+      await sql`
+        UPDATE "ConversationUser"
+        SET "isRead" = FALSE
+        WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
+      `;
+  
+      const response = {
+        id: newMessage.id,
+        message: newMessage.message,
+        authorId: newMessage.authorId,
+        created_at: newMessage.created_at,
+      };
+  
+      res.status(200).json(response);
+    })
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });
@@ -79,43 +64,32 @@ export const getMessagesInConversation = async (
   const parsedConversationId = parseInt(conversationId as string);
   const parsedPage = parseInt(page as string);
   const parsedLimit = parseInt(limit as string);
+
   try {
-    const conversation = await db.conversation.findUnique({
-      where: { id: parsedConversationId },
-      include: { participants: true },
-    });
-    if (
-      conversation?.participants[0].userId !== parsedCurrentUserId &&
-      conversation?.participants[1].userId !== parsedCurrentUserId
-    ) {
+    const conversationUserIds = await sql<{ userId: number }[]>`
+      SELECT "userId" FROM "ConversationUser"
+      WHERE "conversationId" = ${parsedConversationId}
+    `;
+
+    if (!conversationUserIds.some(user => user.userId === parsedCurrentUserId)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    await db.conversationUser.updateMany({
-      where: {
-        conversationId: parsedConversationId,
-        userId: parsedCurrentUserId,
-      },
-      data: { isRead: true },
-    });
 
-    let messages;
-    if (page) {
-      messages = await db.message.findMany({
-        where: {
-          conversationId: parsedConversationId,
-        },
-        orderBy: { created_at: "desc" },
-        skip: (parsedPage - 1) * parsedLimit,
-        take: parsedLimit,
-      });
-    } else {
-      messages = await db.message.findMany({
-        where: {
-          conversationId: parsedConversationId,
-        },
-        orderBy: { created_at: "desc" },
-      });
-    }
+    await sql`
+      UPDATE "ConversationUser"
+      SET "isRead" = TRUE
+      WHERE "conversationId" = ${parsedConversationId} AND "userId" = ${parsedCurrentUserId}
+    `;
+
+    const messages = await sql<MessageDetails[]>`
+      SELECT id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      FROM "Message"
+      WHERE "conversationId" = ${parsedConversationId}
+      ORDER BY created_at DESC
+      OFFSET ${(parsedPage - 1) * parsedLimit}
+      LIMIT ${parsedLimit}
+    `;
+
     res.status(200).json(messages);
   } catch (err) {
     console.error(err);
@@ -126,9 +100,11 @@ export const getMessagesInConversation = async (
 export const deleteMessage = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   try {
-    const message = await db.message.findUnique({
-      where: { id },
-    });
+    const [message] = await sql<MessageDetails[]>`
+      SELECT "authorId"
+      FROM "Message"
+      WHERE id = ${id}
+    `;
 
     if (message?.authorId !== parseInt(req.userId)) {
       return res
@@ -140,14 +116,16 @@ export const deleteMessage = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Message not found" });
     }
 
-    await db.message.delete({
-      where: { id },
-    });
+    await sql`
+      DELETE FROM "Message"
+      WHERE id = ${id}
+    `;
 
     res
       .status(200)
       .json({ message: "Message deleted successfully", messageId: id });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err });
   }
 };
@@ -160,9 +138,11 @@ export const editMessage = async (req: Request, res: Response) => {
 
   const id = parseInt(req.params.id);
   try {
-    const message = await db.message.findUnique({
-      where: { id },
-    });
+    const [message] = await sql<{ authorId: number }[]>`
+      SELECT "authorId"
+      FROM "Message"
+      WHERE id = ${id}
+    `;
 
     if (!message) {
       return res.status(404).json({ message: "Message not found" });
@@ -174,21 +154,16 @@ export const editMessage = async (req: Request, res: Response) => {
         .json({ message: "You can only edit your own messages" });
     }
 
-    if (!newMessageBody || newMessageBody.trim() === "")
-      return res.status(400).json({ message: "Message cannot be empty" });
+    const [updatedMessage] = await sql<MessageDetails[]>`
+      UPDATE "Message"
+      SET message = ${newMessageBody}, "isEdited" = TRUE
+      WHERE id = ${id}
+      RETURNING id, message, "authorId", created_at, "isEdited", "conversationId"
+    `;
 
-    const updatedMessage = await db.message.update({
-      where: {
-        id,
-      },
-      data: {
-        message: newMessageBody,
-        isEdited: true,
-      },
-    });
-
-    res.status(200).json({ updatedMessage });
+    res.status(200).json(updatedMessage);
   } catch (err) {
+    console.error(err);
     res.status(500).json(err);
   }
 };

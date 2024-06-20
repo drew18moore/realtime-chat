@@ -16,9 +16,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [currentUser, setCurrentUser] = useState<User>();
 
-  useEffect(() => {
-    console.log(currentUser);
-  }, [currentUser]);
+  // useEffect(() => {
+  //   console.log(currentUser);
+  // }, [currentUser]);
 
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>

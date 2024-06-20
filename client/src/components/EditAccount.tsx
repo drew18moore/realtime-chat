@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useEditAccount } from "../hooks/auth/useEditAccount";
 import Resizer from "react-image-file-resizer";
 // @ts-expect-error https://github.com/onurzorluer/react-image-file-resizer/issues/68
@@ -25,7 +25,6 @@ const EditAccount = () => {
     const display_name = displayNameRef?.current?.value.trim() as string;
     const username = usernameRef?.current?.value.trim().toLowerCase() as string;
     const profile_picture = profileImgBase64 as string;
-    console.log(display_name, username);
     editAccount({ display_name, username, profile_picture });
   };
 

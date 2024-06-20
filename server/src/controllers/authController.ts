@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { db } from "../db";
+import sql from "../db";
 import jwt from "jsonwebtoken";
+import { UserCreationResponse, dbUser } from "../types";
 
 interface Token {
   userId: string;
@@ -19,13 +20,19 @@ export const registerNewUser = async (req: Request, res: Response) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await db.user.create({
-      data: {
-        display_name,
-        username,
-        password: hashedPassword,
-      },
-    });
+    
+    const [existingUser] = await sql<dbUser[]>`SELECT * FROM "User" WHERE username = ${username}`;
+    if (existingUser) {
+      return res.status(403).json({ message: "Username already in use" });
+    }
+
+    const [user] = await sql<UserCreationResponse[]>`
+      INSERT INTO "User" 
+        (display_name, username, password) 
+      VALUES 
+        (${ display_name }, ${ username }, ${ hashedPassword })
+      RETURNING id, display_name, username
+    `
 
     const accessToken = jwt.sign(
       { userId: user.id },
@@ -39,10 +46,11 @@ export const registerNewUser = async (req: Request, res: Response) => {
       { expiresIn: "7d" }
     );
 
-    await db.user.update({
-      where: { id: user.id },
-      data: { refresh_token: refreshToken },
-    });
+    await sql`
+      UPDATE "User"
+      SET refresh_token = ${refreshToken}
+      WHERE id = ${user.id}
+    `;
 
     const response = {
       id: user.id,
@@ -60,8 +68,7 @@ export const registerNewUser = async (req: Request, res: Response) => {
 
     res.status(200).json(response);
   } catch (err: any) {
-    if (err.code === "P2002")
-      return res.status(403).json({ message: "Username already in use" });
+    console.error(err);
     res.status(500).json(err);
   }
 };
@@ -75,7 +82,7 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Password is required" });
 
   try {
-    const user = await db.user.findFirst({ where: { username } });
+    const [user] = await sql<dbUser[]>`SELECT * FROM "User" WHERE username = ${username}`;
     if (!user) return res.status(404).json({ message: "User not found" });
 
     if (!(await bcrypt.compare(password, user.password)))
@@ -93,10 +100,11 @@ export const loginUser = async (req: Request, res: Response) => {
       { expiresIn: "7d" }
     );
 
-    await db.user.update({
-      where: { id: user.id },
-      data: { refresh_token: refreshToken },
-    });
+    await sql`
+      UPDATE "User"
+      SET refresh_token = ${refreshToken}
+      WHERE id = ${user.id}
+    `;
 
     const response = {
       id: user.id,
@@ -126,9 +134,7 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
     const refreshToken = cookies.jwt as string;
-    const user = await db.user.findFirst({
-      where: { refresh_token: refreshToken },
-    });
+    const [user] = await sql<dbUser[]>`SELECT * FROM "User" WHERE refresh_token = ${refreshToken}`;
     if (!user) return res.status(403).json({ message: "Forbidden" });
 
     jwt.verify(
@@ -157,9 +163,7 @@ export const handlePersistentLogin = async (req: Request, res: Response) => {
     if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
 
     const refreshToken = cookies.jwt as string;
-    const user = await db.user.findFirst({
-      where: { refresh_token: refreshToken },
-    });
+    const [user] = await sql<dbUser[]>`SELECT * FROM "User" WHERE refresh_token = ${refreshToken}`;
     if (!user) return res.status(403).json({ message: "Forbidden" });
 
     jwt.verify(
@@ -197,9 +201,7 @@ export const handleLogout = async (req: Request, res: Response) => {
     if (!cookies?.jwt) return res.sendStatus(204);
 
     const refreshToken = cookies.jwt;
-    const user = await db.user.findFirst({
-      where: { refresh_token: refreshToken },
-    });
+    const [user] = await sql<dbUser[]>`SELECT * FROM "User" WHERE refresh_token = ${refreshToken}`;
     if (!user) {
       res.clearCookie("jwt", {
         httpOnly: true,
@@ -211,10 +213,11 @@ export const handleLogout = async (req: Request, res: Response) => {
     }
 
     // Delete refresh token from db
-    await db.user.update({
-      where: { id: user.id },
-      data: { refresh_token: "" },
-    });
+    await sql`
+      UPDATE "User"
+      SET refresh_token = ''
+      WHERE id = ${user.id}
+    `;
 
     res.clearCookie("jwt", {
       httpOnly: true,

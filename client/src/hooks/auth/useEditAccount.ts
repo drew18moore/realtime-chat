@@ -41,7 +41,6 @@ export const useEditAccount = () => {
         );
       },
       onSuccess: (data) => {
-        console.log(data);
         setCurrentUser((prev) => ({
           ...prev!,
           display_name: data.display_name,

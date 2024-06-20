@@ -1,15 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import postgres from "postgres";
 
-let db: PrismaClient;
+require('dotenv').config();
 
-declare global {
-  var __db: PrismaClient | undefined;
-}
+const env = process.env.DATABASE_URL
+const sql = postgres(env as string);
 
-if (!global.__db) {
-  global.__db = new PrismaClient();
-}
-
-db = global.__db;
-
-export { db };
+export default sql;

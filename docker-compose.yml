@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: chat
+      PGDATA: /data/postgres
+    restart: unless-stopped
+    ports:
+      - "5332:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./server/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    
+  server:
+    build: ./server
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
+      - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
+    container_name: chat-server
+    restart: unless-stopped
+    image: chat-server:latest
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    ports:
+      - 4173:4173
+    container_name: social-client
+    restart: always
+    image: social-client:latest
+    depends_on:
+      - server
+
+volumes:
+  db: {}

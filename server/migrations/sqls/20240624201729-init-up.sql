@@ -22,7 +22,6 @@ CREATE TABLE IF NOT EXISTS "Conversation" (
 CREATE TABLE IF NOT EXISTS "Message" (
     id SERIAL PRIMARY KEY,
     message TEXT NOT NULL,
-    img TEXT NOT NULL DEFAULT '',
     "authorId" INT NOT NULL,
     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "conversationId" INT,

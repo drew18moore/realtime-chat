@@ -21,6 +21,7 @@ const Chat = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [messageToEdit, setMessageToEdit] = useState<Message | null>(null);
   const [imgBase64, setImgBase64] = useState("");
+  const [showMoreClicked, setShowMoreClicked] = useState(false);
 
   const LIMIT = 20;
   const { data: messages, fetchNextPage } = useGetMessagesInfinite(
@@ -68,9 +69,12 @@ const Chat = () => {
   }, [conversationId]);
 
   useEffect(() => {
-    if (messagesContainerRef.current) {
+    console.log("MESSAGES UPDATED. showMoreClicked:", showMoreClicked);
+    if (messagesContainerRef.current && !showMoreClicked) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
+    } else if (showMoreClicked) {
+      setShowMoreClicked(false);
     }
   }, [messages]);
 
@@ -110,7 +114,10 @@ const Chat = () => {
         >
           {messages?.pages[messages.pages.length - 1].length! >= LIMIT && (
             <button
-              onClick={() => fetchNextPage()}
+              onClick={() => {
+                setShowMoreClicked(true);
+                fetchNextPage()
+              }}
               className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto"
             >
               Show More

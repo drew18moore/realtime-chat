@@ -55,7 +55,7 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="w-full px-5 flex flex-col gap-2 relative"
+      className="absolute bottom-0 w-full h-20 px-5 flex items-center gap-2"
     >
       {imgBase64 && (
         <div className="absolute top-0 -translate-y-full">

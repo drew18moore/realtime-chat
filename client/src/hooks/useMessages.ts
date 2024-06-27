@@ -140,6 +140,8 @@ export const useNewMessage = (
             return updatedConversations;
           }
         );
+
+        console.log("IMG:", data.img);
         // Send to other user
         socket.emit("send-message", {
           id: data.id,

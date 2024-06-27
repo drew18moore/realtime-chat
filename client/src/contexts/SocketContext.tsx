@@ -53,7 +53,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket?.on("receive-message", (receivedMessage) => {
-      const { id, conversationId, recipientId, authorId, message, timeSent } =
+      const { id, conversationId, recipientId, authorId, message, img, timeSent } =
         receivedMessage;
       const isViewingConversation =
         pathnameRef.current === `/${conversationId}`;
@@ -94,6 +94,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             pages[0].unshift({
               id,
               message,
+              img,
               authorId,
               created_at: timeSent,
               isEdited: false,

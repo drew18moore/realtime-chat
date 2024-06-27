@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
       recipientId,
       conversationId,
       message,
+      img,
       timeSent,
     }: {
       id: number;
@@ -63,6 +64,7 @@ io.on("connection", (socket) => {
       recipientId: number;
       conversationId: number;
       message: string;
+      img: string;
       timeSent: Date;
     }) => {
       socket.broadcast.to(recipientId.toString()).emit("receive-message", {
@@ -71,6 +73,7 @@ io.on("connection", (socket) => {
         recipientId,
         conversationId,
         message,
+        img,
         timeSent,
       });
     }

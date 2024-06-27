@@ -32,7 +32,8 @@ const Chat = () => {
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
     state?.recipient.id,
-    message
+    message,
+    imgBase64,
   );
 
   const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
@@ -47,7 +48,7 @@ const Chat = () => {
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (message.trim() === "") {
+    if (message.trim() === "" && imgBase64 === "") {
       setMessage("");
       return;
     }
@@ -64,12 +65,13 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    setMessage("");
+    setImgBase64("");
     setMessageToEdit(null);
     inputRef.current?.focus();
   }, [conversationId]);
 
   useEffect(() => {
-    console.log("MESSAGES UPDATED. showMoreClicked:", showMoreClicked);
     if (messagesContainerRef.current && !showMoreClicked) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
@@ -81,6 +83,7 @@ const Chat = () => {
   useEffect(() => {
     setMessage("");
     setMessageToEdit(null);
+    setImgBase64("");
   }, [messageHasBeenSent, messageHasBeenUpdated]);
 
   return (

@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import MessageDropdown from "./MessageDropdown";
 
@@ -8,7 +8,11 @@ interface MessageProps {
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
 }
 
-const Message: FC<MessageProps> = ({ message, isCurrentUser, setMessageToEdit }) => {
+const Message: FC<MessageProps> = ({
+  message,
+  isCurrentUser,
+  setMessageToEdit,
+}) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   // Format datetime
@@ -68,9 +72,14 @@ const Message: FC<MessageProps> = ({ message, isCurrentUser, setMessageToEdit })
             isCurrentUser
               ? "bg-blue-600 text-white"
               : "bg-neutral-200 dark:bg-neutral-800 dark:text-white"
-          } w-fit rounded-[1.25rem] px-3 py-[0.5rem] text-base leading-5`}
+          } w-fit rounded-[1.25rem] px-2 py-[0.5rem] text-base leading-5 flex flex-col gap-1`}
         >
-          {message.message}
+          {message.img !== "" && (
+            <div className="rounded-xl overflow-hidden">
+              <img src={message.img} alt="Message Image" />
+            </div>
+          )}
+          {message.message !== "" && <p className="px-1">{message.message}</p>}
         </div>
       </div>
       <div

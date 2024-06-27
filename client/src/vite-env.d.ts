@@ -10,6 +10,7 @@ type User = {
 type Message = {
   id: number;
   message: string;
+  img: string;
   authorId: number;
   created_at: Date;
   isEdited: boolean;

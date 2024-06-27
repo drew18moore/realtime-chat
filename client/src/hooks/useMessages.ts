@@ -89,7 +89,8 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
 export const useNewMessage = (
   conversationId: number,
   recipientId: number,
-  message: string
+  message: string,
+  img: string,
 ) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
@@ -105,6 +106,7 @@ export const useNewMessage = (
       const res = await axiosPrivate.post("/api/messages/new", {
         message: message,
         conversationId: conversationId,
+        img: img,
       });
       return res.data;
     },
@@ -145,6 +147,7 @@ export const useNewMessage = (
           recipientId,
           conversationId,
           message: data.message,
+          img: data.img,
           timeSent: data.created_at,
         });
       },

@@ -135,7 +135,7 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
         <button
           type="submit"
           className={`bg-neutral-200 rounded-full h-12 aspect-square flex items-center justify-center p-2.5 ${
-            value.trim() === ""
+            value.trim() === "" && imgBase64 === ""
               ? "text-neutral-400 cursor-default"
               : "text-blue-600"
           } dark:bg-neutral-800`}

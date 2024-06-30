@@ -51,7 +51,7 @@ const Sidebar = () => {
       );
       return (
         <Converasation
-          lastMessage={conversation.lastMessageSent?.message}
+          lastMessageSent={conversation.lastMessageSent}
           dateLastMessage={
             conversation.lastMessageSent?.created_at
               ? new Date(conversation.lastMessageSent?.created_at)

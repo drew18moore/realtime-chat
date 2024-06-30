@@ -176,6 +176,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
       | {
           id: number;
           message: string;
+          img: string;
           created_at: Date;
         }
       | undefined;
@@ -194,7 +195,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
         (
           SELECT row_to_json(m)
           FROM (
-            SELECT m.id, m.message, m.created_at::timestamptz AS created_at
+            SELECT m.id, m.message, m.img, m.created_at::timestamptz AS created_at
             FROM "Message" m
             WHERE m."conversationId" = c.id
             ORDER BY m.created_at DESC

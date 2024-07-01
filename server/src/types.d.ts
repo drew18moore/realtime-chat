@@ -83,6 +83,7 @@
   export type MessageDetails = {
     id: number;
     message: string;
+    img: string;
     authorId: number;
     created_at: Date;
     isEdited: boolean;

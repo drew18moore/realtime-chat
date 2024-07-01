@@ -10,6 +10,7 @@ type User = {
 type Message = {
   id: number;
   message: string;
+  img: string;
   authorId: number;
   created_at: Date;
   isEdited: boolean;
@@ -28,6 +29,7 @@ type Conversation = {
     | {
         id: number;
         message: string;
+        img: string;
         created_at: Date;
       }
     | undefined;

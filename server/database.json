@@ -1,0 +1,8 @@
+{
+  "dev": {
+    "driver": "pg",
+    "url": { "ENV": "DATABASE_URL"},
+    "ssl": true,
+    "multipleStatements": true
+  }, "sql-file": true
+}

@@ -89,7 +89,8 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
 export const useNewMessage = (
   conversationId: number,
   recipientId: number,
-  message: string
+  message: string,
+  img: string,
 ) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
@@ -105,6 +106,7 @@ export const useNewMessage = (
       const res = await axiosPrivate.post("/api/messages/new", {
         message: message,
         conversationId: conversationId,
+        img: img,
       });
       return res.data;
     },
@@ -130,6 +132,7 @@ export const useNewMessage = (
               lastMessageSent: {
                 id: data.id,
                 message: data.message,
+                img: data.img,
                 created_at: data.created_at,
               },
             };
@@ -138,6 +141,8 @@ export const useNewMessage = (
             return updatedConversations;
           }
         );
+
+        console.log("IMG:", data.img);
         // Send to other user
         socket.emit("send-message", {
           id: data.id,
@@ -145,6 +150,7 @@ export const useNewMessage = (
           recipientId,
           conversationId,
           message: data.message,
+          img: data.img,
           timeSent: data.created_at,
         });
       },
@@ -206,6 +212,7 @@ export const useDeleteMessage = (conversationId: number) => {
                 lastMessageSent = {
                   id: newLastMessageSent!.id,
                   message: newLastMessageSent!.message,
+                  img: newLastMessageSent!.img,
                   created_at: newLastMessageSent!.created_at,
                 };
               }

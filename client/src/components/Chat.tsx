@@ -20,6 +20,8 @@ const Chat = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [messageToEdit, setMessageToEdit] = useState<Message | null>(null);
+  const [imgBase64, setImgBase64] = useState("");
+  const [showMoreClicked, setShowMoreClicked] = useState(false);
 
   const LIMIT = 20;
   const { data: messages, fetchNextPage } = useGetMessagesInfinite(
@@ -30,7 +32,8 @@ const Chat = () => {
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
     state?.recipient.id,
-    message
+    message,
+    imgBase64,
   );
 
   const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
@@ -45,7 +48,7 @@ const Chat = () => {
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (message.trim() === "") {
+    if (message.trim() === "" && imgBase64 === "") {
       setMessage("");
       return;
     }
@@ -62,20 +65,25 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    setMessage("");
+    setImgBase64("");
     setMessageToEdit(null);
     inputRef.current?.focus();
   }, [conversationId]);
 
   useEffect(() => {
-    if (messagesContainerRef.current) {
+    if (messagesContainerRef.current && !showMoreClicked) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
+    } else if (showMoreClicked) {
+      setShowMoreClicked(false);
     }
   }, [messages]);
 
   useEffect(() => {
     setMessage("");
     setMessageToEdit(null);
+    setImgBase64("");
   }, [messageHasBeenSent, messageHasBeenUpdated]);
 
   return (
@@ -102,14 +110,17 @@ const Chat = () => {
         </h1>
       </div>
 
-      <div className="absolute top-14 bottom-20 w-full flex flex-col justify-end">
+      <div className="absolute top-14 bottom-20 min-h-0 w-full flex flex-col justify-end">
         <div
           ref={messagesContainerRef}
           className="grid gap-2 p-2 pb-8 overflow-y-auto relative"
         >
           {messages?.pages[messages.pages.length - 1].length! >= LIMIT && (
             <button
-              onClick={() => fetchNextPage()}
+              onClick={() => {
+                setShowMoreClicked(true);
+                fetchNextPage()
+              }}
               className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto"
             >
               Show More
@@ -144,6 +155,8 @@ const Chat = () => {
           messageToEdit={messageToEdit}
           setMessageToEdit={setMessageToEdit}
           inputRef={inputRef}
+          imgBase64={imgBase64}
+          setImgBase64={setImgBase64}
         />
       )}
     </div>

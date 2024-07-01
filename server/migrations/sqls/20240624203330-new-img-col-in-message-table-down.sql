@@ -1,0 +1,1 @@
+ALTER TABLE "Message" DROP COLUMN "img";

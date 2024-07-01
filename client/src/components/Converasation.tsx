@@ -4,7 +4,12 @@ import { CgLoadbarDoc } from "react-icons/cg";
 import { MdVerified } from "react-icons/md";
 
 interface ConverasationProps {
-  lastMessage: string | undefined;
+  lastMessageSent?: {
+    id: number;
+    message: string;
+    img: string;
+    created_at: Date;
+  };
   dateLastMessage: Date | undefined;
   isSelected?: boolean;
   conversationId: number;
@@ -20,7 +25,7 @@ interface ConverasationProps {
 }
 
 const Converasation: FC<ConverasationProps> = ({
-  lastMessage,
+  lastMessageSent,
   dateLastMessage,
   isSelected = false,
   conversationId,
@@ -34,6 +39,7 @@ const Converasation: FC<ConverasationProps> = ({
     hour: "numeric",
     minute: "numeric",
   });
+  const lastMessage = lastMessageSent?.message === "" && lastMessageSent.img !== "" ? "Picture" : lastMessageSent?.message 
 
   const handleClick = () => {
     const state = {

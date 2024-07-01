@@ -3,10 +3,10 @@ import sql from "../db";
 import { MessageDetails } from "../types";
 
 export const newMessage = async (req: Request, res: Response) => {
-  const { message, conversationId } = req.body;
+  const { message, conversationId, img } = req.body;
 
-  if (!message || message.trim() === "")
-    return res.status(400).json({ message: "Must provide a message" });
+  if ((!message || message.trim() === "") && (!img || img === ""))
+    return res.status(400).json({ message: "Must provide a message or include an image" });
 
   if (!conversationId)
     return res.status(400).json({ message: "Must provide a conversationId" });
@@ -18,9 +18,9 @@ export const newMessage = async (req: Request, res: Response) => {
   try {
     await sql.begin(async (sql) => {
       const [newMessage] = await sql<MessageDetails[]>`
-      INSERT INTO "Message" (message, "authorId", "conversationId")
-      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId})
-        RETURNING id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      INSERT INTO "Message" (message, "authorId", "conversationId", "img")
+      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId}, ${img || ""})
+        RETURNING id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId"
       `;
   
       await sql`
@@ -38,6 +38,7 @@ export const newMessage = async (req: Request, res: Response) => {
       const response = {
         id: newMessage.id,
         message: newMessage.message,
+        img: newMessage.img,
         authorId: newMessage.authorId,
         created_at: newMessage.created_at,
       };
@@ -82,7 +83,7 @@ export const getMessagesInConversation = async (
     `;
 
     const messages = await sql<MessageDetails[]>`
-      SELECT id, message, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      SELECT id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId"
       FROM "Message"
       WHERE "conversationId" = ${parsedConversationId}
       ORDER BY created_at DESC
@@ -158,7 +159,7 @@ export const editMessage = async (req: Request, res: Response) => {
       UPDATE "Message"
       SET message = ${newMessageBody}, "isEdited" = TRUE
       WHERE id = ${id}
-      RETURNING id, message, "authorId", created_at, "isEdited", "conversationId"
+      RETURNING id, message, img, "authorId", created_at, "isEdited", "conversationId"
     `;
 
     res.status(200).json(updatedMessage);

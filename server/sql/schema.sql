@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP(3) NOT NULL,
+    updated_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     refresh_token TEXT NOT NULL DEFAULT '',
     profile_picture TEXT NOT NULL DEFAULT ''
 );

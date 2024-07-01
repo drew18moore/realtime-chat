@@ -132,6 +132,7 @@ export const useNewMessage = (
               lastMessageSent: {
                 id: data.id,
                 message: data.message,
+                img: data.img,
                 created_at: data.created_at,
               },
             };
@@ -211,6 +212,7 @@ export const useDeleteMessage = (conversationId: number) => {
                 lastMessageSent = {
                   id: newLastMessageSent!.id,
                   message: newLastMessageSent!.message,
+                  img: newLastMessageSent!.img,
                   created_at: newLastMessageSent!.created_at,
                 };
               }

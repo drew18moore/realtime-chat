@@ -29,6 +29,7 @@ type Conversation = {
     | {
         id: number;
         message: string;
+        img: string;
         created_at: Date;
       }
     | undefined;

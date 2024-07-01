@@ -70,6 +70,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             lastMessageSent: {
               id: id,
               message,
+              img,
               created_at: timeSent,
             },
             isRead: isViewingConversation,

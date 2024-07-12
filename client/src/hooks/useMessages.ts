@@ -90,7 +90,7 @@ export const useNewMessage = (
   conversationId: number,
   recipientId: number,
   message: string,
-  img: string,
+  img: string
 ) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
@@ -293,6 +293,49 @@ export const useEditMessage = (conversationId: number) => {
               return updatedConversations;
             }
             return prevConversations;
+          }
+        );
+      },
+    }
+  );
+};
+
+export const useReactMessage = (conversationId: number, userId: number) => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async (data: { messageId: number; emoji: string }) => {
+      const res = await axiosPrivate.put<Reaction[]>(`/api/messages/${data.messageId}/react`, {
+        emoji: data.emoji,
+        userId: userId,
+      });
+      return res.data;
+    },
+    {
+      onSuccess: (data, variables) => {
+        // Update message in query
+        queryClient.setQueryData<InfiniteData<Message[]>>(
+          ["messages", conversationId],
+          (prevData) => {
+            if (prevData) {
+              const updatedPages = prevData.pages.map((page) =>
+                page.map((message) => {
+                  if (message.id === variables.messageId) {
+                    return {
+                      ...message,
+                      reactions: data
+                    };
+                  }
+                  return message;
+                })
+              );
+              return {
+                ...prevData,
+                pages: updatedPages,
+              };
+            }
+            return prevData;
           }
         );
       },

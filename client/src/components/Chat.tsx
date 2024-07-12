@@ -6,6 +6,7 @@ import {
   useEditMessage,
   useGetMessagesInfinite,
   useNewMessage,
+  useReactMessage,
 } from "../hooks/useMessages";
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
@@ -33,11 +34,13 @@ const Chat = () => {
     parseInt(conversationId!),
     state?.recipient.id,
     message,
-    imgBase64,
+    imgBase64
   );
 
   const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
     useEditMessage(parseInt(conversationId!));
+
+  const { mutate: reactToMessage } = useReactMessage(parseInt(conversationId!), currentUser!.id);
 
   useEffect(() => {
     setMessage(() => {
@@ -86,6 +89,12 @@ const Chat = () => {
     setImgBase64("");
   }, [messageHasBeenSent, messageHasBeenUpdated]);
 
+  const handleAddReaction = (messageId: number, emoji: string) => {
+    // Implement the logic to add a reaction to the message.
+    console.log(`Message ${messageId} reacted with ${emoji}`);
+    reactToMessage({ messageId, emoji })
+  };
+
   return (
     <div className="relative h-[calc(100svh)]">
       {/* Header bar */}
@@ -119,7 +128,7 @@ const Chat = () => {
             <button
               onClick={() => {
                 setShowMoreClicked(true);
-                fetchNextPage()
+                fetchNextPage();
               }}
               className="cursor-pointer w-fit px-2 py-1 text-blue-600 hover:underline mx-auto"
             >
@@ -140,6 +149,7 @@ const Chat = () => {
                       key={i}
                       isCurrentUser={message.authorId === currentUser?.id}
                       setMessageToEdit={setMessageToEdit}
+                      addReaction={handleAddReaction}
                     />
                   );
                 });

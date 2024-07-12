@@ -97,6 +97,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
               message,
               img,
               authorId,
+              reactions: [],
               created_at: timeSent,
               isEdited: false,
             });

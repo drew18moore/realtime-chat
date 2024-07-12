@@ -89,3 +89,10 @@
     isEdited: boolean;
     conversationId: number;
   }
+
+  export type Reaction = {
+    id: number;
+    messageId: number;
+    emoji: string;
+    userId: number;
+  }

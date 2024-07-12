@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import sql from "../db";
-import { MessageDetails } from "../types";
+import { MessageDetails, Reaction } from "../types";
 
 export const newMessage = async (req: Request, res: Response) => {
   const { message, conversationId, img } = req.body;
@@ -83,10 +83,23 @@ export const getMessagesInConversation = async (
     `;
 
     const messages = await sql<MessageDetails[]>`
-      SELECT id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId"
-      FROM "Message"
-      WHERE "conversationId" = ${parsedConversationId}
-      ORDER BY created_at DESC
+      SELECT 
+        m.id, m.message, m.img, m."authorId", m.created_at::timestamptz, m."isEdited", m."conversationId",
+        COALESCE(
+          (
+            SELECT json_agg(json_build_object('emoji', r.emoji, 'count', r.count))
+            FROM (
+              SELECT emoji, COUNT(*) as count
+              FROM "Reaction"
+              WHERE "messageId" = m.id
+              GROUP BY emoji
+            ) r
+          ),
+          '[]'
+        ) as reactions
+      FROM "Message" m
+      WHERE m."conversationId" = ${parsedConversationId}
+      ORDER BY m.created_at DESC
       OFFSET ${(parsedPage - 1) * parsedLimit}
       LIMIT ${parsedLimit}
     `;
@@ -168,3 +181,35 @@ export const editMessage = async (req: Request, res: Response) => {
     res.status(500).json(err);
   }
 };
+
+type ReactionsResponse = {
+  id: number;
+  messageId: number;
+  emoji: string;
+  count: number;
+}[]
+
+export const reactToMessage = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { emoji, userId } = req.body;
+
+  try {
+    await sql`
+      INSERT INTO "Reaction" ("messageId", emoji, "userId")
+      VALUES (${id}, ${emoji}, ${userId})
+      ON CONFLICT ("messageId", emoji, "userId")
+      DO NOTHING;
+    `
+    const reactions = await sql<ReactionsResponse>`
+      SELECT "messageId", emoji, COUNT(*) as count
+      FROM "Reaction"
+      WHERE "messageId" = ${id}
+      GROUP BY emoji, "messageId";
+    `
+
+    res.status(200).json(reactions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+}

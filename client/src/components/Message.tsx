@@ -68,7 +68,11 @@ const Message: FC<MessageProps> = ({
             />
           )}
           {showEmojiSelector && (
-            <EmojiPickerDropdown onEmojiClick={handleEmojiClick} setShowDropdown={setShowEmojiSelector} toggleBtnRef={toggleEmojiBtnRef} />
+            <EmojiPickerDropdown
+              onEmojiClick={handleEmojiClick}
+              setShowDropdown={setShowEmojiSelector}
+              toggleBtnRef={toggleEmojiBtnRef}
+            />
           )}
           {isCurrentUser && (
             <button
@@ -79,13 +83,15 @@ const Message: FC<MessageProps> = ({
               <FiMoreHorizontal />
             </button>
           )}
-          <button
-            className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
-            onClick={() => setShowEmojiSelector((prev) => !prev)}
-            ref={toggleEmojiBtnRef}
-          >
-            <FiSmile />
-          </button>
+          {!isCurrentUser && (
+            <button
+              className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
+              onClick={() => setShowEmojiSelector((prev) => !prev)}
+              ref={toggleEmojiBtnRef}
+            >
+              <FiSmile />
+            </button>
+          )}
         </div>
 
         <div
@@ -103,6 +109,17 @@ const Message: FC<MessageProps> = ({
           {message.message !== "" && <p className="px-1">{message.message}</p>}
         </div>
       </div>
+      {message.reactions.length > 0 && (
+        <div
+          className={`bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-full w-fit ${
+            isCurrentUser ? "ml-auto " : "mr-auto"
+          } -translate-y-1 flex items-center gap-1`}
+        >
+          {message.reactions.map((reaction) => (
+            <span key={reaction.id}>{reaction.emoji}</span>
+          ))}
+        </div>
+      )}
       <div
         className={`${
           isCurrentUser ? "justify-self-end" : "justify-self-start"

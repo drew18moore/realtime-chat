@@ -1,7 +1,5 @@
 import React, { FC } from "react";
 import Dropdown, { DropdownItem } from "./Dropdown";
-import { useDeleteMessage } from "../hooks/useMessages";
-import { useParams } from "react-router-dom";
 
 interface EmojiPickerDropdownProps {
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,8 +14,6 @@ const EmojiPickerDropdown: FC<EmojiPickerDropdownProps> = ({
   toggleBtnRef,
   onEmojiClick,
 }) => {
-  const { conversationId } = useParams();
-  const { mutate: deleteMessage } = useDeleteMessage(parseInt(conversationId!));
   return (
     <Dropdown
       setShowDropdown={setShowDropdown}
@@ -30,6 +26,7 @@ const EmojiPickerDropdown: FC<EmojiPickerDropdownProps> = ({
           icon={<span className="text-lg">{emoji}</span>}
           onClick={() => onEmojiClick(emoji)}
           setShowDropdown={setShowDropdown}
+          className="p-2"
         />
       )
       )}

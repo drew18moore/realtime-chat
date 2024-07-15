@@ -40,7 +40,7 @@ const Chat = () => {
   const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
     useEditMessage(parseInt(conversationId!));
 
-  const { mutate: reactToMessage } = useReactMessage(parseInt(conversationId!), currentUser!.id);
+  const { mutate: reactToMessage } = useReactMessage(parseInt(conversationId!), currentUser!.id, state?.recipient.id);
 
   useEffect(() => {
     setMessage(() => {
@@ -90,8 +90,6 @@ const Chat = () => {
   }, [messageHasBeenSent, messageHasBeenUpdated]);
 
   const handleAddReaction = (messageId: number, emoji: string) => {
-    // Implement the logic to add a reaction to the message.
-    console.log(`Message ${messageId} reacted with ${emoji}`);
     reactToMessage({ messageId, emoji })
   };
 

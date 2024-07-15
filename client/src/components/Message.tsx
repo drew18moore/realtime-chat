@@ -115,8 +115,8 @@ const Message: FC<MessageProps> = ({
             isCurrentUser ? "ml-auto " : "mr-auto"
           } -translate-y-1 flex items-center gap-1`}
         >
-          {message.reactions.map((reaction) => (
-            <span key={reaction.id}>{reaction.emoji}</span>
+          {message.reactions.map((reaction, i) => (
+            <span key={i}>{reaction.emoji}</span>
           ))}
         </div>
       )}

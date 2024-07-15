@@ -116,7 +116,10 @@ export const useNewMessage = (
           ["messages", conversationId],
           (prevData) => {
             const pages = prevData?.pages.map((page) => [...page]) ?? [];
-            pages[0].unshift(data);
+            pages[0].unshift({
+              ...data,
+              reactions: [],
+            });
             return { ...prevData!, pages };
           }
         );
@@ -142,7 +145,6 @@ export const useNewMessage = (
           }
         );
 
-        console.log("IMG:", data.img);
         // Send to other user
         socket.emit("send-message", {
           id: data.id,
@@ -300,9 +302,10 @@ export const useEditMessage = (conversationId: number) => {
   );
 };
 
-export const useReactMessage = (conversationId: number, userId: number) => {
+export const useReactMessage = (conversationId: number, userId: number, recipientId: number) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
+  const { socket } = useSocket();
 
   return useMutation(
     async (data: { messageId: number; emoji: string }) => {
@@ -338,6 +341,12 @@ export const useReactMessage = (conversationId: number, userId: number) => {
             return prevData;
           }
         );
+
+        socket.emit("react-to-message", {
+          recipientId: recipientId,
+          conversationId: conversationId,
+          data: data,
+        });
       },
     }
   );

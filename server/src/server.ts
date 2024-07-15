@@ -79,6 +79,29 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on(
+    "react-to-message",
+    ({
+      recipientId,
+      conversationId,
+      data
+    }: {
+      recipientId: number;
+      conversationId: number;
+      data: {
+        id: number;
+        messageId: number;
+        emoji: string;
+        count: number;
+      }[]
+    }) => {
+      socket.broadcast.to(recipientId.toString()).emit("receive-reaction", {
+        conversationId,
+        data
+      });
+    }
+  )
+
   socket.on("disconnect", () => {
     activeUsers.delete(parseInt(id));
     socket.broadcast.emit("user-disconnected", parseInt(id));

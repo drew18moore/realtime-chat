@@ -1,4 +1,6 @@
-import React, { useRef, useState, useLayoutEffect, ReactNode, FC } from "react";
+import clsx, { ClassValue } from "clsx";
+import React, { useRef, useState, useLayoutEffect, ReactNode, FC, HTMLAttributes } from "react";
+import { twMerge } from "tw-merge";
 
 interface DropdownItemProps {
   icon?: ReactNode;
@@ -6,6 +8,11 @@ interface DropdownItemProps {
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   children?: ReactNode;
   variant?: "danger";
+  className?: string;
+}
+
+const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs))
 }
 
 export const DropdownItem: FC<DropdownItemProps> = ({
@@ -14,6 +21,7 @@ export const DropdownItem: FC<DropdownItemProps> = ({
   setShowDropdown,
   children,
   variant,
+  className,
 }) => {
   return (
     <li
@@ -21,11 +29,11 @@ export const DropdownItem: FC<DropdownItemProps> = ({
         onClick();
         setShowDropdown(false);
       }}
-      className={`flex gap-3 items-center px-3 py-3 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer ${
+      className={cn(`flex gap-3 items-center px-3 py-3 hover:bg-neutral-200 dark:hover:bg-neutral-900 cursor-pointer ${
         variant === "danger"
           ? `text-red-600 bg-red-100 hover:bg-red-200 dark:bg-red-600 dark:text-white dark:hover:bg-red-500`
           : ""
-      }`}
+      }`, className)}
     >
       {icon && <span>{icon}</span>}
       {children}

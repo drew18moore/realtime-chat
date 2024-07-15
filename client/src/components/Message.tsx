@@ -1,20 +1,26 @@
-import { FC, useEffect, useRef, useState } from "react";
-import { FiMoreHorizontal } from "react-icons/fi";
+import React, { FC, useState, useRef } from "react";
+import { FiMoreHorizontal, FiSmile } from "react-icons/fi";
 import MessageDropdown from "./MessageDropdown";
+import EmojiPickerDropdown from "./EmojiPickerDropdown";
 
 interface MessageProps {
   message: Message;
   isCurrentUser: boolean;
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
+  addReaction: (messageId: number, reaction: string) => void;
 }
 
 const Message: FC<MessageProps> = ({
   message,
   isCurrentUser,
   setMessageToEdit,
+  addReaction,
 }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [showEmojiSelector, setShowEmojiSelector] = useState<boolean>(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
+  const toggleEmojiBtnRef = useRef<HTMLButtonElement>(null);
+
   // Format datetime
   const date = new Date(message?.created_at);
   let dateFormated;
@@ -33,6 +39,11 @@ const Message: FC<MessageProps> = ({
     });
   }
 
+  const handleEmojiClick = (emoji: string) => {
+    addReaction(message.id, emoji);
+    setShowEmojiSelector(false);
+  };
+
   return (
     <div
       className={`${
@@ -40,7 +51,7 @@ const Message: FC<MessageProps> = ({
       } grid max-w-xl relative`}
     >
       <div
-        className={`flex gap-1  ${
+        className={`flex gap-1 ${
           isCurrentUser
             ? "justify-self-end"
             : "justify-self-start flex-row-reverse"
@@ -56,6 +67,13 @@ const Message: FC<MessageProps> = ({
               setMessageToEdit={setMessageToEdit}
             />
           )}
+          {showEmojiSelector && (
+            <EmojiPickerDropdown
+              onEmojiClick={handleEmojiClick}
+              setShowDropdown={setShowEmojiSelector}
+              toggleBtnRef={toggleEmojiBtnRef}
+            />
+          )}
           {isCurrentUser && (
             <button
               onClick={() => setShowDropdown((prev) => !prev)}
@@ -63,6 +81,15 @@ const Message: FC<MessageProps> = ({
               className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
             >
               <FiMoreHorizontal />
+            </button>
+          )}
+          {!isCurrentUser && (
+            <button
+              className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
+              onClick={() => setShowEmojiSelector((prev) => !prev)}
+              ref={toggleEmojiBtnRef}
+            >
+              <FiSmile />
             </button>
           )}
         </div>
@@ -82,6 +109,17 @@ const Message: FC<MessageProps> = ({
           {message.message !== "" && <p className="px-1">{message.message}</p>}
         </div>
       </div>
+      {message.reactions.length > 0 && (
+        <div
+          className={`bg-neutral-200 dark:bg-neutral-800 px-2 py-1 rounded-full w-fit ${
+            isCurrentUser ? "ml-auto " : "mr-auto"
+          } -translate-y-1 flex items-center gap-1`}
+        >
+          {message.reactions.map((reaction, i) => (
+            <span key={i}>{reaction.emoji}</span>
+          ))}
+        </div>
+      )}
       <div
         className={`${
           isCurrentUser ? "justify-self-end" : "justify-self-start"

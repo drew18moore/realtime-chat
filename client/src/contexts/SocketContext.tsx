@@ -53,8 +53,15 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     });
 
     socket?.on("receive-message", (receivedMessage) => {
-      const { id, conversationId, recipientId, authorId, message, img, timeSent } =
-        receivedMessage;
+      const {
+        id,
+        conversationId,
+        recipientId,
+        authorId,
+        message,
+        img,
+        timeSent,
+      } = receivedMessage;
       const isViewingConversation =
         pathnameRef.current === `/${conversationId}`;
 
@@ -97,6 +104,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
               message,
               img,
               authorId,
+              reactions: [],
               created_at: timeSent,
               isEdited: false,
             });
@@ -105,6 +113,45 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         );
       }
     });
+
+    socket?.on(
+      "receive-reaction",
+      (receivedReaction: {
+        conversationId: number;
+        data: {
+          id: number;
+          messageId: number;
+          emoji: string;
+          count: number;
+        }[];
+      }) => {
+        const { data, conversationId } = receivedReaction;
+        const messageId = data[0].messageId;
+        queryClient.setQueryData<InfiniteData<Message[]>>(
+          ["messages", conversationId],
+          (prevData) => {
+            if (prevData) {
+              const updatedPages = prevData.pages.map((page) =>
+                page.map((message) => {
+                  if (message.id === messageId) {
+                    return {
+                      ...message,
+                      reactions: data
+                    };
+                  }
+                  return message;
+                })
+              );
+              return {
+                ...prevData,
+                pages: updatedPages,
+              };
+            }
+            return prevData;
+          }
+        )
+      }
+    );
 
     return () => {
       socket?.off("user-connected");

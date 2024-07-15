@@ -44,7 +44,7 @@ export const useNewConversation = (participants: number[]) => {
         if (!prevConversations?.some((conv) => conv.id === data.id)) {
           queryClient.setQueryData(
             ["conversations"],
-            [...prevConversations!, data]
+            [data, ...prevConversations!]
           );
         }
         const conversationWithSelf =

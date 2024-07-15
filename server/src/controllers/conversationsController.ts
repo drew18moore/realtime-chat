@@ -20,6 +20,16 @@ const findConversationByParticipants = async (
   currUserId: string,
   participantIds: number[]
 ) => {
+  const arraysEqual = (a: number[], b: number[]) => {
+    if (a.length !== b.length) return false;
+    a = a.slice().sort();
+    b = b.slice().sort();
+    for (let i = 0; i < a.length; i++) {
+      if (a[i] !== b[i]) return false;
+    }
+    return true;
+  };
+
   try {
     const allUserConversations = await sql<ConversationWithParticipants[]>`
       SELECT 
@@ -60,7 +70,7 @@ const findConversationByParticipants = async (
       c.participants.map((p) => p.userId)
     );
     for (let i = 0; i < participants.length; i++) {
-      if (participantIds.every((e) => participants[i].includes(e))) {
+      if (arraysEqual(participantIds, participants[i])) {
         conversationTargetId = i;
       }
     }

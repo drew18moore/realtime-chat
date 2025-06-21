@@ -9,6 +9,7 @@ import messagesRouter from "./routes/messages";
 import conversationsRouter from "./routes/conversations";
 import { credentials } from "./middleware/credentials";
 import cookieParser from "cookie-parser";
+import { allowedOrigins } from "./config/allowedOrigins";
 require('dotenv').config();
 
 const PORT = 3000;
@@ -16,11 +17,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://127.0.0.1:5173",
-      "https://realtime-chat-phi.vercel.app",
-      "http://127.0.0.1:4173",
-    ],
+    origin: allowedOrigins,
   },
 });
 

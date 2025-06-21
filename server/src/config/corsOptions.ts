@@ -9,6 +9,7 @@ export const corsOptions: CorsOptions = {
       callback(new Error("Not allowed by CORS"), false);
     }
   },
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 

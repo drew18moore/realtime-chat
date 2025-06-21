@@ -1,13 +1,14 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-22.04
+
     env:
       ACCESS_TOKEN_SECRET: testaccesstokensecret
       REFRESH_TOKEN_SECRET: testrefreshtokensecret
@@ -19,38 +20,20 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install and build server
+      # Server: Install and build
+      - name: Install server dependencies
         working-directory: ./server
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
-      - name: Install and build client
+      - name: Build server
+        working-directory: ./server
+        run: npm run build
+
+      # Client: Install and build
+      - name: Install client dependencies
         working-directory: ./client
-        run: |
-          npm ci
-          npm run build
+        run: npm ci
 
-      - name: Deploy to EC2 with rsync
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          
-          rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no" \
-            ./server/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:~/app
-
-      - name: SSH into EC2 and install deps + restart
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /app/server
-            npm ci
-            npm run build
-            pm2 delete 0
-            pm2 --name WebServer start npm -- start
+      - name: Build client app
+        working-directory: ./client
+        run: npm run build

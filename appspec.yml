@@ -4,6 +4,7 @@ os: linux
 files:
   - source: server/
     destination: /home/ec2-user/app
+file_exists_behavior: OVERWRITE
 
 hooks:
   BeforeInstall:

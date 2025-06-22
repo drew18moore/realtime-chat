@@ -6,6 +6,10 @@ files:
     destination: /home/ec2-user/app
 
 hooks:
+  BeforeInstall:
+    - location: server/scripts/cleanup.sh
+      timeout: 60
+      runas: ec2-user
   AfterInstall:
     - location: server/scripts/install_dependencies.sh
       timeout: 60

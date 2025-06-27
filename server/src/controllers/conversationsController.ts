@@ -273,7 +273,7 @@ export const readConversation = async (req: Request, res: Response) => {
   try {
     await sql`
       UPDATE "ConversationUser"
-      SET "isRead = TRUE
+      SET "isRead" = TRUE
       WHERE "conversationId" = ${parsedConversationId} AND "userId" = ${parsedUserId}
     `;
     res

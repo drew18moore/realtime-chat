@@ -4,6 +4,10 @@
     "outDir": "dist",
     "strict": true,
     "lib": ["esnext"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true
   }
 }

@@ -16,19 +16,58 @@ services:
       - db:/var/lib/postgresql/data
       - ./server/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql
     
-  server:
+  server_1:
     build: ./server
-    ports:
-      - 3000:3000
     environment:
+      - APPID=1111
       - DATABASE_URL=postgres://postgres:password@db:5432/chat
       - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
       - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
-    container_name: chat-server
+    container_name: server_1
     restart: unless-stopped
-    image: chat-server:latest
     depends_on:
       - db
+      - redis
+
+  server_2:
+    build: ./server
+    environment:
+      - APPID=2222
+      - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
+      - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
+    container_name: server_2
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
+  server_3:
+    build: ./server
+    environment:
+      - APPID=3333
+      - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
+      - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
+    container_name: server_3
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
+  loadbalancer:
+    image: haproxy
+    ports:
+      - "8080:8080"
+    volumes: 
+      - ./haproxy:/usr/local/etc/haproxy
+    depends_on:
+      - server_1
+      - server_2
+      - server_3
+
+  redis:
+    image: redis
 
   client:
     build: ./client
@@ -38,7 +77,7 @@ services:
     restart: always
     image: social-client:latest
     depends_on:
-      - server
+      - loadbalancer
 
 volumes:
   db: {}

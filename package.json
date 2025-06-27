@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "typescript": "^5.8.3"
   }
 }

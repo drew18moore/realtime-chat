@@ -59,9 +59,9 @@ subscriber.pSubscribe("conversation:*", (message, channel) => {
     io.to(conversationId).emit("receive-reaction", parsed);
   } else {
     if ("senderSocketId" in parsed) {
-      io.to(conversationId).except(parsed.senderSocketId).emit("receive-message", parsed);
+      io.to(parsed.recipientId.toString()).except(parsed.senderSocketId).emit("receive-message", parsed);
     } else {
-      io.to(conversationId).emit("receive-message", parsed);
+      io.to((parsed as (WSMessage | WSReaction) & { senderSocketId: string } ).recipientId.toString()).emit("receive-message", parsed);
     }
   }
 });

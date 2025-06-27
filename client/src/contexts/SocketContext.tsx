@@ -88,6 +88,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       const isViewingConversation = pathnameRef.current === `/${conversationId}`;
 
       queryClient.setQueryData<Conversation[]>(["conversations"], (prevConversations) => {
+        console.log("UPDATE CONVERSATIONS (OLD):", prevConversations);
         if (!prevConversations) return prevConversations;
         const conversationIndex = prevConversations!.findIndex(conv => conv.id === conversationId);
         if (conversationIndex === -1) return prevConversations;
@@ -104,6 +105,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         isViewingConversation && readConversation(conversationId);
         const updatedConversations = [...prevConversations!];
         updatedConversations[conversationIndex] = updatedConversation;
+        console.log("UPDATED CONVERSATIONS (NEW):", updatedConversations);
         return updatedConversations;
       });
 

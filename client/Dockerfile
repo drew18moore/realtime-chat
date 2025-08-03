@@ -2,7 +2,7 @@ FROM node:18
 
 WORKDIR /usr/src/client
 
-ENV VITE_BASE_URL="http://localhost:3000"
+ENV VITE_BASE_URL="http://localhost:8080"
 
 COPY package*.json ./
 

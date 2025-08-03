@@ -13,7 +13,7 @@ import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useReadConversation } from "../hooks/useConversations";
 
 type SocketContextType = {
-  socket: Socket;
+  socket: Socket | undefined;
   onlineUserIds: number[];
 };
 
@@ -24,6 +24,7 @@ export const useSocket = (): SocketContextType => {
 };
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+const WS_URL = BASE_URL?.replace("http", "ws") || "ws://localhost:3000";
 
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const { currentUser } = useAuth();
@@ -32,136 +33,30 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const pathnameRef = useRef<string>(location.pathname);
+  const prevConversationRef = useRef<string | null>(null);
   const { mutate: readConversation } = useReadConversation();
+
   useEffect(() => {
     pathnameRef.current = location.pathname;
+
+    const match = location.pathname.match(/\/(\d+)/);
+    const conversationId = match ? match[1] : null;
+
+    if (socket) {
+      if (prevConversationRef.current && prevConversationRef.current !== conversationId) {
+        socket.emit("leave-conversation", prevConversationRef.current);
+      }
+      if (conversationId) {
+        socket.emit("join-conversation", conversationId);
+      }
+    }
+    prevConversationRef.current = conversationId;
   }, [location]);
 
   useEffect(() => {
-    socket?.on("online-users", (userIds) => {
-      setOnlineUserIds(userIds);
-    });
-
-    socket?.on("user-connected", (userId) => {
-      setOnlineUserIds((prevUserIds) => [...prevUserIds, userId]);
-    });
-
-    socket?.on("user-disconnected", (userId) => {
-      setOnlineUserIds((prevUserIds) =>
-        prevUserIds.filter((id) => id !== userId)
-      );
-    });
-
-    socket?.on("receive-message", (receivedMessage) => {
-      const {
-        id,
-        conversationId,
-        recipientId,
-        authorId,
-        message,
-        img,
-        timeSent,
-      } = receivedMessage;
-      const isViewingConversation =
-        pathnameRef.current === `/${conversationId}`;
-
-      // Update conversations cache
-      queryClient.setQueryData<Conversation[]>(
-        ["conversations"],
-        (prevConversations) => {
-          const conversationIndex = prevConversations!.findIndex(
-            (conv) => conv.id === conversationId
-          );
-          const updatedConversation: Conversation = {
-            ...prevConversations![conversationIndex],
-            lastMessageSent: {
-              id: id,
-              message,
-              img,
-              created_at: timeSent,
-            },
-            isRead: isViewingConversation,
-          };
-          isViewingConversation && readConversation(conversationId);
-          const updatedConversations = [...prevConversations!];
-          updatedConversations[conversationIndex] = updatedConversation;
-          return updatedConversations;
-        }
-      );
-
-      // Update messages cache
-      const existingMessages = queryClient.getQueryData<Message[]>([
-        "messages",
-        conversationId,
-      ]);
-      if (existingMessages) {
-        queryClient.setQueryData<InfiniteData<Message[]>>(
-          ["messages", conversationId],
-          (prevData) => {
-            const pages = prevData?.pages.map((page) => [...page]) ?? [];
-            pages[0].unshift({
-              id,
-              message,
-              img,
-              authorId,
-              reactions: [],
-              created_at: timeSent,
-              isEdited: false,
-            });
-            return { ...prevData!, pages };
-          }
-        );
-      }
-    });
-
-    socket?.on(
-      "receive-reaction",
-      (receivedReaction: {
-        conversationId: number;
-        data: {
-          id: number;
-          messageId: number;
-          emoji: string;
-          count: number;
-        }[];
-      }) => {
-        const { data, conversationId } = receivedReaction;
-        const messageId = data[0].messageId;
-        queryClient.setQueryData<InfiniteData<Message[]>>(
-          ["messages", conversationId],
-          (prevData) => {
-            if (prevData) {
-              const updatedPages = prevData.pages.map((page) =>
-                page.map((message) => {
-                  if (message.id === messageId) {
-                    return {
-                      ...message,
-                      reactions: data
-                    };
-                  }
-                  return message;
-                })
-              );
-              return {
-                ...prevData,
-                pages: updatedPages,
-              };
-            }
-            return prevData;
-          }
-        )
-      }
-    );
-
-    return () => {
-      socket?.off("user-connected");
-      socket?.off("user-disconnected");
-    };
-  }, [socket]);
-
-  useEffect(() => {
     if (currentUser) {
-      const newSocket = io(BASE_URL, {
+      const newSocket = io(WS_URL, {
+        transports: ["websocket"],
         query: { id: currentUser.id.toString() },
       });
       setSocket(newSocket);
@@ -172,7 +67,111 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [currentUser]);
 
-  const value = {
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleOnlineUsers = (userIds: number[]) => setOnlineUserIds(userIds);
+    const handleUserConnected = (userId: number) => setOnlineUserIds((prev) => [...prev, userId]);
+    const handleUserDisconnected = (userId: number) => setOnlineUserIds((prev) => prev.filter((id) => id !== userId));
+    const handleReceiveMessage = (receivedMessage: any) => {
+      const {
+        id,
+        conversationId,
+        recipientId,
+        authorId,
+        message,
+        img,
+        timeSent,
+      } = receivedMessage;
+      console.log("MESSAGE RECEIVED:", receivedMessage.message, "from", authorId, "to", recipientId);
+
+      const isViewingConversation = pathnameRef.current === `/${conversationId}`;
+
+      queryClient.setQueryData<Conversation[]>(["conversations"], (prevConversations) => {
+        console.log("UPDATE CONVERSATIONS (OLD):", prevConversations);
+        if (!prevConversations) return prevConversations;
+        const conversationIndex = prevConversations!.findIndex(conv => conv.id === conversationId);
+        if (conversationIndex === -1) return prevConversations;
+        const updatedConversation: Conversation = {
+          ...prevConversations[conversationIndex],
+          lastMessageSent: {
+            id,
+            message,
+            img,
+            created_at: timeSent,
+          },
+          isRead: isViewingConversation,
+        };
+        isViewingConversation && readConversation(conversationId);
+        const updatedConversations = [...prevConversations!];
+        updatedConversations[conversationIndex] = updatedConversation;
+        console.log("UPDATED CONVERSATIONS (NEW):", updatedConversations);
+        return updatedConversations;
+      });
+
+      queryClient.setQueryData<InfiniteData<Message[]>>(
+        ["messages", conversationId],
+        (prevData) => {
+          if (!prevData) return prevData;
+          const pages = prevData?.pages.map((page) => [...page]);
+          pages[0].unshift({
+            id,
+            message,
+            img,
+            authorId,
+            reactions: [],
+            created_at: timeSent,
+            isEdited: false,
+          });
+          return { ...prevData, pages };
+        }
+      );
+    }
+
+    const handleReceiveReaction = (receivedReaction: {
+      conversationId: number;
+      data: {
+        id: number;
+        messageId: number;
+        emoji: string;
+        count: number;
+      }[];
+    }) => {
+      const { data, conversationId } = receivedReaction;
+      const messageId = data[0].messageId;
+      if (!messageId) return;
+
+      queryClient.setQueryData<InfiniteData<Message[]>>(
+        ["messages", conversationId],
+        (prevData) => {
+          if (!prevData) return prevData;
+          const updatedPages = prevData.pages.map((page) =>
+            page.map((message) => message.id === messageId ? { ...message, reactions: data } : message)
+          );
+          return {
+            ...prevData,
+            pages: updatedPages,
+          };
+        }
+      );
+    };
+
+    socket?.on("online-users", handleOnlineUsers);
+    socket?.on("user-connected", handleUserConnected);
+    socket?.on("user-disconnected", handleUserDisconnected);
+    socket?.on("receive-message", handleReceiveMessage);
+    socket?.on("receive-reaction", handleReceiveReaction);
+
+    return () => {
+      socket?.off("online-users", handleOnlineUsers);
+      socket.off("user-connected", handleUserConnected);
+      socket.off("user-disconnected", handleUserDisconnected);
+      socket.off("receive-message", handleReceiveMessage);
+      socket.off("receive-reaction", handleReceiveReaction);
+    };
+  }, [socket, queryClient, readConversation]);
+
+  const value: SocketContextType = {
     socket,
     onlineUserIds,
   };

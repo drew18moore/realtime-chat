@@ -96,3 +96,24 @@
     emoji: string;
     userId: number;
   }
+
+  export type WSMessage = {
+    id: number;
+    authorId: number;
+    recipientId: number;
+    conversationId: number;
+    message: string;
+    img: string;
+    timeSent: Date;
+  }
+
+  export type WSReaction = {
+    recipientId: number;
+    conversationId: number;
+    data: {
+      id: number;
+      messageId: number;
+      emoji: string;
+      count: number;
+    }[]
+  }

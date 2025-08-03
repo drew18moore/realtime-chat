@@ -146,7 +146,7 @@ export const useNewMessage = (
         );
 
         // Send to other user
-        socket.emit("send-message", {
+        socket?.emit("send-message", {
           id: data.id,
           authorId: data.authorId,
           recipientId,
@@ -342,7 +342,7 @@ export const useReactMessage = (conversationId: number, userId: number, recipien
           }
         );
 
-        socket.emit("react-to-message", {
+        socket?.emit("react-to-message", {
           recipientId: recipientId,
           conversationId: conversationId,
           data: data,

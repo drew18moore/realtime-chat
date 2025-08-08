@@ -18,8 +18,8 @@ const APPID = process.env.APPID || "default-app-id";
 const PORT = 3000;
 const activeUsers = new Set<number>();
 
-const subscriber = createClient({ url: "redis://redis:6379" });
-const publisher = createClient({ url: "redis://redis:6379" });
+const subscriber = createClient({ url: process.env.REDIS_URL || "redis://redis:6379" });
+const publisher = createClient({ url: process.env.REDIS_URL || "redis://redis:6379" });
 
 subscriber.on("error", (err) => console.error("Redis Subscriber Error", err));
 publisher.on("error", (err) => console.error("Redis Publisher Error", err));

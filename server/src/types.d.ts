@@ -80,8 +80,17 @@ export type Participant = {
 export type NewMessageResponse = {
   id: number;
   message: string;
+  img: string;
   authorId: number;
   created_at: Date;
+  replyToId?: number;
+  repliedToMessage?: {
+    id: number;
+    message: string;
+    img: string;
+    authorId: number;
+    authorDisplayName: string;
+  } | null;
 };
 
 export type MessageDetails = {
@@ -117,6 +126,14 @@ export type WSMessage = {
   message: string;
   img: string;
   timeSent: Date;
+  replyToId?: number;
+  repliedToMessage?: {
+    id: number;
+    message: string;
+    img: string;
+    authorId: number;
+    authorDisplayName: string;
+  } | null;
 };
 
 export type WSReaction = {

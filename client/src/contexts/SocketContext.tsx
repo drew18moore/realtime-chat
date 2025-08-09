@@ -43,7 +43,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const conversationId = match ? match[1] : null;
 
     if (socket) {
-      if (prevConversationRef.current && prevConversationRef.current !== conversationId) {
+      if (
+        prevConversationRef.current &&
+        prevConversationRef.current !== conversationId
+      ) {
         socket.emit("leave-conversation", prevConversationRef.current);
       }
       if (conversationId) {
@@ -71,8 +74,10 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     if (!socket) return;
 
     const handleOnlineUsers = (userIds: number[]) => setOnlineUserIds(userIds);
-    const handleUserConnected = (userId: number) => setOnlineUserIds((prev) => [...prev, userId]);
-    const handleUserDisconnected = (userId: number) => setOnlineUserIds((prev) => prev.filter((id) => id !== userId));
+    const handleUserConnected = (userId: number) =>
+      setOnlineUserIds((prev) => [...prev, userId]);
+    const handleUserDisconnected = (userId: number) =>
+      setOnlineUserIds((prev) => prev.filter((id) => id !== userId));
     const handleReceiveMessage = (receivedMessage: any) => {
       const {
         id,
@@ -82,32 +87,47 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         message,
         img,
         timeSent,
+        replyToId,
+        repliedToMessage,
       } = receivedMessage;
-      console.log("MESSAGE RECEIVED:", receivedMessage.message, "from", authorId, "to", recipientId);
+      console.log(
+        "MESSAGE RECEIVED:",
+        receivedMessage.message,
+        "from",
+        authorId,
+        "to",
+        recipientId
+      );
 
-      const isViewingConversation = pathnameRef.current === `/${conversationId}`;
+      const isViewingConversation =
+        pathnameRef.current === `/${conversationId}`;
 
-      queryClient.setQueryData<Conversation[]>(["conversations"], (prevConversations) => {
-        console.log("UPDATE CONVERSATIONS (OLD):", prevConversations);
-        if (!prevConversations) return prevConversations;
-        const conversationIndex = prevConversations!.findIndex(conv => conv.id === conversationId);
-        if (conversationIndex === -1) return prevConversations;
-        const updatedConversation: Conversation = {
-          ...prevConversations[conversationIndex],
-          lastMessageSent: {
-            id,
-            message,
-            img,
-            created_at: timeSent,
-          },
-          isRead: isViewingConversation,
-        };
-        isViewingConversation && readConversation(conversationId);
-        const updatedConversations = [...prevConversations!];
-        updatedConversations[conversationIndex] = updatedConversation;
-        console.log("UPDATED CONVERSATIONS (NEW):", updatedConversations);
-        return updatedConversations;
-      });
+      queryClient.setQueryData<Conversation[]>(
+        ["conversations"],
+        (prevConversations) => {
+          console.log("UPDATE CONVERSATIONS (OLD):", prevConversations);
+          if (!prevConversations) return prevConversations;
+          const conversationIndex = prevConversations!.findIndex(
+            (conv) => conv.id === conversationId
+          );
+          if (conversationIndex === -1) return prevConversations;
+          const updatedConversation: Conversation = {
+            ...prevConversations[conversationIndex],
+            lastMessageSent: {
+              id,
+              message,
+              img,
+              created_at: timeSent,
+            },
+            isRead: isViewingConversation,
+          };
+          isViewingConversation && readConversation(conversationId);
+          const updatedConversations = [...prevConversations!];
+          updatedConversations[conversationIndex] = updatedConversation;
+          console.log("UPDATED CONVERSATIONS (NEW):", updatedConversations);
+          return updatedConversations;
+        }
+      );
 
       queryClient.setQueryData<InfiniteData<Message[]>>(
         ["messages", conversationId],
@@ -122,11 +142,13 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             reactions: [],
             created_at: timeSent,
             isEdited: false,
+            replyToId,
+            repliedToMessage,
           });
           return { ...prevData, pages };
         }
       );
-    }
+    };
 
     const handleReceiveReaction = (receivedReaction: {
       conversationId: number;
@@ -146,7 +168,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         (prevData) => {
           if (!prevData) return prevData;
           const updatedPages = prevData.pages.map((page) =>
-            page.map((message) => message.id === messageId ? { ...message, reactions: data } : message)
+            page.map((message) =>
+              message.id === messageId
+                ? { ...message, reactions: data }
+                : message
+            )
           );
           return {
             ...prevData,

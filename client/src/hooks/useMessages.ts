@@ -156,6 +156,8 @@ export const useNewMessage = (
           message: data.message,
           img: data.img,
           timeSent: data.created_at,
+          replyToId: data.replyToId,
+          repliedToMessage: data.repliedToMessage,
         });
       },
       onError: (err) => {

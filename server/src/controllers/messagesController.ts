@@ -39,12 +39,34 @@ export const newMessage = async (req: Request, res: Response) => {
         WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
       `;
 
+      let repliedToMessage = null;
+      if (newMessage.replyToId) {
+        const [repliedTo] = await sql<
+          {
+            id: number;
+            message: string;
+            img: string;
+            authorId: number;
+            authorDisplayName: string;
+          }[]
+        >`
+          SELECT 
+            rm.id, rm.message, rm.img, rm."authorId", ru.display_name as "authorDisplayName"
+          FROM "Message" rm
+          LEFT JOIN "User" ru ON rm."authorId" = ru.id
+          WHERE rm.id = ${newMessage.replyToId}
+        `;
+        repliedToMessage = repliedTo || null;
+      }
+
       const response = {
         id: newMessage.id,
         message: newMessage.message,
         img: newMessage.img,
         authorId: newMessage.authorId,
         created_at: newMessage.created_at,
+        replyToId: newMessage.replyToId,
+        repliedToMessage: repliedToMessage,
       };
 
       res.status(200).json(response);

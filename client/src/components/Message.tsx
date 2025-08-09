@@ -77,15 +77,6 @@ const Message: FC<MessageProps> = ({
               toggleBtnRef={toggleEmojiBtnRef}
             />
           )}
-          {isCurrentUser && (
-            <button
-              onClick={() => setShowDropdown((prev) => !prev)}
-              ref={toggleBtnRef}
-              className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
-            >
-              <FiMoreHorizontal />
-            </button>
-          )}
           {!isCurrentUser && (
             <button
               className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
@@ -95,6 +86,13 @@ const Message: FC<MessageProps> = ({
               <FiSmile />
             </button>
           )}
+          <button
+            onClick={() => setShowDropdown((prev) => !prev)}
+            ref={toggleBtnRef}
+            className="hover:bg-neutral-200 dark:hover:bg-neutral-900 p-2 text-xl text-neutral-600 dark:text-neutral-500 rounded-full w-fit h-fit"
+          >
+            <FiMoreHorizontal />
+          </button>
         </div>
 
         <div
@@ -130,7 +128,9 @@ const Message: FC<MessageProps> = ({
                     : "text-neutral-700 dark:text-neutral-300"
                 } truncate`}
               >
-                {message.repliedToMessage.img ? "Image" : message.repliedToMessage.message}
+                {message.repliedToMessage.img
+                  ? "Image"
+                  : message.repliedToMessage.message}
               </p>
             </div>
           )}

@@ -14,12 +14,20 @@ type Message = {
   authorId: number;
   created_at: Date;
   isEdited: boolean;
+  replyToId?: number;
+  repliedToMessage?: {
+    id: number;
+    message: string;
+    img: string;
+    authorId: number;
+    authorDisplayName: string;
+  } | null;
   reactions: {
     id: number;
     messageId: number;
     emoji: string;
     count: number;
-  }[]
+  }[];
 };
 
 type Reaction = {
@@ -27,7 +35,7 @@ type Reaction = {
   messageId: number;
   emoji: string;
   count: number;
-}
+};
 
 type Conversation = {
   id: number;

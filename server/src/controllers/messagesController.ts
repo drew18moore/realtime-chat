@@ -3,10 +3,12 @@ import sql from "../db";
 import { MessageDetails, Reaction } from "../types";
 
 export const newMessage = async (req: Request, res: Response) => {
-  const { message, conversationId, img } = req.body;
+  const { message, conversationId, img, replyToId } = req.body;
 
   if ((!message || message.trim() === "") && (!img || img === ""))
-    return res.status(400).json({ message: "Must provide a message or include an image" });
+    return res
+      .status(400)
+      .json({ message: "Must provide a message or include an image" });
 
   if (!conversationId)
     return res.status(400).json({ message: "Must provide a conversationId" });
@@ -18,23 +20,25 @@ export const newMessage = async (req: Request, res: Response) => {
   try {
     await sql.begin(async (sql) => {
       const [newMessage] = await sql<MessageDetails[]>`
-      INSERT INTO "Message" (message, "authorId", "conversationId", "img")
-      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId}, ${img || ""})
-        RETURNING id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId"
+      INSERT INTO "Message" (message, "authorId", "conversationId", "img", "replyToId")
+      VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId}, ${
+        img || ""
+      }, ${replyToId ? parseInt(replyToId) : null})
+        RETURNING id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId", "replyToId"
       `;
-  
+
       await sql`
         UPDATE "Conversation"
         SET "dateLastMessage" = NOW()
         WHERE id = ${parsedConversationId}
       `;
-  
+
       await sql`
         UPDATE "ConversationUser"
         SET "isRead" = FALSE
         WHERE "conversationId" = ${parsedConversationId} AND "userId" <> ${parsedAuthorId}
       `;
-  
+
       const response = {
         id: newMessage.id,
         message: newMessage.message,
@@ -42,9 +46,9 @@ export const newMessage = async (req: Request, res: Response) => {
         authorId: newMessage.authorId,
         created_at: newMessage.created_at,
       };
-  
+
       res.status(200).json(response);
-    })
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err });
@@ -72,7 +76,9 @@ export const getMessagesInConversation = async (
       WHERE "conversationId" = ${parsedConversationId}
     `;
 
-    if (!conversationUserIds.some(user => user.userId === parsedCurrentUserId)) {
+    if (
+      !conversationUserIds.some((user) => user.userId === parsedCurrentUserId)
+    ) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -84,7 +90,18 @@ export const getMessagesInConversation = async (
 
     const messages = await sql<MessageDetails[]>`
       SELECT 
-        m.id, m.message, m.img, m."authorId", m.created_at::timestamptz, m."isEdited", m."conversationId",
+        m.id, m.message, m.img, m."authorId", m.created_at::timestamptz, m."isEdited", m."conversationId", m."replyToId",
+        CASE 
+          WHEN m."replyToId" IS NOT NULL THEN 
+            json_build_object(
+              'id', rm.id,
+              'message', rm.message,
+              'img', rm.img,
+              'authorId', rm."authorId",
+              'authorDisplayName', ru.display_name
+            )
+          ELSE NULL
+        END as "repliedToMessage",
         COALESCE(
           (
             SELECT json_agg(json_build_object('emoji', r.emoji, 'count', r.count))
@@ -98,6 +115,8 @@ export const getMessagesInConversation = async (
           '[]'
         ) as reactions
       FROM "Message" m
+      LEFT JOIN "Message" rm ON m."replyToId" = rm.id
+      LEFT JOIN "User" ru ON rm."authorId" = ru.id
       WHERE m."conversationId" = ${parsedConversationId}
       ORDER BY m.created_at DESC
       OFFSET ${(parsedPage - 1) * parsedLimit}
@@ -187,7 +206,7 @@ type ReactionsResponse = {
   messageId: number;
   emoji: string;
   count: number;
-}[]
+}[];
 
 export const reactToMessage = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -199,17 +218,17 @@ export const reactToMessage = async (req: Request, res: Response) => {
       VALUES (${id}, ${emoji}, ${userId})
       ON CONFLICT ("messageId", emoji, "userId")
       DO NOTHING;
-    `
+    `;
     const reactions = await sql<ReactionsResponse>`
       SELECT "messageId", emoji, COUNT(*) as count
       FROM "Reaction"
       WHERE "messageId" = ${id}
       GROUP BY emoji, "messageId";
-    `
+    `;
 
     res.status(200).json(reactions);
   } catch (err) {
     console.error(err);
     res.status(500).json(err);
   }
-}
+};

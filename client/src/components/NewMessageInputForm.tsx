@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Input from "./ui/Input";
 import { BiCheck, BiSend, BiImageAlt } from "react-icons/bi";
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiCornerUpLeft } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import Resizer from "react-image-file-resizer";
 // @ts-expect-error https://github.com/onurzorluer/react-image-file-resizer/issues/68
@@ -13,6 +13,8 @@ interface NewMessageInputFormProps {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   messageToEdit: Message | null;
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
+  messageToReply: Message | null;
+  setMessageToReply: React.Dispatch<React.SetStateAction<Message | null>>;
   inputRef: React.RefObject<HTMLInputElement>;
   imgBase64: string;
   setImgBase64: React.Dispatch<React.SetStateAction<string>>;
@@ -24,11 +26,14 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
   onChange,
   messageToEdit,
   setMessageToEdit,
+  messageToReply,
+  setMessageToReply,
   inputRef,
   imgBase64,
   setImgBase64,
 }) => {
   const isEditing = messageToEdit !== null;
+  const isReplying = messageToReply !== null;
 
   const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,10 +84,12 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
       )}
       <div className="flex items-center gap-2 w-full my-3">
         <div className="w-full relative flex flex-col">
-          {isEditing && (
+          {(isEditing || isReplying) && (
             <div className="absolute top-1/2 -translate-y-1/2 pl-3 text-blue-600 flex items-center gap-2 border-r-[1px] pr-2 border-blue-600">
-              <FiEdit2 />
-              <p className="text-sm">Editing</p>
+              {isEditing ? <FiEdit2 /> : <FiCornerUpLeft />}
+              <p className="text-sm">
+                {isEditing ? "Editing" : "Replying"}
+              </p>
             </div>
           )}
           <Input
@@ -92,7 +99,9 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
             value={value}
             onChange={onChange}
             className={`${
-              isEditing ? "pl-24 outline outline-2 outline-blue-600" : ""
+              isEditing || isReplying
+                ? `${isEditing ? "pl-24" : "pl-[6.6rem]"} outline outline-2 outline-blue-600`
+                : ""
             }`}
             ref={inputRef}
           />
@@ -108,7 +117,17 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
           </button>
         )}
 
-        {!isEditing && (
+        {isReplying && (
+          <button
+            type="button"
+            onClick={() => setMessageToReply(null)}
+            className={`bg-neutral-200 rounded-full h-12 aspect-square flex items-center justify-center p-2.5 text-neutral-600 dark:text-neutral-500 dark:bg-neutral-800`}
+          >
+            <IoClose size={"100%"} />
+          </button>
+        )}
+
+        {!isEditing && !isReplying && (
           <>
             <input
               type="file"

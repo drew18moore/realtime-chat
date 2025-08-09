@@ -21,6 +21,7 @@ const Chat = () => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [messageToEdit, setMessageToEdit] = useState<Message | null>(null);
+  const [messageToReply, setMessageToReply] = useState<Message | null>(null);
   const [imgBase64, setImgBase64] = useState("");
   const [showMoreClicked, setShowMoreClicked] = useState(false);
 
@@ -34,13 +35,18 @@ const Chat = () => {
     parseInt(conversationId!),
     state?.recipient.id,
     message,
-    imgBase64
+    imgBase64,
+    messageToReply?.id
   );
 
   const { mutate: editMessage, isSuccess: messageHasBeenUpdated } =
     useEditMessage(parseInt(conversationId!));
 
-  const { mutate: reactToMessage } = useReactMessage(parseInt(conversationId!), currentUser!.id, state?.recipient.id);
+  const { mutate: reactToMessage } = useReactMessage(
+    parseInt(conversationId!),
+    currentUser!.id,
+    state?.recipient.id
+  );
 
   useEffect(() => {
     setMessage(() => {
@@ -71,6 +77,7 @@ const Chat = () => {
     setMessage("");
     setImgBase64("");
     setMessageToEdit(null);
+    setMessageToReply(null);
     inputRef.current?.focus();
   }, [conversationId]);
 
@@ -86,11 +93,12 @@ const Chat = () => {
   useEffect(() => {
     setMessage("");
     setMessageToEdit(null);
+    setMessageToReply(null);
     setImgBase64("");
   }, [messageHasBeenSent, messageHasBeenUpdated]);
 
   const handleAddReaction = (messageId: number, emoji: string) => {
-    reactToMessage({ messageId, emoji })
+    reactToMessage({ messageId, emoji });
   };
 
   return (
@@ -147,6 +155,7 @@ const Chat = () => {
                       key={i}
                       isCurrentUser={message.authorId === currentUser?.id}
                       setMessageToEdit={setMessageToEdit}
+                      setMessageToReply={setMessageToReply}
                       addReaction={handleAddReaction}
                     />
                   );
@@ -162,6 +171,8 @@ const Chat = () => {
           onSubmit={messageToEdit !== null ? updateMessage : sendMessage}
           messageToEdit={messageToEdit}
           setMessageToEdit={setMessageToEdit}
+          messageToReply={messageToReply}
+          setMessageToReply={setMessageToReply}
           inputRef={inputRef}
           imgBase64={imgBase64}
           setImgBase64={setImgBase64}

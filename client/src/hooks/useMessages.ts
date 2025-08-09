@@ -90,7 +90,8 @@ export const useNewMessage = (
   conversationId: number,
   recipientId: number,
   message: string,
-  img: string
+  img: string,
+  replyToId?: number
 ) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
@@ -107,6 +108,7 @@ export const useNewMessage = (
         message: message,
         conversationId: conversationId,
         img: img,
+        replyToId: replyToId,
       });
       return res.data;
     },
@@ -302,17 +304,24 @@ export const useEditMessage = (conversationId: number) => {
   );
 };
 
-export const useReactMessage = (conversationId: number, userId: number, recipientId: number) => {
+export const useReactMessage = (
+  conversationId: number,
+  userId: number,
+  recipientId: number
+) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const { socket } = useSocket();
 
   return useMutation(
     async (data: { messageId: number; emoji: string }) => {
-      const res = await axiosPrivate.put<Reaction[]>(`/api/messages/${data.messageId}/react`, {
-        emoji: data.emoji,
-        userId: userId,
-      });
+      const res = await axiosPrivate.put<Reaction[]>(
+        `/api/messages/${data.messageId}/react`,
+        {
+          emoji: data.emoji,
+          userId: userId,
+        }
+      );
       return res.data;
     },
     {
@@ -327,7 +336,7 @@ export const useReactMessage = (conversationId: number, userId: number, recipien
                   if (message.id === variables.messageId) {
                     return {
                       ...message,
-                      reactions: data
+                      reactions: data,
                     };
                   }
                   return message;

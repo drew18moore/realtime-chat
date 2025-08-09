@@ -7,6 +7,7 @@ interface MessageProps {
   message: Message;
   isCurrentUser: boolean;
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
+  setMessageToReply: React.Dispatch<React.SetStateAction<Message | null>>;
   addReaction: (messageId: number, reaction: string) => void;
 }
 
@@ -14,6 +15,7 @@ const Message: FC<MessageProps> = ({
   message,
   isCurrentUser,
   setMessageToEdit,
+  setMessageToReply,
   addReaction,
 }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -65,6 +67,7 @@ const Message: FC<MessageProps> = ({
               isCurrentUser={isCurrentUser}
               message={message}
               setMessageToEdit={setMessageToEdit}
+              setMessageToReply={setMessageToReply}
             />
           )}
           {showEmojiSelector && (
@@ -101,6 +104,36 @@ const Message: FC<MessageProps> = ({
               : "bg-neutral-200 dark:bg-neutral-800 dark:text-white"
           } w-fit rounded-[1.25rem] px-2 py-[0.5rem] text-base leading-5 flex flex-col gap-1`}
         >
+          {message.repliedToMessage && (
+            <div
+              className={`${
+                isCurrentUser
+                  ? "bg-blue-500 bg-opacity-70"
+                  : "bg-neutral-300 dark:bg-neutral-700"
+              } rounded-lg px-2 py-1 mb-1 border-l-2 ${
+                isCurrentUser ? "border-blue-300" : "border-neutral-400"
+              }`}
+            >
+              <p
+                className={`text-xs ${
+                  isCurrentUser
+                    ? "text-blue-100"
+                    : "text-neutral-600 dark:text-neutral-400"
+                }`}
+              >
+                Replying to {message.repliedToMessage.authorDisplayName}
+              </p>
+              <p
+                className={`text-sm ${
+                  isCurrentUser
+                    ? "text-blue-50"
+                    : "text-neutral-700 dark:text-neutral-300"
+                } truncate`}
+              >
+                {message.repliedToMessage.img ? "Image" : message.repliedToMessage.message}
+              </p>
+            </div>
+          )}
           {message.img !== "" && (
             <div className="rounded-xl overflow-hidden">
               <img src={message.img} alt="Message Image" />

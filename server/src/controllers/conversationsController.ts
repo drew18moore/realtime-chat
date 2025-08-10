@@ -5,9 +5,12 @@ import { dbUser } from "../types";
 
 type ConversationWithParticipants = {
   id: number;
-  title: string;
+  title: string | null;
   created_at: Date;
   dateLastMessage: Date;
+  isGroup: boolean;
+  ownerId: number | null;
+  group_picture: string;
   participants: {
     id: number;
     userId: number;
@@ -31,12 +34,17 @@ const findConversationByParticipants = async (
   };
 
   try {
-    const allUserConversations = await sql<ConversationWithParticipants[]>`
+    const allUserNonGroupConversations = await sql<
+      ConversationWithParticipants[]
+    >`
       SELECT 
       c.id,
       c.title,
       c.created_at,
       c."dateLastMessage",
+      c."isGroup",
+      c."ownerId",
+      c.group_picture,
       json_agg(
         json_build_object(
           'id', cu.id,
@@ -61,12 +69,13 @@ const findConversationByParticipants = async (
           FROM "ConversationUser" 
           WHERE "userId" = ${currUserId}
         )
+        AND c."isGroup" = FALSE
       GROUP BY 
         c.id
     `;
 
     let conversationTargetId = -1;
-    const participants = allUserConversations.map((c) =>
+    const participants = allUserNonGroupConversations.map((c) =>
       c.participants.map((p) => p.userId)
     );
     for (let i = 0; i < participants.length; i++) {
@@ -76,7 +85,7 @@ const findConversationByParticipants = async (
     }
 
     if (conversationTargetId !== -1) {
-      const conversation = allUserConversations[conversationTargetId];
+      const conversation = allUserNonGroupConversations[conversationTargetId];
       const response = {
         id: conversation.id,
         title: conversation.title,
@@ -96,37 +105,59 @@ const findConversationByParticipants = async (
 };
 
 export const newConversation = async (req: Request, res: Response) => {
-  const participantIds: number[] = req.body.participants;
+  const participantIdsRaw: number[] = req.body.participants;
+  const isGroup: boolean = Boolean(req.body.isGroup);
+  const title: string | null = req.body.title ?? null;
+  const group_picture: string = req.body.group_picture ?? "";
 
-  if (!participantIds || participantIds.length === 0)
+  if (!participantIdsRaw || participantIdsRaw.length === 0)
     res.status(400).json({ message: "Must provide array of participants" });
 
   try {
-    const existingConversation = await findConversationByParticipants(
-      req.userId,
-      participantIds
-    );
-
-    if (existingConversation !== null) {
-      return res.status(200).json(existingConversation);
+    if (!isGroup) {
+      const existingConversation = await findConversationByParticipants(
+        req.userId,
+        participantIdsRaw
+      );
+      if (existingConversation !== null) {
+        return res.status(200).json(existingConversation);
+      }
     }
 
     await sql.begin(async (sql) => {
-      const [conversation] = await sql<{ id: number; title: string | null }[]>`
-      INSERT INTO "Conversation" (title)
-      VALUES (NULL)
-      RETURNING id, title
-    `;
+      const ownerId = isGroup ? parseInt(req.userId) : null;
+      const [conversation] = await sql<
+        {
+          id: number;
+          title: string | null;
+        }[]
+      >`
+        INSERT INTO "Conversation" (title, "isGroup", "ownerId", group_picture)
+        VALUES (${title}, ${isGroup}, ${ownerId}, ${group_picture})
+        RETURNING id, title
+      `;
 
       const conversationId = conversation.id;
-      // Create the insert values for participants
-      const participantValues = participantIds
-        .map((participantId) => `(${participantId}, ${conversationId}, true)`)
+      // Ensure current user (owner for group) is included and unique
+      const participantIdsUnique = Array.from(
+        new Set<number>([
+          ...participantIdsRaw.map((p) => parseInt(String(p))),
+          parseInt(req.userId),
+        ])
+      );
+
+      // Create the insert values for participants with roles
+      const participantValues = participantIdsUnique
+        .map((participantId) => {
+          const role =
+            isGroup && participantId === ownerId ? "owner" : "member";
+          return `(${participantId}, ${conversationId}, true, '${role}')`;
+        })
         .join(", ");
 
       // Insert participants into ConversationUser
       await sql.unsafe(`
-      INSERT INTO "ConversationUser" ("userId", "conversationId", "isRead")
+      INSERT INTO "ConversationUser" ("userId", "conversationId", "isRead", role)
       VALUES ${participantValues}
     `);
 
@@ -136,6 +167,9 @@ export const newConversation = async (req: Request, res: Response) => {
       c.title,
       c.created_at,
       c."dateLastMessage",
+      c."isGroup",
+      c."ownerId",
+      c.group_picture,
       json_agg(
         json_build_object(
           'id', cu.id,
@@ -163,6 +197,9 @@ export const newConversation = async (req: Request, res: Response) => {
       const response = {
         id: createdConversation.id,
         title: createdConversation.title,
+        isGroup: createdConversation.isGroup,
+        ownerId: createdConversation.ownerId,
+        group_picture: createdConversation.group_picture,
         participants: createdConversation.participants.map((p) => ({
           id: p.userId,
           display_name: p.display_name,
@@ -181,6 +218,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
   type Conversation = {
     id: number;
     title: string | null;
+    isGroup: boolean;
+    ownerId: number | null;
+    group_picture: string;
     participants: Participant[];
     lastMessageSent:
       | {
@@ -201,7 +241,7 @@ export const getAllConversations = async (req: Request, res: Response) => {
 
   try {
     const conversations = await sql<Conversation[]>`
-      SELECT c.id, c.title,
+      SELECT c.id, c.title, c."isGroup", c."ownerId", c.group_picture,
         (
           SELECT row_to_json(m)
           FROM (
@@ -252,6 +292,9 @@ export const getAllConversations = async (req: Request, res: Response) => {
       return {
         id: conversation.id,
         title: conversation.title,
+        isGroup: conversation.isGroup,
+        ownerId: conversation.ownerId,
+        group_picture: conversation.group_picture,
         lastMessageSent: conversation.lastMessageSent,
         participants: participants,
         isRead: isRead,

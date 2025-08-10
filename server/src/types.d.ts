@@ -34,6 +34,9 @@ export type ParticipantDetails = {
 export type ConversationDetails = {
   id: number;
   title: string | null;
+  isGroup?: boolean;
+  ownerId?: number | null;
+  group_picture?: string;
   participants: ParticipantDetails[];
   lastMessageSent:
     | {
@@ -53,6 +56,9 @@ export type ConversationMessageDetails = {
 export type GetConversationResponse = {
   id: number;
   title: string | null;
+  isGroup?: boolean;
+  ownerId?: number | null;
+  group_picture?: string;
   participants: ParticipantDetails[];
   lastMessageSent:
     | {
@@ -67,6 +73,9 @@ export type GetConversationResponse = {
 export type ConversationWithParticipants = {
   id: number;
   title: string | null;
+  isGroup?: boolean;
+  ownerId?: number | null;
+  group_picture?: string;
   participants: Participant[];
 };
 

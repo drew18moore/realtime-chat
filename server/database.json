@@ -2,6 +2,12 @@
   "dev": {
     "driver": "pg",
     "url": { "ENV": "DATABASE_URL"},
+    "ssl": false,
+    "multipleStatements": true
+  },
+  "remote": {
+    "driver": "pg",
+    "url": { "ENV": "DATABASE_URL"},
     "ssl": true,
     "multipleStatements": true
   }, "sql-file": true

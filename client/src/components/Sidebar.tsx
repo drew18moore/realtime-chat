@@ -4,9 +4,7 @@ import Search from "./Search";
 import { useAuth } from "../contexts/AuthContext";
 import Contact from "./Contact";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { FiLogOut } from "react-icons/fi";
 import { RiSettings5Fill } from "react-icons/ri";
-import useLogout from "../hooks/auth/useLogout";
 import { useGetConversations } from "../hooks/useConversations";
 import ConverasationSkeleton from "./ConversationSkeleton";
 import useDebounce from "../hooks/useDebounce";
@@ -22,7 +20,6 @@ const Sidebar = () => {
 
   const { data: conversations, isLoading: isLoadingConversations } =
     useGetConversations();
-  const { mutate: logout } = useLogout();
   const { currentUser } = useAuth();
   const { onlineUserIds } = useSocket();
 
@@ -123,7 +120,7 @@ const Sidebar = () => {
             <h2 className="text-center">No results found</h2>
           )}
         </div>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start">
           <div className="flex items-center gap-2">
             <div className="w-12 aspect-square rounded-full overflow-hidden">
               <img
@@ -141,13 +138,6 @@ const Sidebar = () => {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => logout()}
-            name="logout"
-            className="hover:bg-neutral-300 h-fit p-3 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-900"
-          >
-            <FiLogOut />
-          </button>
         </div>
       </div>
     </div>

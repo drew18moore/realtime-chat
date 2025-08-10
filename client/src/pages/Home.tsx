@@ -4,12 +4,15 @@ import { Outlet, useLocation } from "react-router-dom";
 const Home = () => {
   const location = useLocation();
   const isRootRoute = location.pathname === "/";
+  const isNewRoute = location.pathname === "/new";
   return (
     <div className="flex dark:bg-black">
       <Sidebar />
-      <div className={`flex-grow ${isRootRoute ? "hidden" : ""} sm:block`}>
-        <Outlet />
-      </div>
+      {!(isRootRoute || isNewRoute) && (
+        <div className="flex-grow sm:block">
+          <Outlet />
+        </div>
+      )}
     </div>
   );
 };

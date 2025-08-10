@@ -60,10 +60,10 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="absolute bottom-0 w-full h-20 px-5 flex items-center gap-2"
+      className="flex-none w-full px-5 py-2 flex flex-col gap-2"
     >
       {imgBase64 && (
-        <div className="absolute top-0 -translate-y-full">
+        <div>
           <div className="relative w-24">
             <button
               type="button"
@@ -82,14 +82,12 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
           </div>
         </div>
       )}
-      <div className="flex items-center gap-2 w-full my-3">
+      <div className="flex items-center gap-2 w-full">
         <div className="w-full relative flex flex-col">
           {(isEditing || isReplying) && (
             <div className="absolute top-1/2 -translate-y-1/2 pl-3 text-blue-600 flex items-center gap-2 border-r-[1px] pr-2 border-blue-600">
               {isEditing ? <FiEdit2 /> : <FiCornerUpLeft />}
-              <p className="text-sm">
-                {isEditing ? "Editing" : "Replying"}
-              </p>
+              <p className="text-sm">{isEditing ? "Editing" : "Replying"}</p>
             </div>
           )}
           <Input
@@ -100,7 +98,9 @@ const NewMessageInputForm: FC<NewMessageInputFormProps> = ({
             onChange={onChange}
             className={`${
               isEditing || isReplying
-                ? `${isEditing ? "pl-24" : "pl-[6.6rem]"} outline outline-2 outline-blue-600`
+                ? `${
+                    isEditing ? "pl-24" : "pl-[6.6rem]"
+                  } outline outline-2 outline-blue-600`
                 : ""
             }`}
             ref={inputRef}

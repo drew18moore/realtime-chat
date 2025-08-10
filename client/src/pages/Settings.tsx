@@ -12,14 +12,14 @@ const Settings = () => {
   return (
     <div className="min-h-[calc(100svh)] dark:bg-black bg-gray-50">
       {/* Header */}
-      <div className="flex items-center gap-3 h-14 sm:h-16 px-4 sm:px-6 bg-white dark:bg-black border-b border-neutral-200 dark:border-neutral-800 shadow-sm">
+      <div className="flex items-center gap-3 py-2 px-5 dark:bg-black border-b border-neutral-200 dark:border-neutral-800">
         <button
-          className="hover:bg-neutral-100 dark:hover:bg-neutral-900 h-9 sm:h-10 aspect-square flex items-center justify-center rounded-full transition-colors duration-200 dark:text-white"
+          className="hover:bg-neutral-200 dark:hover:bg-neutral-800 h-11 aspect-square flex items-center justify-center rounded-full transition-colors duration-200 dark:text-white"
           onClick={() => navigate(-1)}
         >
-          <BiArrowBack size={18} className="sm:w-5 sm:h-5" />
+          <BiArrowBack size={"1.5rem"} />
         </button>
-        <h1 className="text-lg sm:text-xl font-semibold dark:text-white">
+        <h1 className="text-xl font-bold dark:text-white">
           Settings
         </h1>
       </div>

@@ -3,7 +3,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RiSettings5Fill } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
-import { IoChevronBack } from "react-icons/io5";
 import { useGetConversations } from "../hooks/useConversations";
 import ConverasationSkeleton from "./ConversationSkeleton";
 import { useSocket } from "../contexts/SocketContext";

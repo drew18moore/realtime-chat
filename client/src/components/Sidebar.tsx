@@ -75,7 +75,7 @@ const Sidebar = () => {
             <button
               onClick={() => navigate("/")}
               name="back"
-              className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 sm:hidden dark:text-white dark:hover:bg-neutral-800"
+              className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 dark:text-white dark:hover:bg-neutral-800"
               aria-label="Back"
             >
               <BiArrowBack size={"1.5rem"} />

@@ -27,7 +27,6 @@ const NewConversation = () => {
           searchResults.users.map((result) => {
             const isCurrentUser = result.id === currentUser?.id;
             return (
-              <>
               <Contact
                 img={result.profile_picture || "default-pfp.jpg"}
                 id={result.id}
@@ -37,34 +36,6 @@ const NewConversation = () => {
                 clearSearch={clearSearch}
                 isCurrentUser={isCurrentUser}
               />
-              <Contact
-                img={result.profile_picture || "default-pfp.jpg"}
-                id={result.id}
-                displayName={result.display_name}
-                username={result.username}
-                key={result.id}
-                clearSearch={clearSearch}
-                isCurrentUser={isCurrentUser}
-              />
-              <Contact
-                img={result.profile_picture || "default-pfp.jpg"}
-                id={result.id}
-                displayName={result.display_name}
-                username={result.username}
-                key={result.id}
-                clearSearch={clearSearch}
-                isCurrentUser={isCurrentUser}
-              />
-              <Contact
-                img={result.profile_picture || "default-pfp.jpg"}
-                id={result.id}
-                displayName={result.display_name}
-                username={result.username}
-                key={result.id}
-                clearSearch={clearSearch}
-                isCurrentUser={isCurrentUser}
-              />
-              </>
             );
           })
         ) : (

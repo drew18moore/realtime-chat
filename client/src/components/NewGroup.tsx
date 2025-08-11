@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
+import { RiCloseFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import useDebounce from "../hooks/useDebounce";
@@ -14,6 +15,9 @@ const NewGroup: React.FC = () => {
   const { data: searchResults } = useSearch(debouncedSearch);
   const { currentUser } = useAuth();
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const [selectedUsersById, setSelectedUsersById] = useState<
+    Record<number, any>
+  >({});
   const filteredUsers = useMemo(
     () => (searchResults?.users ?? []).filter((u) => u.id !== currentUser?.id),
     [searchResults, currentUser?.id]
@@ -21,12 +25,33 @@ const NewGroup: React.FC = () => {
 
   const clearSearch = () => setSearch("");
 
-  const toggleSelect = (userId: number) => {
+  const toggleSelectUser = (user: any) => {
+    const userId = user.id as number;
     setSelectedUserIds((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
         : [...prev, userId]
     );
+    setSelectedUsersById((prev) => {
+      if (prev[userId]) {
+        const { [userId]: _removed, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [userId]: user };
+    });
+  };
+
+  const removeSelectedUser = (userId: number) => {
+    setSelectedUserIds((prev) => prev.filter((id) => id !== userId));
+    setSelectedUsersById((prev) => {
+      const { [userId]: _removed, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const clearAllSelected = () => {
+    setSelectedUserIds([]);
+    setSelectedUsersById({});
   };
 
   const selectedCount = selectedUserIds.length;
@@ -50,7 +75,7 @@ const NewGroup: React.FC = () => {
             disabled={!canCreateGroup}
             className="text-blue-600 px-4 py-2 rounded-md disabled:opacity-50"
           >
-            Create
+            Create{selectedCount > 0 ? ` (${selectedCount})` : ""}
           </button>
         </div>
       </div>
@@ -59,6 +84,50 @@ const NewGroup: React.FC = () => {
           <div className="flex h-14 justify-center">
             <Search search={search} setSearch={setSearch} />
           </div>
+          {selectedCount > 0 && (
+            <div className="px-5">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Selected
+                </p>
+                <button
+                  type="button"
+                  onClick={clearAllSelected}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Clear all
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 pb-1">
+                {Object.values(selectedUsersById).map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center gap-2 pr-2 pl-1 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-white flex-shrink-0"
+                    title={u.display_name}
+                  >
+                    <div className="w-6 h-6 rounded-full overflow-hidden bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <img
+                        src={u.profile_picture || "default-pfp.jpg"}
+                        alt={u.display_name}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <span className="text-sm max-w-[10rem] truncate">
+                      {u.display_name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeSelectedUser(u.id)}
+                      className="rounded-full hover:bg-neutral-300 dark:hover:bg-neutral-700 w-5 h-5 flex items-center justify-center"
+                      aria-label={`Remove ${u.display_name}`}
+                    >
+                      <RiCloseFill size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-2 overflow-y-auto flex-1 min-h-0">
             {!searchResults ? (
@@ -77,7 +146,7 @@ const NewGroup: React.FC = () => {
                   isCurrentUser={false}
                   toggleable
                   selected={selectedUserIds.includes(result.id)}
-                  onToggle={toggleSelect}
+                  onToggle={() => toggleSelectUser(result)}
                 />
               ))
             ) : (

@@ -26,20 +26,28 @@ const NewGroup: React.FC = () => {
   };
 
   const selectedCount = selectedUserIds.length;
-  const canCreateGroup = useMemo(() => selectedCount >= 2, [selectedCount]);
+  const canCreateGroup = useMemo(() => selectedCount >= 1, [selectedCount]);
   return (
     <>
       <div className="px-5 py-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              name="back"
+              className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 dark:text-white dark:hover:bg-neutral-800"
+              aria-label="Back"
+            >
+              <BiArrowBack size={"1.5rem"} />
+            </button>
+            <h1 className="text-xl font-bold dark:text-white">New Group</h1>
+          </div>
           <button
-            onClick={() => navigate(-1)}
-            name="back"
-            className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 dark:text-white dark:hover:bg-neutral-800"
-            aria-label="Back"
+            disabled={!canCreateGroup}
+            className="text-blue-600 px-4 py-2 rounded-md disabled:opacity-50"
           >
-            <BiArrowBack size={"1.5rem"} />
+            Create
           </button>
-          <h1 className="text-xl font-bold dark:text-white">New Group</h1>
         </div>
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">

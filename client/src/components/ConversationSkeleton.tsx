@@ -1,4 +1,4 @@
-const ConverasationSkeleton = () => {
+const ConversationSkeleton = () => {
   return (
     <div className="p-3 rounded-xl flex gap-3 items-center">
       <div className="bg-neutral-400 w-14 h-14 rounded-full animate-pulse" />
@@ -10,4 +10,4 @@ const ConverasationSkeleton = () => {
   );
 };
 
-export default ConverasationSkeleton;
+export default ConversationSkeleton;

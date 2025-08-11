@@ -16,8 +16,10 @@ function App() {
         <Route element={<PersistLogin />}>
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Home />}>
-              <Route path="/:conversationId" element={<Chat />} />
+              <Route path=":conversationId" element={<Chat />} />
             </Route>
+            <Route path="/new" element={<Home />} />
+            <Route path="/new/group" element={<Home />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>

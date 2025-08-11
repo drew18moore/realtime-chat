@@ -7,6 +7,7 @@ import { useGetConversations } from "../hooks/useConversations";
 import ConverasationSkeleton from "./ConversationSkeleton";
 import { useSocket } from "../contexts/SocketContext";
 import NewConversation from "./NewConversation";
+import NewGroup from "./NewGroup";
 import { BiArrowBack } from "react-icons/bi";
 
 const Sidebar = () => {
@@ -15,7 +16,9 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const isRootRoute = location.pathname === "/";
-  const isNewRoute = location.pathname === "/new";
+  const isNewMessageRoute = location.pathname === "/new";
+  const isNewGroupRoute = location.pathname === "/new/group";
+  const isNewRoute = isNewMessageRoute || isNewGroupRoute;
 
   const { data: conversations, isLoading: isLoadingConversations } =
     useGetConversations();
@@ -73,14 +76,16 @@ const Sidebar = () => {
         {isNewRoute ? (
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate(isNewGroupRoute ? "/new" : "/")}
               name="back"
               className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 dark:text-white dark:hover:bg-neutral-800"
               aria-label="Back"
             >
               <BiArrowBack size={"1.5rem"} />
             </button>
-            <h1 className="text-xl font-bold dark:text-white">New message</h1>
+            <h1 className="text-xl font-bold dark:text-white">
+              {isNewGroupRoute ? "New Group" : "New message"}
+            </h1>
           </div>
         ) : (
           <>
@@ -98,7 +103,11 @@ const Sidebar = () => {
       </div>
       <div className="absolute top-14 left-0 right-0 bottom-0 p-2 flex flex-col justify-between">
         {isNewRoute ? (
-          <NewConversation />
+          isNewGroupRoute ? (
+            <NewGroup />
+          ) : (
+            <NewConversation />
+          )
         ) : (
           <>
             <div className="grid gap-2 overflow-y-auto">

@@ -4,7 +4,8 @@ import { Outlet, useLocation } from "react-router-dom";
 const Home = () => {
   const location = useLocation();
   const isRootRoute = location.pathname === "/";
-  const isNewRoute = location.pathname === "/new";
+  const isNewRoute =
+    location.pathname === "/new" || location.pathname.startsWith("/new/");
   return (
     <div className="flex dark:bg-black">
       <Sidebar />

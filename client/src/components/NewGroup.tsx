@@ -14,6 +14,10 @@ const NewGroup: React.FC = () => {
   const { data: searchResults } = useSearch(debouncedSearch);
   const { currentUser } = useAuth();
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const filteredUsers = useMemo(
+    () => (searchResults?.users ?? []).filter((u) => u.id !== currentUser?.id),
+    [searchResults, currentUser?.id]
+  );
 
   const clearSearch = () => setSearch("");
 
@@ -61,24 +65,21 @@ const NewGroup: React.FC = () => {
               <p className="px-5 text-center text-neutral-600 dark:text-neutral-500 mt-10">
                 Search for users to start a conversation.
               </p>
-            ) : searchResults.users.length > 0 ? (
-              searchResults.users.map((result) => {
-                const isCurrentUser = result.id === currentUser?.id;
-                return (
-                  <Contact
-                    img={result.profile_picture || "default-pfp.jpg"}
-                    id={result.id}
-                    displayName={result.display_name}
-                    username={result.username}
-                    key={result.id}
-                    clearSearch={clearSearch}
-                    isCurrentUser={isCurrentUser}
-                    toggleable
-                    selected={selectedUserIds.includes(result.id)}
-                    onToggle={toggleSelect}
-                  />
-                );
-              })
+            ) : filteredUsers.length > 0 ? (
+              filteredUsers.map((result: any) => (
+                <Contact
+                  img={result.profile_picture || "default-pfp.jpg"}
+                  id={result.id}
+                  displayName={result.display_name}
+                  username={result.username}
+                  key={result.id}
+                  clearSearch={clearSearch}
+                  isCurrentUser={false}
+                  toggleable
+                  selected={selectedUserIds.includes(result.id)}
+                  onToggle={toggleSelect}
+                />
+              ))
             ) : (
               <h2 className="text-center">No results found</h2>
             )}

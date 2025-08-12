@@ -181,6 +181,17 @@ const Chat = () => {
                 m.authorId !== currentUser?.id &&
                 (!prev || prev.authorId !== m.authorId);
               const authorInfo = getAuthorInfo(m.authorId);
+              const next =
+                idx < orderedMessages.length - 1
+                  ? orderedMessages[idx + 1]
+                  : undefined;
+              const FIVE_MINUTES_MS = 5 * 60 * 1000;
+              const showTimestamp =
+                !next ||
+                next.authorId !== m.authorId ||
+                new Date(next.created_at).getTime() -
+                  new Date(m.created_at).getTime() >
+                  FIVE_MINUTES_MS;
               return (
                 <Message
                   key={m.id}
@@ -192,6 +203,7 @@ const Chat = () => {
                   showAuthorHeader={showAuthorHeader}
                   authorDisplayName={authorInfo.display_name}
                   authorProfilePicture={authorInfo.profile_picture}
+                  showTimestamp={showTimestamp}
                 />
               );
             });

@@ -24,7 +24,6 @@ const Inbox = () => {
     }
   } else {
     conversationsContent = conversations?.map((conversation) => {
-      console.log(conversation);
       const conversationWithSelf =
         conversation.participants.length === 1 &&
         conversation.participants[0].id === currentUser?.id;

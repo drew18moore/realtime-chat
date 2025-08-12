@@ -12,6 +12,7 @@ interface MessageProps {
   showAuthorHeader?: boolean;
   authorDisplayName?: string;
   authorProfilePicture?: string;
+  showTimestamp?: boolean;
 }
 
 const Message: FC<MessageProps> = ({
@@ -23,6 +24,7 @@ const Message: FC<MessageProps> = ({
   showAuthorHeader = false,
   authorDisplayName,
   authorProfilePicture,
+  showTimestamp = true,
 }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [showEmojiSelector, setShowEmojiSelector] = useState<boolean>(false);
@@ -177,21 +179,23 @@ const Message: FC<MessageProps> = ({
           ))}
         </div>
       )}
-      <div
-        className={`${
-          isCurrentUser ? "justify-self-end" : "justify-self-start"
-        } text-neutral-600 dark:text-neutral-500 flex gap-1`}
-      >
-        {message.isEdited && (
-          <>
-            <p>Edited</p>
-            <span>&#8226;</span>
-          </>
-        )}
-        <p className={`text-neutral-600 dark:text-neutral-500`}>
-          {dateFormated}
-        </p>
-      </div>
+      {showTimestamp && (
+        <div
+          className={`${
+            isCurrentUser ? "justify-self-end" : "justify-self-start"
+          } text-neutral-600 dark:text-neutral-500 flex gap-1`}
+        >
+          {message.isEdited && (
+            <>
+              <p>Edited</p>
+              <span>&#8226;</span>
+            </>
+          )}
+          <p className={`text-neutral-600 dark:text-neutral-500`}>
+            {dateFormated}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

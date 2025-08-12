@@ -7,6 +7,7 @@ import useDebounce from "../hooks/useDebounce";
 import useSearch from "../hooks/useSearch";
 import Contact from "./Contact";
 import Search from "./Search";
+import { useNewConversation } from "../hooks/useConversations";
 
 const NewGroup: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ const NewGroup: React.FC = () => {
   const { data: searchResults } = useSearch(debouncedSearch);
   const { currentUser } = useAuth();
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
+  const { mutate: newConversation } = useNewConversation([currentUser!.id, ...selectedUserIds], true);
   const [selectedUsersById, setSelectedUsersById] = useState<
     Record<number, any>
   >({});
@@ -72,6 +74,7 @@ const NewGroup: React.FC = () => {
             <h1 className="text-xl font-bold dark:text-white">New Group</h1>
           </div>
           <button
+            onClick={() => newConversation()}
             disabled={!canCreateGroup}
             className="text-blue-600 px-4 py-2 rounded-md disabled:opacity-50"
           >

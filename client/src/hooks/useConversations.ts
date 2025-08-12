@@ -23,7 +23,7 @@ export const useGetConversations = () => {
   );
 };
 
-export const useNewConversation = (participants: number[]) => {
+export const useNewConversation = (participants: number[], isGroup: boolean = false) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -31,8 +31,10 @@ export const useNewConversation = (participants: number[]) => {
 
   return useMutation<Conversation>(
     async () => {
+      console.log("NEW CONVERSATION", participants);
       const res = await axiosPrivate.post("/api/conversations/new", {
         participants,
+        isGroup,
       });
       return res.data;
     },

@@ -43,9 +43,20 @@ const Chat = () => {
   const isGroup = conversationMeta?.isGroup ?? false;
   const participants = conversationMeta?.participants ?? [];
 
+  const conversationWithSelf =
+    (conversationMeta?.participants?.length === 1 &&
+      conversationMeta.participants[0].id === currentUser?.id) ||
+    false;
+
+  const recipientIds = conversationWithSelf
+    ? [currentUser!.id]
+    : (conversationMeta?.participants || [])
+        .map((p) => p.id)
+        .filter((id) => id !== currentUser?.id);
+
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
-    state?.recipient.id,
+    recipientIds,
     message,
     imgBase64,
     messageToReply?.id
@@ -57,7 +68,7 @@ const Chat = () => {
   const { mutate: reactToMessage } = useReactMessage(
     parseInt(conversationId!),
     currentUser!.id,
-    state?.recipient.id
+    recipientIds[0] ?? state?.recipient.id
   );
 
   useEffect(() => {
@@ -65,7 +76,14 @@ const Chat = () => {
       if (messageToEdit?.message) return messageToEdit.message;
       return "";
     });
+    inputRef.current?.focus();
   }, [messageToEdit]);
+
+  useEffect(() => {
+    if (messageToReply) {
+      inputRef.current?.focus();
+    }
+  }, [messageToReply]);
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

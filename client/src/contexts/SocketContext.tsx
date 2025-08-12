@@ -82,7 +82,6 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       const {
         id,
         conversationId,
-        recipientId,
         authorId,
         message,
         img,
@@ -94,9 +93,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         "MESSAGE RECEIVED:",
         receivedMessage.message,
         "from",
-        authorId,
-        "to",
-        recipientId
+        authorId
       );
 
       const isViewingConversation =

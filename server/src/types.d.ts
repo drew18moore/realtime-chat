@@ -130,7 +130,8 @@ export type Reaction = {
 export type WSMessage = {
   id: number;
   authorId: number;
-  recipientId: number;
+  recipientId?: number;
+  recipientIds?: number[];
   conversationId: number;
   message: string;
   img: string;

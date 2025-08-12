@@ -88,7 +88,7 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
 
 export const useNewMessage = (
   conversationId: number,
-  recipientId: number,
+  recipientIds: number[],
   message: string,
   img: string,
   replyToId?: number
@@ -147,11 +147,11 @@ export const useNewMessage = (
           }
         );
 
-        // Send to other user
+        // Send to recipients (DM or group)
         socket?.emit("send-message", {
           id: data.id,
           authorId: data.authorId,
-          recipientId,
+          recipientIds,
           conversationId,
           message: data.message,
           img: data.img,

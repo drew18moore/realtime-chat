@@ -12,14 +12,18 @@ import cookieParser from "cookie-parser";
 import { allowedOrigins } from "./config/allowedOrigins";
 import { createClient } from "redis";
 import { WSMessage, WSReaction } from "./types";
-require('dotenv').config();
+require("dotenv").config();
 
 const APPID = process.env.APPID || "default-app-id";
 const PORT = 3000;
 const activeUsers = new Set<number>();
 
-const subscriber = createClient({ url: process.env.REDIS_URL || "redis://redis:6379" });
-const publisher = createClient({ url: process.env.REDIS_URL || "redis://redis:6379" });
+const subscriber = createClient({
+  url: process.env.REDIS_URL || "redis://redis:6379",
+});
+const publisher = createClient({
+  url: process.env.REDIS_URL || "redis://redis:6379",
+});
 
 subscriber.on("error", (err) => console.error("Redis Subscriber Error", err));
 publisher.on("error", (err) => console.error("Redis Publisher Error", err));
@@ -50,27 +54,44 @@ server.listen(3000, () => {
 });
 
 subscriber.pSubscribe("conversation:*", (message, channel) => {
-  const parsed: (WSMessage | WSReaction) & { senderSocketId: string } = JSON.parse(message);
+  const parsed: (WSMessage | WSReaction) & { senderSocketId?: string } =
+    JSON.parse(message);
   const [, conversationId, type] = channel.split(":");
 
-  if (!activeUsers.has(parsed.recipientId) ) return;
-
   if (type === "reaction") {
-    io.to(conversationId).emit("receive-reaction", parsed);
+    // Reactions broadcast to the conversation room
+    io.to(conversationId).emit("receive-reaction", parsed as WSReaction);
+    return;
+  }
+
+  const payload = parsed as WSMessage & { senderSocketId?: string };
+  const recipientIds: number[] = Array.isArray(payload.recipientIds)
+    ? payload.recipientIds
+    : typeof payload.recipientId === "number"
+    ? [payload.recipientId]
+    : [];
+
+  if (recipientIds.length === 0) return;
+
+  const onlineRecipientIds = recipientIds.filter((id) => activeUsers.has(id));
+  if (onlineRecipientIds.length === 0) return;
+
+  if (payload.senderSocketId) {
+    onlineRecipientIds.forEach((rid) => {
+      io.to(rid.toString())
+        .except(payload.senderSocketId!)
+        .emit("receive-message", payload);
+    });
   } else {
-    if ("senderSocketId" in parsed) {
-      console.log("SENDING TO", parsed.recipientId, "EXCEPT", parsed.senderSocketId);
-      io.to(parsed.recipientId.toString()).except(parsed.senderSocketId).emit("receive-message", parsed);
-    } else {
-      console.log("SENDING TO", (parsed as (WSMessage | WSReaction) & { senderSocketId: string }).recipientId);
-      io.to((parsed as (WSMessage | WSReaction) & { senderSocketId: string } ).recipientId.toString()).emit("receive-message", parsed);
-    }
+    onlineRecipientIds.forEach((rid) => {
+      io.to(rid.toString()).emit("receive-message", payload);
+    });
   }
 });
 
 io.on("connection", (socket) => {
   const id = socket.handshake.query.id as string;
-  
+
   console.log("WELCOME", id, "to the server", APPID);
   activeUsers.add(parseInt(id));
   socket.join(id);
@@ -79,19 +100,21 @@ io.on("connection", (socket) => {
   socket.broadcast.emit("user-connected", parseInt(id));
 
   socket.on("send-message", async (payload: WSMessage) => {
-      console.log("SENDING TO REDIS:", payload);
-      // socket.to(payload.conversationId.toString()).emit("receive-message", payload);
-      await publisher.publish(`conversation:${payload.conversationId}`, JSON.stringify({ ...payload, senderSocketId: socket.id }));
-    }
-  );
+    console.log("SENDING TO REDIS:", payload);
+    // socket.to(payload.conversationId.toString()).emit("receive-message", payload);
+    await publisher.publish(
+      `conversation:${payload.conversationId}`,
+      JSON.stringify({ ...payload, senderSocketId: socket.id })
+    );
+  });
 
-  socket.on(
-    "react-to-message",
-    async (payload: WSReaction) => {
-      // socket.to(payload.conversationId.toString()).emit("receive-reaction", payload);
-      await publisher.publish(`conversation:${payload.conversationId}:reaction`, JSON.stringify({ ...payload, senderSocketId: socket.id }));
-    }
-  );
+  socket.on("react-to-message", async (payload: WSReaction) => {
+    // socket.to(payload.conversationId.toString()).emit("receive-reaction", payload);
+    await publisher.publish(
+      `conversation:${payload.conversationId}:reaction`,
+      JSON.stringify({ ...payload, senderSocketId: socket.id })
+    );
+  });
 
   socket.on("join-conversation", (conversationId: string | number) => {
     socket.join(conversationId.toString());

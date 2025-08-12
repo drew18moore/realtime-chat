@@ -24,6 +24,7 @@ const Inbox = () => {
     }
   } else {
     conversationsContent = conversations?.map((conversation) => {
+      console.log(conversation);
       const conversationWithSelf =
         conversation.participants.length === 1 &&
         conversation.participants[0].id === currentUser?.id;
@@ -40,9 +41,7 @@ const Inbox = () => {
           }
           isSelected={conversation.id.toString() === conversationId}
           conversationId={conversation.id}
-          recipient={
-            conversationWithSelf ? conversation.participants[0] : recipients[0]
-          }
+          participants={conversation.participants}
           key={conversation.id}
           isOnline={
             conversationWithSelf
@@ -51,6 +50,8 @@ const Inbox = () => {
           }
           isRead={conversation.isRead}
           conversationWithSelf={conversationWithSelf}
+          isGroup={conversation.isGroup}
+          groupPicture={conversation.group_picture}
         />
       );
     });

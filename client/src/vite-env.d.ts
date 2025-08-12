@@ -55,6 +55,9 @@ type Conversation = {
       }
     | undefined;
   isRead: boolean;
+  isGroup: boolean;
+  ownerId: number | null;
+  group_picture?: string;
 };
 
 type SearchResults = {

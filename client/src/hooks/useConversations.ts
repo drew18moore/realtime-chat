@@ -18,12 +18,20 @@ export const useGetConversations = () => {
       onError: (err) => {
         console.error(err);
       },
+      enabled: !!currentUser?.id,
+      // Prevent unnecessary refetch when navigating back if cache exists
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     }
   );
 };
 
-export const useNewConversation = (participants: number[], isGroup: boolean = false) => {
+export const useNewConversation = (
+  participants: number[],
+  isGroup: boolean = false
+) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();

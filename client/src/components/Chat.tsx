@@ -11,6 +11,7 @@ import {
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
 import { MdVerified } from "react-icons/md";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -30,6 +31,17 @@ const Chat = () => {
     parseInt(conversationId!),
     LIMIT
   );
+
+  // Conversations metadata from cache
+  const queryClient = useQueryClient();
+  const conversations = queryClient.getQueryData<Conversation[]>([
+    "conversations",
+  ]);
+  const conversationMeta = conversations?.find(
+    (c) => c.id === parseInt(conversationId!)
+  );
+  const isGroup = conversationMeta?.isGroup ?? false;
+  const participants = conversationMeta?.participants ?? [];
 
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
@@ -141,26 +153,49 @@ const Chat = () => {
               Show More
             </button>
           )}
-          {messages?.pages
-            .slice()
-            .reverse()
-            .map((page) => {
-              return page
+          {(() => {
+            const orderedMessages: Message[] =
+              messages?.pages
                 .slice()
                 .reverse()
-                .map((message, i) => {
-                  return (
-                    <Message
-                      message={message}
-                      key={i}
-                      isCurrentUser={message.authorId === currentUser?.id}
-                      setMessageToEdit={setMessageToEdit}
-                      setMessageToReply={setMessageToReply}
-                      addReaction={handleAddReaction}
-                    />
-                  );
-                });
-            })}
+                .flatMap((page) => page.slice().reverse()) ?? [];
+
+            const getAuthorInfo = (authorId: number) => {
+              if (authorId === currentUser?.id) {
+                return {
+                  display_name: currentUser.display_name,
+                  profile_picture: currentUser.profile_picture,
+                };
+              }
+              const found = participants.find((p) => p.id === authorId);
+              return {
+                display_name: found?.display_name,
+                profile_picture: found?.profile_picture,
+              };
+            };
+
+            return orderedMessages.map((m, idx) => {
+              const prev = idx > 0 ? orderedMessages[idx - 1] : undefined;
+              const showAuthorHeader =
+                isGroup &&
+                m.authorId !== currentUser?.id &&
+                (!prev || prev.authorId !== m.authorId);
+              const authorInfo = getAuthorInfo(m.authorId);
+              return (
+                <Message
+                  key={m.id}
+                  message={m}
+                  isCurrentUser={m.authorId === currentUser?.id}
+                  setMessageToEdit={setMessageToEdit}
+                  setMessageToReply={setMessageToReply}
+                  addReaction={handleAddReaction}
+                  showAuthorHeader={showAuthorHeader}
+                  authorDisplayName={authorInfo.display_name}
+                  authorProfilePicture={authorInfo.profile_picture}
+                />
+              );
+            });
+          })()}
         </div>
       </div>
 

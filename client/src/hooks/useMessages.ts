@@ -51,6 +51,10 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
       return res.data;
     },
     {
+      // Avoid refetching when navigating back if data exists in cache
+      staleTime: 5 * 60 * 1000,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
       onSuccess: () => {
         // Set conversation isRead to true
         queryClient.setQueryData<Conversation[]>(

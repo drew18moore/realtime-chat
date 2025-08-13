@@ -39,7 +39,6 @@ export const useNewConversation = (
 
   return useMutation<Conversation>(
     async () => {
-      console.log("NEW CONVERSATION", participants);
       const res = await axiosPrivate.post("/api/conversations/new", {
         participants,
         isGroup,

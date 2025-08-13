@@ -273,10 +273,13 @@ export const getAllConversations = async (req: Request, res: Response) => {
         WHERE p."conversationId" = c.id
           AND p."userId" = ${userIdParsed}
       )
-        AND EXISTS (
-          SELECT 1
-          FROM "Message" m
-          WHERE m."conversationId" = c.id
+        AND (
+          c."isGroup" = TRUE
+          OR EXISTS (
+            SELECT 1
+            FROM "Message" m
+            WHERE m."conversationId" = c.id
+          )
         )
       ORDER BY c."dateLastMessage" DESC
     `;

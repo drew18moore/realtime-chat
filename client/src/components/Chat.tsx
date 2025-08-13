@@ -141,7 +141,12 @@ const Chat = () => {
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl dark:text-white grid gap-2 min-w-0">
+        <button
+          type="button"
+          onClick={() => navigate(`/${conversationId}/info`)}
+          className="text-left text-2xl dark:text-white grid gap-2 min-w-0 hover:underline"
+          aria-label="Open conversation info"
+        >
           {state?.recipient.conversationWithSelf ? (
             <>
               <p className="truncate">Note to self</p>
@@ -156,7 +161,7 @@ const Chat = () => {
           ) : (
             state?.recipient.title
           )}
-        </h1>
+        </button>
       </div>
 
       <div className="flex-1 min-h-0 w-full flex flex-col justify-end">

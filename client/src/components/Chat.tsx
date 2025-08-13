@@ -132,23 +132,27 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100svh)]">
+    <div className="flex flex-col h-[calc(100svh)] min-w-0">
       {/* Header bar */}
-      <div className="flex-none flex items-center gap-3 py-2 px-5 sm:px-10 border-b border-b-neutral-200 dark:border-b-neutral-800">
+      <div className="flex-none flex items-center gap-3 py-2 px-5 sm:px-10 border-b border-b-neutral-200 dark:border-b-neutral-800 min-w-0">
         <button
           className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 sm:hidden dark:text-white dark:hover:bg-neutral-800"
           onClick={() => navigate(-1)}
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl dark:text-white flex items-center gap-2">
+        <h1 className="text-2xl dark:text-white grid gap-2 min-w-0">
           {state?.recipient.conversationWithSelf ? (
             <>
-              <p>Note to self</p>
+              <p className="truncate">Note to self</p>
               <span className="text-blue-600">
                 <MdVerified />
               </span>
             </>
+          ) : isGroup ? (
+            <span className="truncate">
+              {participants.map((p) => p.display_name).join(", ")}
+            </span>
           ) : (
             state?.recipient.title
           )}

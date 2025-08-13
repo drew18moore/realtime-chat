@@ -56,8 +56,10 @@ const Converasation: FC<ConverasationProps> = ({
   const handleClick = () => {
     const state = {
       recipient: {
-        id: recipients[0].id,
-        title: recipients[0].display_name,
+        id: conversationWithSelf ? currentUser?.id : recipients[0].id,
+        title: conversationWithSelf
+          ? "Note to self"
+          : recipients[0].display_name,
         conversationWithSelf,
       },
     };

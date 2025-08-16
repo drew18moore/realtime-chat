@@ -98,6 +98,24 @@ export const useReadConversation = () => {
   );
 };
 
+export const useGetConversation = (conversationId: number) => {
+  const queryClient = useQueryClient();
+  return useQuery<Conversation | undefined>(
+    ["conversations", conversationId],
+    () => {
+      const conversations = queryClient.getQueryData<Conversation[]>([
+        "conversations",
+      ]);
+      return conversations?.find(
+        (conversation) => conversation.id === conversationId
+      );
+    },
+    {
+      enabled: !!conversationId,
+    }
+  );
+};
+
 export const useUpdateConversation = () => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();

@@ -97,3 +97,42 @@ export const useReadConversation = () => {
     }
   );
 };
+
+export const useUpdateConversation = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({
+      conversationId,
+      title,
+      img,
+    }: {
+      conversationId: number;
+      title: string | null;
+      img: string | null;
+    }) => {
+      const res = await axiosPrivate.patch(
+        `/api/conversations/${conversationId}`,
+        {
+          title,
+          img,
+        }
+      );
+      return res.data as { id: number; title: string | null };
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData<Conversation[]>(["conversations"], (prev) => {
+          if (!prev) return prev;
+          const idx = prev.findIndex((c) => c.id === data.id);
+          if (idx === -1) return prev;
+          const updated: Conversation = { ...prev[idx], title: data.title };
+          const copy = [...prev];
+          copy[idx] = updated;
+          return copy;
+        });
+      },
+    }
+  );
+};

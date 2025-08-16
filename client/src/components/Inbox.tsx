@@ -51,6 +51,7 @@ const Inbox = () => {
           conversationWithSelf={conversationWithSelf}
           isGroup={conversation.isGroup}
           groupPicture={conversation.group_picture}
+          title={conversation.title || ""}
         />
       );
     });

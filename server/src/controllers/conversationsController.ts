@@ -330,3 +330,55 @@ export const readConversation = async (req: Request, res: Response) => {
     res.status(500).json({ message: err });
   }
 };
+
+export const updateConversation = async (req: Request, res: Response) => {
+  const { conversationId } = req.params;
+  const parsedConversationId = parseInt(conversationId);
+  const { title, img } = req.body as {
+    title?: string | null;
+    img?: string | null;
+  };
+
+  try {
+    const [conversation] = await sql<
+      { id: number; isGroup: boolean; ownerId: number | null }[]
+    >`
+      SELECT id, "isGroup", "ownerId"
+      FROM "Conversation"
+      WHERE id = ${parsedConversationId}
+    `;
+
+    if (!conversation) {
+      return res.status(404).json({ message: "Conversation not found" });
+    }
+
+    if (!conversation.isGroup) {
+      return res
+        .status(400)
+        .json({ message: "Only group conversations can be updated" });
+    }
+
+    if (conversation.ownerId !== parseInt(req.userId)) {
+      return res
+        .status(403)
+        .json({ message: "Only the owner can update this conversation" });
+    }
+
+    const normalizedTitle = !title ? "" : title?.trim();
+    const normalizedImg = !img ? "" : img?.trim();
+
+    const [updated] = await sql<
+      { id: number; title: string | null; group_picture: string }[]
+    >`
+      UPDATE "Conversation"
+      SET title = ${normalizedTitle}, group_picture = ${normalizedImg}
+      WHERE id = ${parsedConversationId}
+      RETURNING id, title, group_picture
+    `;
+
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: err });
+  }
+};

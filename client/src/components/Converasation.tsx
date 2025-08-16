@@ -25,6 +25,7 @@ interface ConverasationProps {
   conversationWithSelf: boolean;
   isGroup: boolean;
   groupPicture?: string;
+  title?: string;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -38,6 +39,7 @@ const Converasation: FC<ConverasationProps> = ({
   conversationWithSelf,
   isGroup,
   groupPicture,
+  title,
 }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -81,7 +83,11 @@ const Converasation: FC<ConverasationProps> = ({
             {conversationWithSelf ? (
               <CgLoadbarDoc size={"2rem"} />
             ) : isGroup && groupPicture ? (
-              groupPicture
+              <img
+                src={groupPicture}
+                alt="group picture"
+                className="object-cover w-full h-full"
+              />
             ) : (
               <img
                 src={recipients[0].profile_picture || "default-pfp.jpg"}
@@ -106,7 +112,7 @@ const Converasation: FC<ConverasationProps> = ({
               </>
             ) : isGroup ? (
               <span className="truncate">
-                {recipients
+                {title || recipients
                   .map((recipient) => recipient.display_name)
                   .join(", ")}
               </span>

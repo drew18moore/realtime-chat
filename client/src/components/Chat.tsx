@@ -156,7 +156,8 @@ const Chat = () => {
             </>
           ) : isGroup ? (
             <span className="truncate">
-              {participants.map((p) => p.display_name).join(", ")}
+              {conversationMeta?.title ||
+                participants.map((p) => p.display_name).join(", ")}
             </span>
           ) : (
             state?.recipient.title

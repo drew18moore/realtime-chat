@@ -18,8 +18,7 @@ const ConversationInfo = () => {
         <h1 className="text-2xl dark:text-white">Conversation details</h1>
       </div>
       <div className="p-5 text-neutral-700 dark:text-neutral-300">
-        <p>Conversation ID: {conversationId}</p>
-        <p className="mt-2">This is a placeholder for conversation info.</p>
+        {/* TODO */}
       </div>
     </div>
   );

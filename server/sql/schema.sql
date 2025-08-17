@@ -29,10 +29,12 @@ CREATE TABLE IF NOT EXISTS "Message" (
     "authorId" INT NOT NULL,
     created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "conversationId" INT,
+    "conversationUserId" INT,
     "isEdited" BOOLEAN NOT NULL DEFAULT false,
     "replyToId" INT,
     CONSTRAINT fk_author FOREIGN KEY ("authorId") REFERENCES "User"(id) ON DELETE CASCADE,
     CONSTRAINT fk_conversation FOREIGN KEY ("conversationId") REFERENCES "Conversation"(id) ON DELETE CASCADE,
+    CONSTRAINT fk_conversation_user FOREIGN KEY ("conversationUserId") REFERENCES "ConversationUser"(id) ON DELETE CASCADE,
     CONSTRAINT fk_reply_to_message FOREIGN KEY ("replyToId") REFERENCES "Message"(id) ON DELETE SET NULL
 );
 

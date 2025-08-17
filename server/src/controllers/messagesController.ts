@@ -19,12 +19,23 @@ export const newMessage = async (req: Request, res: Response) => {
 
   try {
     await sql.begin(async (sql) => {
+      // Get the ConversationUser ID for this user and conversation
+      const [conversationUser] = await sql<{ id: number }[]>`
+        SELECT id
+        FROM "ConversationUser"
+        WHERE "userId" = ${parsedAuthorId} AND "conversationId" = ${parsedConversationId}
+      `;
+
+      if (!conversationUser) {
+        throw new Error("User is not a participant in this conversation");
+      }
+
       const [newMessage] = await sql<MessageDetails[]>`
-      INSERT INTO "Message" (message, "authorId", "conversationId", "img", "replyToId")
+      INSERT INTO "Message" (message, "authorId", "conversationId", "conversationUserId", "img", "replyToId")
       VALUES (${message}, ${parsedAuthorId}, ${parsedConversationId}, ${
-        img || ""
-      }, ${replyToId ? parseInt(replyToId) : null})
-        RETURNING id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId", "replyToId"
+        conversationUser.id
+      }, ${img || ""}, ${replyToId ? parseInt(replyToId) : null})
+        RETURNING id, message, img, "authorId", created_at::timestamptz, "isEdited", "conversationId", "conversationUserId", "replyToId"
       `;
 
       await sql`
@@ -112,7 +123,7 @@ export const getMessagesInConversation = async (
 
     const messages = await sql<MessageDetails[]>`
       SELECT 
-        m.id, m.message, m.img, m."authorId", m.created_at::timestamptz, m."isEdited", m."conversationId", m."replyToId",
+        m.id, m.message, m.img, m."authorId", m.created_at::timestamptz, m."isEdited", m."conversationId", m."conversationUserId", m."replyToId",
         CASE 
           WHEN m."replyToId" IS NOT NULL THEN 
             json_build_object(

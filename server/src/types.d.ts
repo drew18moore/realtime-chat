@@ -110,6 +110,7 @@ export type MessageDetails = {
   created_at: Date;
   isEdited: boolean;
   conversationId: number;
+  conversationUserId: number;
   replyToId?: number;
   repliedToMessage?: {
     id: number;

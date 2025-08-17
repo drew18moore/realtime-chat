@@ -56,10 +56,7 @@ const ConversationInfo = () => {
         {conversation?.isGroup ? (
           <span className="flex items-center justify-center w-32 aspect-square rounded-full overflow-hidden">
             <img
-              src={
-                conversation?.group_picture ||
-                "default-pfp.jpg"
-              }
+              src={conversation?.group_picture || "default-pfp.jpg"}
               alt="group picture"
               className="w-full h-full object-cover"
             />
@@ -67,7 +64,11 @@ const ConversationInfo = () => {
         ) : (
           <span className="flex items-center justify-center w-32 aspect-square rounded-full overflow-hidden">
             <img
-              src={conversationWithSelf ? currentUser?.profile_picture || "default-pfp.jpg" : recipients?.[0].profile_picture || "default-pfp.jpg"}
+              src={
+                conversationWithSelf
+                  ? currentUser?.profile_picture || "default-pfp.jpg"
+                  : recipients?.[0].profile_picture || "default-pfp.jpg"
+              }
               alt="profile picture"
               className="w-full h-full object-cover"
             />
@@ -92,10 +93,57 @@ const ConversationInfo = () => {
           </h2>
         ) : (
           <h2 className="text-2xl dark:text-white">
-            {conversationWithSelf ? currentUser?.display_name : recipients?.[0].display_name}
+            {conversationWithSelf
+              ? currentUser?.display_name
+              : recipients?.[0].display_name}
           </h2>
         )}
       </div>
+
+      {/* Members List for Group Chats */}
+      {conversation?.isGroup && (
+        <div className="flex-1 p-5">
+          <h3 className="text-lg font-medium dark:text-white mb-4">
+            Members ({conversation.participants.length})
+          </h3>
+          <div className="space-y-3">
+            {conversation.participants.map((participant) => (
+              <div
+                key={participant.id}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <div className="flex items-center justify-center w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                  <img
+                    src={participant.profile_picture || "default-pfp.jpg"}
+                    alt={`${participant.display_name}'s profile`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-medium text-neutral-900 dark:text-white truncate">
+                      {participant.display_name}
+                    </h4>
+                    {participant.id === currentUser?.id && (
+                      <span className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded-full flex-shrink-0">
+                        You
+                      </span>
+                    )}
+                    {conversation.ownerId === participant.id && (
+                      <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded-full flex-shrink-0">
+                        Owner
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
+                    @{participant.username}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Edit Conversation Modal */}
       <EditConversationModal

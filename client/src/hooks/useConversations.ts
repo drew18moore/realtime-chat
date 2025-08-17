@@ -99,21 +99,10 @@ export const useReadConversation = () => {
 };
 
 export const useGetConversation = (conversationId: number) => {
-  const queryClient = useQueryClient();
-  return useQuery<Conversation | undefined>(
-    ["conversations", conversationId],
-    () => {
-      const conversations = queryClient.getQueryData<Conversation[]>([
-        "conversations",
-      ]);
-      return conversations?.find(
-        (conversation) => conversation.id === conversationId
-      );
-    },
-    {
-      enabled: !!conversationId,
-    }
-  );
+  const { data: conversations } = useGetConversations();
+  const conversation =
+    conversations?.find((c) => c.id === conversationId) ?? null;
+  return { data: conversation } as { data: Conversation | null };
 };
 
 export const useUpdateConversation = () => {
@@ -154,3 +143,22 @@ export const useUpdateConversation = () => {
     }
   );
 };
+
+export const useDeleteConversation = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+  return useMutation(
+    async (conversationId: number) => {
+      const res = await axiosPrivate.delete(`/api/conversations/${conversationId}`);
+      return res.data;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData<Conversation[]>(["conversations"], (prev) => {
+          if (!prev) return prev;
+          return prev.filter((c) => c.id !== data.id);
+        });
+      },
+    }
+  );
+}

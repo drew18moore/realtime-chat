@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     container_name: postgres
@@ -14,13 +12,13 @@ services:
       - "5332:5432"
     volumes:
       - db:/var/lib/postgresql/data
-      - ./server/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql
-    
+
   server_1:
     build: ./server
     environment:
       - APPID=1111
       - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - REDIS_URL=redis://redis:6379
       - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
       - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
     container_name: server_1
@@ -34,6 +32,7 @@ services:
     environment:
       - APPID=2222
       - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - REDIS_URL=redis://redis:6379
       - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
       - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
     container_name: server_2
@@ -47,6 +46,7 @@ services:
     environment:
       - APPID=3333
       - DATABASE_URL=postgres://postgres:password@db:5432/chat
+      - REDIS_URL=redis://redis:6379
       - ACCESS_TOKEN_SECRET=2febb740c48e60e2423236faac3029bf771a73f6bede633691c4068f79e1db4a8b3621a62965965b6197d50e35a67b28a4f297c36e68d91e1b22a8a214df91f0
       - REFRESH_TOKEN_SECRET=9a0912d63d5275946c27f3522d682a864b65cb2c7762f19e4fa674414e8e2aeebf428f99ee95e9537e42e575b6200cf4572d4b8edd87ac1b65399d1e2d3ea67a
     container_name: server_3
@@ -59,7 +59,7 @@ services:
     image: haproxy
     ports:
       - "8080:8080"
-    volumes: 
+    volumes:
       - ./haproxy:/usr/local/etc/haproxy
     depends_on:
       - server_1
@@ -67,7 +67,14 @@ services:
       - server_3
 
   redis:
-    image: redis
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
 
   client:
     build: ./client
@@ -81,3 +88,4 @@ services:
 
 volumes:
   db: {}
+  redis_data: {}

@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { CgLoadbarDoc } from "react-icons/cg";
 import { MdVerified } from "react-icons/md";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ConverasationProps {
   lastMessageSent?: {
@@ -13,15 +14,18 @@ interface ConverasationProps {
   dateLastMessage: Date | undefined;
   isSelected?: boolean;
   conversationId: number;
-  recipient: {
+  participants: {
     id: number;
     display_name: string;
     username: string;
     profile_picture?: string;
-  };
+  }[];
   isOnline: boolean;
   isRead: boolean;
   conversationWithSelf: boolean;
+  isGroup: boolean;
+  groupPicture?: string;
+  title?: string;
 }
 
 const Converasation: FC<ConverasationProps> = ({
@@ -29,23 +33,35 @@ const Converasation: FC<ConverasationProps> = ({
   dateLastMessage,
   isSelected = false,
   conversationId,
-  recipient,
+  participants,
   isOnline,
   isRead,
   conversationWithSelf,
+  isGroup,
+  groupPicture,
+  title,
 }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const dateFormatted = dateLastMessage?.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "numeric",
   });
-  const lastMessage = lastMessageSent?.message === "" && lastMessageSent.img !== "" ? "Picture" : lastMessageSent?.message 
+  const lastMessage =
+    lastMessageSent?.message === "" && lastMessageSent.img !== ""
+      ? "Picture"
+      : lastMessageSent?.message;
+  const recipients = participants.filter(
+    (participant) => participant.id !== currentUser?.id
+  );
 
   const handleClick = () => {
     const state = {
       recipient: {
-        id: recipient.id,
-        title: recipient.display_name,
+        id: conversationWithSelf ? currentUser?.id : recipients[0].id,
+        title: conversationWithSelf
+          ? "Note to self"
+          : recipients[0].display_name,
         conversationWithSelf,
       },
     };
@@ -61,14 +77,20 @@ const Converasation: FC<ConverasationProps> = ({
           : "hover:bg-neutral-100 dark:hover:bg-neutral-900"
       } rounded-xl flex gap-3 p-3 items-center justify-between cursor-pointer`}
     >
-      <div className="flex gap-3 items-center">
+      <div className="flex gap-3 items-center min-w-0">
         <div className="relative">
           <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-purple-100 text-purple-700">
             {conversationWithSelf ? (
               <CgLoadbarDoc size={"2rem"} />
+            ) : isGroup ? (
+              <img
+                src={groupPicture || "default-pfp.jpg"}
+                alt="group picture"
+                className="object-cover w-full h-full"
+              />
             ) : (
               <img
-                src={recipient.profile_picture || "default-pfp.jpg"}
+                src={recipients[0].profile_picture || "default-pfp.jpg"}
                 alt="profile picture"
                 className="object-cover w-full h-full"
               />
@@ -79,17 +101,23 @@ const Converasation: FC<ConverasationProps> = ({
           )}
         </div>
 
-        <div className="grid items-center">
-          <h2 className="text-xl dark:text-white flex items-center gap-2">
+        <div className="grid items-center min-w-0">
+          <h2 className="text-xl dark:text-white flex items-center gap-2 min-w-0">
             {conversationWithSelf ? (
               <>
-                <p>Note to self</p>
-                <span className="text-blue-600">
+                <span className="truncate">Note to self</span>
+                <span className="text-blue-600 flex-shrink-0">
                   <MdVerified />
                 </span>
               </>
+            ) : isGroup ? (
+              <span className="truncate">
+                {title || participants
+                  .map((participant) => participant.display_name)
+                  .join(", ")}
+              </span>
             ) : (
-              recipient.display_name
+              <span className="truncate">{recipients[0].display_name}</span>
             )}
           </h2>
           <p className="text-neutral-600 text-sm truncate dark:text-neutral-500">

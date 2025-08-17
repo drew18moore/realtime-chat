@@ -4,7 +4,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import PrivateRoute from "./components/PrivateRoute";
 import PersistLogin from "./components/PersistLogin";
-import Chat from "./components/Chat";
+import Main from "./components/Main";
 import Settings from "./pages/Settings";
 
 function App() {
@@ -16,8 +16,10 @@ function App() {
         <Route element={<PersistLogin />}>
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Home />}>
-              <Route path="/:conversationId" element={<Chat />} />
+              <Route path=":conversationId/*" element={<Main />} />
             </Route>
+            <Route path="/new" element={<Home />} />
+            <Route path="/new/group" element={<Home />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>

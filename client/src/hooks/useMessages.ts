@@ -51,6 +51,10 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
       return res.data;
     },
     {
+      // Avoid refetching when navigating back if data exists in cache
+      staleTime: 5 * 60 * 1000,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
       onSuccess: () => {
         // Set conversation isRead to true
         queryClient.setQueryData<Conversation[]>(
@@ -88,7 +92,7 @@ export const useGetMessagesInfinite = (conversationId: number, limit = 20) => {
 
 export const useNewMessage = (
   conversationId: number,
-  recipientId: number,
+  recipientIds: number[],
   message: string,
   img: string,
   replyToId?: number
@@ -147,11 +151,11 @@ export const useNewMessage = (
           }
         );
 
-        // Send to other user
+        // Send to recipients (DM or group)
         socket?.emit("send-message", {
           id: data.id,
           authorId: data.authorId,
-          recipientId,
+          recipientIds,
           conversationId,
           message: data.message,
           img: data.img,

@@ -9,6 +9,10 @@ interface MessageProps {
   setMessageToEdit: React.Dispatch<React.SetStateAction<Message | null>>;
   setMessageToReply: React.Dispatch<React.SetStateAction<Message | null>>;
   addReaction: (messageId: number, reaction: string) => void;
+  showAuthorHeader?: boolean;
+  authorDisplayName?: string;
+  authorProfilePicture?: string;
+  showTimestamp?: boolean;
 }
 
 const Message: FC<MessageProps> = ({
@@ -17,6 +21,10 @@ const Message: FC<MessageProps> = ({
   setMessageToEdit,
   setMessageToReply,
   addReaction,
+  showAuthorHeader = false,
+  authorDisplayName,
+  authorProfilePicture,
+  showTimestamp = true,
 }) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [showEmojiSelector, setShowEmojiSelector] = useState<boolean>(false);
@@ -52,6 +60,24 @@ const Message: FC<MessageProps> = ({
         isCurrentUser ? "justify-self-end" : "justify-self-start"
       } grid max-w-xl relative`}
     >
+      {showAuthorHeader && (
+        <div
+          className={`${
+            isCurrentUser ? "justify-self-end" : "justify-self-start"
+          } flex items-center gap-2 mb-1`}
+        >
+          <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
+            <img
+              src={authorProfilePicture || "default-pfp.jpg"}
+              alt="profile picture"
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <span className="text-sm text-neutral-600 dark:text-neutral-400">
+            {authorDisplayName}
+          </span>
+        </div>
+      )}
       <div
         className={`flex gap-1 ${
           isCurrentUser
@@ -153,21 +179,23 @@ const Message: FC<MessageProps> = ({
           ))}
         </div>
       )}
-      <div
-        className={`${
-          isCurrentUser ? "justify-self-end" : "justify-self-start"
-        } text-neutral-600 dark:text-neutral-500 flex gap-1`}
-      >
-        {message.isEdited && (
-          <>
-            <p>Edited</p>
-            <span>&#8226;</span>
-          </>
-        )}
-        <p className={`text-neutral-600 dark:text-neutral-500`}>
-          {dateFormated}
-        </p>
-      </div>
+      {showTimestamp && (
+        <div
+          className={`${
+            isCurrentUser ? "justify-self-end" : "justify-self-start"
+          } text-neutral-600 dark:text-neutral-500 flex gap-1`}
+        >
+          {message.isEdited && (
+            <>
+              <p>Edited</p>
+              <span>&#8226;</span>
+            </>
+          )}
+          <p className={`text-neutral-600 dark:text-neutral-500`}>
+            {dateFormated}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

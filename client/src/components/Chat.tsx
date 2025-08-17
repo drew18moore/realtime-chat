@@ -11,6 +11,7 @@ import {
 import { BiArrowBack } from "react-icons/bi";
 import NewMessageInputForm from "./NewMessageInputForm";
 import { MdVerified } from "react-icons/md";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -31,9 +32,31 @@ const Chat = () => {
     LIMIT
   );
 
+  // Conversations metadata from cache
+  const queryClient = useQueryClient();
+  const conversations = queryClient.getQueryData<Conversation[]>([
+    "conversations",
+  ]);
+  const conversationMeta = conversations?.find(
+    (c) => c.id === parseInt(conversationId!)
+  );
+  const isGroup = conversationMeta?.isGroup ?? false;
+  const participants = conversationMeta?.participants ?? [];
+
+  const conversationWithSelf =
+    (conversationMeta?.participants?.length === 1 &&
+      conversationMeta.participants[0].id === currentUser?.id) ||
+    false;
+
+  const recipientIds = conversationWithSelf
+    ? [currentUser!.id]
+    : (conversationMeta?.participants || [])
+        .map((p) => p.id)
+        .filter((id) => id !== currentUser?.id);
+
   const { mutate: newMessage, isSuccess: messageHasBeenSent } = useNewMessage(
     parseInt(conversationId!),
-    state?.recipient.id,
+    recipientIds,
     message,
     imgBase64,
     messageToReply?.id
@@ -45,7 +68,7 @@ const Chat = () => {
   const { mutate: reactToMessage } = useReactMessage(
     parseInt(conversationId!),
     currentUser!.id,
-    state?.recipient.id
+    recipientIds[0] ?? state?.recipient.id
   );
 
   useEffect(() => {
@@ -53,7 +76,14 @@ const Chat = () => {
       if (messageToEdit?.message) return messageToEdit.message;
       return "";
     });
+    inputRef.current?.focus();
   }, [messageToEdit]);
+
+  useEffect(() => {
+    if (messageToReply) {
+      inputRef.current?.focus();
+    }
+  }, [messageToReply]);
 
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -102,33 +132,43 @@ const Chat = () => {
   };
 
   return (
-    <div className="relative h-[calc(100svh)]">
+    <div className="flex flex-col h-[calc(100svh)] min-w-0">
       {/* Header bar */}
-      <div className="flex items-center gap-3 absolute top-0 right-0 left-0 h-14 px-5 sm:px-10 border border-b-neutral-200 border-x-0 border-t-0 dark:border-b-neutral-800">
+      <div className="flex-none flex items-center gap-3 py-2 px-5 sm:px-10 border-b border-b-neutral-200 dark:border-b-neutral-800 min-w-0">
         <button
           className="hover:bg-neutral-200 h-11 aspect-square flex items-center justify-center rounded-full p-2.5 sm:hidden dark:text-white dark:hover:bg-neutral-800"
           onClick={() => navigate(-1)}
         >
           <BiArrowBack size={"100%"} />
         </button>
-        <h1 className="text-2xl dark:text-white flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => navigate(`/${conversationId}/info`)}
+          className="text-left text-2xl dark:text-white grid grid-flow-col items-center gap-2 min-w-0 hover:underline py-[0.375rem]"
+          aria-label="Open conversation info"
+        >
           {state?.recipient.conversationWithSelf ? (
             <>
-              <p>Note to self</p>
+              <p className="truncate">Note to self</p>
               <span className="text-blue-600">
                 <MdVerified />
               </span>
             </>
+          ) : isGroup ? (
+            <span className="truncate">
+              {conversationMeta?.title ||
+                participants.map((p) => p.display_name).join(", ")}
+            </span>
           ) : (
             state?.recipient.title
           )}
-        </h1>
+        </button>
       </div>
 
-      <div className="absolute top-14 bottom-20 min-h-0 w-full flex flex-col justify-end">
+      <div className="flex-1 min-h-0 w-full flex flex-col justify-end">
         <div
           ref={messagesContainerRef}
-          className="grid gap-2 p-2 pb-8 overflow-y-auto relative"
+          className="grid gap-2 p-2 overflow-y-auto"
         >
           {messages?.pages[messages.pages.length - 1].length! >= LIMIT && (
             <button
@@ -141,26 +181,61 @@ const Chat = () => {
               Show More
             </button>
           )}
-          {messages?.pages
-            .slice()
-            .reverse()
-            .map((page) => {
-              return page
+          {(() => {
+            const orderedMessages: Message[] =
+              messages?.pages
                 .slice()
                 .reverse()
-                .map((message, i) => {
-                  return (
-                    <Message
-                      message={message}
-                      key={i}
-                      isCurrentUser={message.authorId === currentUser?.id}
-                      setMessageToEdit={setMessageToEdit}
-                      setMessageToReply={setMessageToReply}
-                      addReaction={handleAddReaction}
-                    />
-                  );
-                });
-            })}
+                .flatMap((page) => page.slice().reverse()) ?? [];
+
+            const getAuthorInfo = (authorId: number) => {
+              if (authorId === currentUser?.id) {
+                return {
+                  display_name: currentUser.display_name,
+                  profile_picture: currentUser.profile_picture,
+                };
+              }
+              const found = participants.find((p) => p.id === authorId);
+              return {
+                display_name: found?.display_name,
+                profile_picture: found?.profile_picture,
+              };
+            };
+
+            return orderedMessages.map((m, idx) => {
+              const prev = idx > 0 ? orderedMessages[idx - 1] : undefined;
+              const showAuthorHeader =
+                isGroup &&
+                m.authorId !== currentUser?.id &&
+                (!prev || prev.authorId !== m.authorId);
+              const authorInfo = getAuthorInfo(m.authorId);
+              const next =
+                idx < orderedMessages.length - 1
+                  ? orderedMessages[idx + 1]
+                  : undefined;
+              const FIVE_MINUTES_MS = 5 * 60 * 1000;
+              const showTimestamp =
+                !next ||
+                next.authorId !== m.authorId ||
+                new Date(next.created_at).getTime() -
+                  new Date(m.created_at).getTime() >
+                  FIVE_MINUTES_MS;
+              return (
+                <Message
+                  key={m.id}
+                  message={m}
+                  isCurrentUser={m.authorId === currentUser?.id}
+                  setMessageToEdit={setMessageToEdit}
+                  setMessageToReply={setMessageToReply}
+                  addReaction={handleAddReaction}
+                  showAuthorHeader={showAuthorHeader}
+                  authorDisplayName={authorInfo.display_name}
+                  authorProfilePicture={authorInfo.profile_picture}
+                  showTimestamp={showTimestamp}
+                />
+              );
+            });
+          })()}
         </div>
       </div>
 

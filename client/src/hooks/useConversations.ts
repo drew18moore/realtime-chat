@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useTheme } from "../contexts/ThemeContext";
 
 export const useGetConversations = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -18,12 +20,20 @@ export const useGetConversations = () => {
       onError: (err) => {
         console.error(err);
       },
+      enabled: !!currentUser?.id,
+      // Prevent unnecessary refetch when navigating back if cache exists
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnMount: false,
       refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     }
   );
 };
 
-export const useNewConversation = (participants: number[]) => {
+export const useNewConversation = (
+  participants: number[],
+  isGroup: boolean = false
+) => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -33,6 +43,7 @@ export const useNewConversation = (participants: number[]) => {
     async () => {
       const res = await axiosPrivate.post("/api/conversations/new", {
         participants,
+        isGroup,
       });
       return res.data;
     },
@@ -84,6 +95,125 @@ export const useReadConversation = () => {
     {
       onSuccess: (data) => {
         console.log("SUCCESS", data);
+      },
+    }
+  );
+};
+
+export const useGetConversation = (conversationId: number) => {
+  const { data: conversations } = useGetConversations();
+  const conversation =
+    conversations?.find((c) => c.id === conversationId) ?? null;
+  return { data: conversation } as { data: Conversation | null };
+};
+
+export const useUpdateConversation = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    async ({
+      conversationId,
+      title,
+      img,
+    }: {
+      conversationId: number;
+      title: string | null;
+      img: string | null;
+    }) => {
+      const res = await axiosPrivate.patch(
+        `/api/conversations/${conversationId}`,
+        {
+          title,
+          img,
+        }
+      );
+      return res.data as {
+        id: number;
+        title: string | null;
+        group_picture: string | null;
+      };
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData<Conversation[]>(["conversations"], (prev) => {
+          if (!prev) return prev;
+          const idx = prev.findIndex((c) => c.id === data.id);
+          if (idx === -1) return prev;
+          const updated: Conversation = {
+            ...prev[idx],
+            title: data.title,
+            group_picture: data.group_picture || "",
+          };
+          const copy = [...prev];
+          copy[idx] = updated;
+          return copy;
+        });
+      },
+    }
+  );
+};
+
+export const useDeleteConversation = () => {
+  const axiosPrivate = useAxiosPrivate();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const { currentUser } = useAuth();
+
+  return useMutation(
+    async (conversationId: number) => {
+      // Get conversation data before deletion to determine message type
+      const conversations = queryClient.getQueryData<Conversation[]>([
+        "conversations",
+      ]);
+      const conversation = conversations?.find((c) => c.id === conversationId);
+
+      const res = await axiosPrivate.delete(
+        `/api/conversations/${conversationId}`
+      );
+      return {
+        ...res.data,
+        conversationId,
+        isGroup: conversation?.isGroup || false,
+        wasLeaveAction:
+          conversation?.isGroup && conversation?.ownerId !== currentUser?.id,
+      };
+    },
+    {
+      onSuccess: (data) => {
+        // Remove conversation from cache
+        queryClient.setQueryData<Conversation[]>(["conversations"], (prev) => {
+          if (!prev) return prev;
+          return prev.filter((c) => c.id !== data.conversationId);
+        });
+
+        // Clear messages cache for this conversation
+        queryClient.removeQueries(["messages", data.conversationId]);
+
+        // Show success toast with appropriate message
+        const toastMessage = data.wasLeaveAction
+          ? "Left group successfully"
+          : "Conversation deleted successfully";
+
+        toast.success(toastMessage, {
+          style: {
+            background: `${theme === "light" ? "" : "#262626"}`,
+            color: `${theme === "light" ? "" : "#fff"}`,
+          },
+        });
+
+        // Navigate to root page
+        navigate("/");
+      },
+      onError: (err) => {
+        console.error("Error deleting conversation:", err);
+        toast.error("Failed to delete conversation. Please try again.", {
+          style: {
+            background: `${theme === "light" ? "" : "#262626"}`,
+            color: `${theme === "light" ? "" : "#fff"}`,
+          },
+        });
       },
     }
   );

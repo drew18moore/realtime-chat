@@ -2,6 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosPrivate from "./useAxiosPrivate";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { useTheme } from "../contexts/ThemeContext";
 
 export const useGetConversations = () => {
   const axiosPrivate = useAxiosPrivate();
@@ -126,7 +128,11 @@ export const useUpdateConversation = () => {
           img,
         }
       );
-      return res.data as { id: number; title: string | null, group_picture: string | null };
+      return res.data as {
+        id: number;
+        title: string | null;
+        group_picture: string | null;
+      };
     },
     {
       onSuccess: (data) => {
@@ -134,7 +140,11 @@ export const useUpdateConversation = () => {
           if (!prev) return prev;
           const idx = prev.findIndex((c) => c.id === data.id);
           if (idx === -1) return prev;
-          const updated: Conversation = { ...prev[idx], title: data.title, group_picture: data.group_picture || "" };
+          const updated: Conversation = {
+            ...prev[idx],
+            title: data.title,
+            group_picture: data.group_picture || "",
+          };
           const copy = [...prev];
           copy[idx] = updated;
           return copy;
@@ -147,18 +157,64 @@ export const useUpdateConversation = () => {
 export const useDeleteConversation = () => {
   const axiosPrivate = useAxiosPrivate();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const { currentUser } = useAuth();
+
   return useMutation(
     async (conversationId: number) => {
-      const res = await axiosPrivate.delete(`/api/conversations/${conversationId}`);
-      return res.data;
+      // Get conversation data before deletion to determine message type
+      const conversations = queryClient.getQueryData<Conversation[]>([
+        "conversations",
+      ]);
+      const conversation = conversations?.find((c) => c.id === conversationId);
+
+      const res = await axiosPrivate.delete(
+        `/api/conversations/${conversationId}`
+      );
+      return {
+        ...res.data,
+        conversationId,
+        isGroup: conversation?.isGroup || false,
+        wasLeaveAction:
+          conversation?.isGroup && conversation?.ownerId !== currentUser?.id,
+      };
     },
     {
       onSuccess: (data) => {
+        // Remove conversation from cache
         queryClient.setQueryData<Conversation[]>(["conversations"], (prev) => {
           if (!prev) return prev;
-          return prev.filter((c) => c.id !== data.id);
+          return prev.filter((c) => c.id !== data.conversationId);
+        });
+
+        // Clear messages cache for this conversation
+        queryClient.removeQueries(["messages", data.conversationId]);
+
+        // Show success toast with appropriate message
+        const toastMessage = data.wasLeaveAction
+          ? "Left group successfully"
+          : "Conversation deleted successfully";
+
+        toast.success(toastMessage, {
+          style: {
+            background: `${theme === "light" ? "" : "#262626"}`,
+            color: `${theme === "light" ? "" : "#fff"}`,
+          },
+        });
+
+        // Navigate to root page
+        navigate("/");
+      },
+      onError: (err) => {
+        console.error("Error deleting conversation:", err);
+        toast.error("Failed to delete conversation. Please try again.", {
+          style: {
+            background: `${theme === "light" ? "" : "#262626"}`,
+            color: `${theme === "light" ? "" : "#fff"}`,
+          },
         });
       },
     }
   );
-}
+};

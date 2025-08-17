@@ -7,12 +7,14 @@ type ConversationInfoDropdownProps = {
   setShowDropdown: React.Dispatch<React.SetStateAction<boolean>>;
   toggleBtnRef: React.RefObject<HTMLButtonElement>;
   isGroup: boolean;
+  isOwner: boolean;
 }
 
 const ConversationInfoDropdown = ({
   setShowDropdown,
   toggleBtnRef,
   isGroup,
+  isOwner,
 }: ConversationInfoDropdownProps) => {
   const { conversationId } = useParams();
   const { mutate: deleteConversation } = useDeleteConversation();
@@ -23,7 +25,7 @@ const ConversationInfoDropdown = ({
   
   return (
     <Dropdown setShowDropdown={setShowDropdown} toggleBtnRef={toggleBtnRef} orientation="vertical">
-      {isGroup ? (
+      {(isGroup && !isOwner) ? (
         <DropdownItem icon={<FiLogOut />} onClick={handleDeleteConversation} setShowDropdown={setShowDropdown} variant="danger">Leave</DropdownItem>
       ): (
         <DropdownItem icon={<FiTrash2 />} onClick={handleDeleteConversation} setShowDropdown={setShowDropdown} variant="danger">Delete</DropdownItem>

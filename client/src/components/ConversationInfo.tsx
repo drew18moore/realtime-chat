@@ -46,6 +46,7 @@ const ConversationInfo = () => {
               setShowDropdown={setShowDropdown}
               toggleBtnRef={toggleBtnRef}
               isGroup={conversation?.isGroup || false}
+              isOwner={conversation?.ownerId === currentUser?.id}
             />
           )}
         </div>

@@ -334,10 +334,7 @@ export const readConversation = async (req: Request, res: Response) => {
 export const updateConversation = async (req: Request, res: Response) => {
   const { conversationId } = req.params;
   const parsedConversationId = parseInt(conversationId);
-  const { title, img } = req.body as {
-    title?: string | null;
-    img?: string | null;
-  };
+  const { title, img } = req.body;
 
   try {
     const [conversation] = await sql<
@@ -364,14 +361,21 @@ export const updateConversation = async (req: Request, res: Response) => {
         .json({ message: "Only the owner can update this conversation" });
     }
 
-    const normalizedTitle = !title ? "" : title?.trim();
-    const normalizedImg = !img ? "" : img?.trim();
+    const titleTrimmed = title?.trim();
 
     const [updated] = await sql<
       { id: number; title: string | null; group_picture: string }[]
     >`
       UPDATE "Conversation"
-      SET title = ${normalizedTitle}, group_picture = ${normalizedImg}
+      SET 
+        title = CASE
+          WHEN ${titleTrimmed}::TEXT IS NOT NULL AND ${titleTrimmed}::TEXT != '' THEN ${titleTrimmed}::TEXT
+          ELSE title
+        END, 
+        group_picture = CASE
+          WHEN ${img}::TEXT IS NOT NULL AND ${img}::TEXT != '' THEN ${img}::TEXT
+          ELSE group_picture
+        END
       WHERE id = ${parsedConversationId}
       RETURNING id, title, group_picture
     `;

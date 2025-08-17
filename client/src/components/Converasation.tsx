@@ -82,9 +82,9 @@ const Converasation: FC<ConverasationProps> = ({
           <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-purple-100 text-purple-700">
             {conversationWithSelf ? (
               <CgLoadbarDoc size={"2rem"} />
-            ) : isGroup && groupPicture ? (
+            ) : isGroup ? (
               <img
-                src={groupPicture}
+                src={groupPicture || "default-pfp.jpg"}
                 alt="group picture"
                 className="object-cover w-full h-full"
               />

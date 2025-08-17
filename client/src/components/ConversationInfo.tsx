@@ -5,6 +5,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { useEffect, useRef, useState } from "react";
 import { FiMoreHorizontal } from "react-icons/fi";
 import ConversationInfoDropdown from "./ConversationInfoDropdown";
+import { FaCamera } from "react-icons/fa";
+import Input from "./ui/Input";
+import EditConversationModal from "./EditConversationModal";
+import Resizer from "react-image-file-resizer";
+// @ts-expect-error https://github.com/onurzorluer/react-image-file-resizer/issues/68
+const resizer: typeof Resizer = Resizer.default || Resizer;
 
 const ConversationInfo = () => {
   const { conversationId } = useParams();
@@ -16,10 +22,28 @@ const ConversationInfo = () => {
   );
   const [showDropdown, setShowDropdown] = useState(false);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
+  const [groupPictureBase64, setGroupPictureBase64] = useState<string | null>(
+    null
+  );
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  useEffect(() => {
-    console.log(conversation?.isGroup);
-  }, [conversation, recipients]);
+  const handleImgChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    resizer.imageFileResizer(
+      file,
+      400,
+      400,
+      "JPEG",
+      80,
+      0,
+      (uri) => {
+        setGroupPictureBase64(uri as string);
+      },
+      "base64"
+    );
+  };
+
   return (
     <div className="flex flex-col h-[calc(100svh)] min-w-0">
       <div className="flex-none flex items-center justify-between py-2 px-5 sm:px-10 border-b border-b-neutral-200 dark:border-b-neutral-800 min-w-0">
@@ -47,38 +71,50 @@ const ConversationInfo = () => {
               toggleBtnRef={toggleBtnRef}
               isGroup={conversation?.isGroup || false}
               isOwner={conversation?.ownerId === currentUser?.id}
+              onEditClick={() => setShowEditModal(true)}
             />
           )}
         </div>
       </div>
       <div className="p-5 text-neutral-700 dark:text-neutral-300 flex flex-col items-center">
-        {conversation?.isGroup && conversation?.group_picture?.length ? (
-          <img
-            src={conversation?.group_picture}
-            alt="group picture"
-            className="w-full h-full object-cover"
-          />
+        {conversation?.isGroup ? (
+          <span className="flex items-center justify-center w-32 aspect-square rounded-full overflow-hidden">
+            <img
+              src={
+                groupPictureBase64 ||
+                conversation?.group_picture ||
+                "default-pfp.jpg"
+              }
+              alt="group picture"
+              className="w-full h-full object-cover"
+            />
+          </span>
         ) : (
-          <>
-            <span className="flex items-center justify-center w-32 aspect-square rounded-full overflow-hidden">
-              <img
-                src={recipients?.[0].profile_picture || "default-pfp.jpg"}
-                alt="profile picture"
-                className="w-full h-full object-cover"
-              />
-            </span>
-            {conversation?.isGroup ? (
-              <h2 className="text-2xl dark:text-white">
-                {conversation?.title || "Add a title"}
-              </h2>
-            ) : (
-              <h2 className="text-2xl dark:text-white">
-                {recipients?.[0].display_name}
-              </h2>
-            )}
-          </>
+          <span className="flex items-center justify-center w-32 aspect-square rounded-full overflow-hidden">
+            <img
+              src={recipients?.[0].profile_picture || "default-pfp.jpg"}
+              alt="profile picture"
+              className="w-full h-full object-cover"
+            />
+          </span>
+        )}
+        {conversation?.isGroup ? (
+          <h2 className="text-2xl dark:text-white">
+            {conversation?.title || "Add a title"}
+          </h2>
+        ) : (
+          <h2 className="text-2xl dark:text-white">
+            {recipients?.[0].display_name}
+          </h2>
         )}
       </div>
+
+      {/* Edit Conversation Modal */}
+      <EditConversationModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        conversation={conversation}
+      />
     </div>
   );
 };

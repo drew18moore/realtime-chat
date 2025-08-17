@@ -126,7 +126,7 @@ export const useUpdateConversation = () => {
           img,
         }
       );
-      return res.data as { id: number; title: string | null };
+      return res.data as { id: number; title: string | null, group_picture: string | null };
     },
     {
       onSuccess: (data) => {
@@ -134,7 +134,7 @@ export const useUpdateConversation = () => {
           if (!prev) return prev;
           const idx = prev.findIndex((c) => c.id === data.id);
           if (idx === -1) return prev;
-          const updated: Conversation = { ...prev[idx], title: data.title };
+          const updated: Conversation = { ...prev[idx], title: data.title, group_picture: data.group_picture || "" };
           const copy = [...prev];
           copy[idx] = updated;
           return copy;

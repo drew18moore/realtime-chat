@@ -100,7 +100,20 @@ const ConversationInfo = () => {
         )}
         {conversation?.isGroup ? (
           <h2 className="text-2xl dark:text-white">
-            {conversation?.title || "Add a title"}
+            {conversation?.title ? (
+              conversation.title
+            ) : conversation?.ownerId === currentUser?.id ? (
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors underline decoration-dashed underline-offset-4"
+              >
+                Add a title
+              </button>
+            ) : (
+              <span className="text-neutral-500 dark:text-neutral-400 italic">
+                No title
+              </span>
+            )}
           </h2>
         ) : (
           <h2 className="text-2xl dark:text-white">

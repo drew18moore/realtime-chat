@@ -144,7 +144,7 @@ const Chat = () => {
         <button
           type="button"
           onClick={() => navigate(`/${conversationId}/info`)}
-          className="text-left text-2xl dark:text-white grid grid-flow-col items-center gap-2 min-w-0 hover:underline"
+          className="text-left text-2xl dark:text-white grid grid-flow-col items-center gap-2 min-w-0 hover:underline py-[0.375rem]"
           aria-label="Open conversation info"
         >
           {state?.recipient.conversationWithSelf ? (

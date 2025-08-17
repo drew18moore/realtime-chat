@@ -40,8 +40,4 @@ CREATE TABLE IF NOT EXISTS "ConversationUser" (
     CONSTRAINT fk_conversation FOREIGN KEY ("conversationId") REFERENCES "Conversation"(id) ON DELETE CASCADE
 );
 
--- Create indices and constraints for relationships
-ALTER TABLE "Message" ADD CONSTRAINT fk_author FOREIGN KEY ("authorId") REFERENCES "User"(id) ON DELETE RESTRICT ON UPDATE CASCADE;
-ALTER TABLE "Message" ADD CONSTRAINT fk_conversation FOREIGN KEY ("conversationId") REFERENCES "Conversation"(id) ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "ConversationUser" ADD CONSTRAINT fk_user FOREIGN KEY ("userId") REFERENCES "User"(id) ON DELETE RESTRICT ON UPDATE CASCADE;
-ALTER TABLE "ConversationUser" ADD CONSTRAINT fk_conversation FOREIGN KEY ("conversationId") REFERENCES "Conversation"(id) ON DELETE CASCADE ON UPDATE CASCADE;
+-- Note: Constraints are already defined inline in the CREATE TABLE statements above

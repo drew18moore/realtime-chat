@@ -112,8 +112,8 @@ const Converasation: FC<ConverasationProps> = ({
               </>
             ) : isGroup ? (
               <span className="truncate">
-                {title || recipients
-                  .map((recipient) => recipient.display_name)
+                {title || participants
+                  .map((participant) => participant.display_name)
                   .join(", ")}
               </span>
             ) : (

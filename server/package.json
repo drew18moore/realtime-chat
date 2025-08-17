@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "build": "tsc",
+    "migrate": "db-migrate up",
     "start": "node dist/server.js"
   },
   "keywords": [],

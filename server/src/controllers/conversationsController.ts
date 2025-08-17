@@ -412,10 +412,6 @@ export const deleteConversation = async (req: Request, res: Response) => {
       return res.status(200).json({ message: "You have left the group conversation" });
     }
 
-    if (conversation.ownerId !== parseInt(req.userId)) {
-      return res.status(403).json({ message: "Only the owner can delete this conversation" });
-    }
-
     await sql`
       DELETE FROM "Conversation"
       WHERE id = ${parsedConversationId}

@@ -4,5 +4,6 @@ export const allowedOrigins = [
   "https://social-network-mern.onrender.com",
   "http://192.168.1.23:5173",
   "http://127.0.0.1:4173",
-  "https://chat.drewmoore.dev"
+  "https://chat.drewmoore.dev",
+  "http://192.168.1.28:5173"
 ];
